@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>专业的康养顾问 对话助手 - 智能对话界面</title>
+    <title>专业康养顾问 - 智能对话界面</title>
     <!-- Tailwind CSS + Font Awesome + Markdown 相关库 -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -128,7 +128,7 @@
             <div class="max-w-3xl mx-auto px-4 py-6 space-y-5">
                 <div v-if="messages.length === 0" class="flex flex-col items-center justify-center h-64 text-center text-gray-400">
                     <i class="fas fa-comment-dots text-5xl mb-4 opacity-50"></i>
-                    <p class="text-lg font-medium">开始与 Dify AI 对话</p>
+                    <p class="text-lg font-medium">开始与 专业康养顾问 AI 对话</p>
                     <p class="text-sm mt-1">配置好 API 后，输入消息即可体验智能对话</p>
                 </div>
                 <div v-for="(msg, idx) in messages" :key="msg.id" class="flex" :class="msg.role === 'user' ? 'justify-end' : 'justify-start'">
