@@ -3,58 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>专业康养顾问 - 智能对话界面</title>
-    <!-- Tailwind CSS + Font Awesome + Markdown 相关库 -->
+    <title>专业康养顾问 - 多用户智能对话</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- marked.js 用于 Markdown 渲染 -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <!-- DOMPurify 防止 XSS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
-    <!-- highlight.js 代码高亮 (可选) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <!-- Vue 3 CDN -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <style>
-        /* 自定义滚动条与消息气泡动画 */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
-        }
-        .message-enter-active {
-            transition: all 0.2s ease-out;
-        }
-        .fade-enter-active, .fade-leave-active {
-            transition: opacity 0.2s;
-        }
-        .fade-enter-from, .fade-leave-to {
-            opacity: 0;
-        }
-        /* 代码块内部样式优化 */
-        pre code.hljs {
-            border-radius: 0.5rem;
-            padding: 0.75rem;
-            font-size: 0.85rem;
-        }
-        /* 打字光标动画 */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 10px; }
         .typing-indicator span {
-            display: inline-block;
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background-color: #9ca3af;
-            margin: 0 2px;
+            display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+            background-color: #9ca3af; margin: 0 2px;
             animation: typing 1.4s infinite ease-in-out both;
         }
         .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
@@ -63,121 +26,135 @@
             0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
             40% { transform: scale(1); opacity: 1; }
         }
+        .voice-btn:hover { background-color: #e5e7eb; transform: scale(1.05); }
+        .fade-enter-active, .fade-leave-active { transition: opacity 0.2s; }
+        .fade-enter-from, .fade-leave-to { opacity: 0; }
     </style>
 </head>
-<body class="bg-gray-100 antialiased font-sans h-screen overflow-hidden">
-    <div id="app" class="h-full flex flex-col">
-        <!-- 顶部导航栏 -->
-        <header class="bg-white/80 backdrop-blur-sm border-b border-gray-200 shadow-sm sticky top-0 z-10">
-            <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <div class="w-8 h-8 bg-indigo-600 rounded-xl flex items-center justify-center shadow-md">
-                        <i class="fas fa-robot text-white text-sm"></i>
+<body class="bg-gray-100 font-sans h-screen overflow-hidden">
+    <div id="app">
+        <!-- 登录/注册界面 -->
+        <div v-if="!currentUser" class="h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-50">
+            <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-8 mx-4">
+                <div class="text-center mb-6">
+                    <div class="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg">
+                        <i class="fas fa-robot text-white text-2xl"></i>
                     </div>
-                    <h1 class="text-xl font-semibold bg-gradient-to-r from-indigo-700 to-purple-700 bg-clip-text text-transparent">专业康养顾问</h1>
+                    <h2 class="text-2xl font-bold mt-4 text-gray-800">专业康养顾问</h2>
+                    <p class="text-gray-500 mt-1">多用户智能对话系统</p>
                 </div>
-                <div class="flex items-center gap-2">
-                    <button @click="newConversation" :disabled="isStreaming" 
-                        class="p-2 rounded-full hover:bg-gray-100 transition disabled:opacity-50 disabled:cursor-not-allowed" title="新建对话">
-                        <i class="fas fa-plus text-gray-600 text-lg"></i>
-                    </button>
-                    <button @click="showConfig = !showConfig" 
-                        class="p-2 rounded-full hover:bg-gray-100 transition" title="设置 API 配置">
-                        <i class="fas fa-sliders-h text-gray-600 text-lg"></i>
-                    </button>
-                </div>
-            </div>
-        </header>
-
-        <!-- 配置侧边栏 (滑入式) -->
-        <div v-if="showConfig" class="fixed inset-0 bg-black/30 z-20 flex justify-end transition-all" @click.self="showConfig = false">
-            <div class="w-full max-w-md bg-white h-full shadow-2xl animate-slide-in-right p-6 overflow-y-auto">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-xl font-bold text-gray-800">⚙️ API 配置</h2>
-                    <button @click="showConfig = false" class="text-gray-400 hover:text-gray-600">
-                        <i class="fas fa-times text-xl"></i>
-                    </button>
-                </div>
-                <div class="space-y-5">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">API 基础地址</label>
-                        <input type="text" v-model="config.apiBase" placeholder="https://api.dify.ai/v1" 
-                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none">
-                        <p class="text-xs text-gray-500 mt-1">例如: https://api.dify.ai/v1 或自部署地址</p>
+                <div class="space-y-4">
+                    <div v-if="isLoginMode">
+                        <input type="text" v-model="loginUsername" placeholder="用户名" class="w-full border rounded-xl px-4 py-2 focus:ring-indigo-500">
+                        <input type="password" v-model="loginPassword" placeholder="密码" class="w-full border rounded-xl px-4 py-2 mt-3 focus:ring-indigo-500">
+                        <button @click="doLogin" class="w-full bg-indigo-600 text-white py-2 rounded-xl mt-4 hover:bg-indigo-700">登录</button>
+                        <p class="text-center text-sm mt-3">没有账号？<a href="#" @click="isLoginMode=false" class="text-indigo-600">立即注册</a></p>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">API Key (应用密钥)</label>
-                        <input type="password" v-model="config.apiKey" placeholder="app-xxxxxxxxxxxxx" 
-                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none">
-                        <p class="text-xs text-gray-500 mt-1">从 Dify 应用设置中获取，格式通常以 app- 开头</p>
+                    <div v-else>
+                        <input type="text" v-model="regUsername" placeholder="用户名" class="w-full border rounded-xl px-4 py-2 focus:ring-indigo-500">
+                        <input type="password" v-model="regPassword" placeholder="密码" class="w-full border rounded-xl px-4 py-2 mt-3 focus:ring-indigo-500">
+                        <button @click="doRegister" class="w-full bg-indigo-600 text-white py-2 rounded-xl mt-4 hover:bg-indigo-700">注册</button>
+                        <p class="text-center text-sm mt-3">已有账号？<a href="#" @click="isLoginMode=true" class="text-indigo-600">去登录</a></p>
                     </div>
-                    <div class="pt-2">
-                        <button @click="saveConfigAndReset" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-lg transition shadow-sm">
-                            <i class="fas fa-save mr-2"></i>保存配置并开始新对话
-                        </button>
-                    </div>
-                    <div class="border-t pt-4 mt-2">
-                        <p class="text-xs text-gray-500 flex items-center gap-1"><i class="fas fa-info-circle"></i> 提示：配置需包含有效的 Dify 对话型应用 API Key，并确保响应模式支持流式(streaming)。</p>
-                    </div>
+                    <div v-if="authError" class="text-red-600 text-sm text-center mt-2">{{ authError }}</div>
                 </div>
             </div>
         </div>
 
-        <!-- 消息列表区域 -->
-        <main class="flex-1 overflow-y-auto" id="messageContainer" ref="messageContainer">
-            <div class="max-w-3xl mx-auto px-4 py-6 space-y-5">
-                <div v-if="messages.length === 0" class="flex flex-col items-center justify-center h-64 text-center text-gray-400">
-                    <i class="fas fa-comment-dots text-5xl mb-4 opacity-50"></i>
-                    <p class="text-lg font-medium">开始与 专业康养顾问 AI 对话</p>
-                    <p class="text-sm mt-1">配置好 API 后，输入消息即可体验智能对话</p>
-                </div>
-                <div v-for="(msg, idx) in messages" :key="msg.id" class="flex" :class="msg.role === 'user' ? 'justify-end' : 'justify-start'">
-                    <div class="flex max-w-[85%] gap-2" :class="msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'">
-                        <!-- 头像 -->
-                        <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center shadow-sm"
-                            :class="msg.role === 'user' ? 'bg-indigo-100 text-indigo-600' : 'bg-gray-200 text-gray-600'">
-                            <i :class="msg.role === 'user' ? 'fas fa-user' : 'fas fa-robot'"></i>
+        <!-- 主聊天界面 (已登录) -->
+        <div v-else class="h-full flex flex-col">
+            <header class="bg-white/80 backdrop-blur-sm border-b shadow-sm sticky top-0 z-10">
+                <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-indigo-600 rounded-xl flex items-center justify-center shadow-md">
+                            <i class="fas fa-robot text-white text-sm"></i>
                         </div>
-                        <!-- 气泡内容 -->
-                        <div class="relative px-4 py-3 rounded-2xl shadow-sm break-words"
-                            :class="msg.role === 'user' ? 'bg-indigo-600 text-white rounded-tr-none' : 'bg-white text-gray-800 rounded-tl-none border border-gray-100'">
-                            <div v-if="msg.role === 'assistant'" class="prose prose-sm max-w-none markdown-body" v-html="renderMarkdown(msg.content)"></div>
-                            <div v-else class="whitespace-pre-wrap">{{ msg.content }}</div>
-                            <!-- 流式加载指示器（仅在最后一条助手正在生成且内容为空时显示） -->
-                            <div v-if="msg.role === 'assistant' && idx === messages.length-1 && isStreaming && !msg.content" class="typing-indicator flex space-x-1 py-1">
-                                <span></span><span></span><span></span>
-                            </div>
-                        </div>
+                        <h1 class="text-xl font-semibold bg-gradient-to-r from-indigo-700 to-purple-700 bg-clip-text text-transparent">专业康养顾问</h1>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm text-gray-600 hidden sm:inline"><i class="fas fa-user-circle"></i> {{ currentUser.username }}</span>
+                        <button @click="showConfig = !showConfig" class="p-2 rounded-full hover:bg-gray-100" title="API配置">
+                            <i class="fas fa-sliders-h text-gray-600"></i>
+                        </button>
+                        <button @click="logout" class="p-2 rounded-full hover:bg-gray-100" title="退出登录">
+                            <i class="fas fa-sign-out-alt text-gray-600"></i>
+                        </button>
                     </div>
                 </div>
-                <!-- 错误提示轻提示 -->
-                <div v-if="errorMsg" class="bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded-xl text-sm flex items-center gap-2">
-                    <i class="fas fa-exclamation-triangle"></i> {{ errorMsg }}
+            </header>
+
+            <!-- 配置侧边栏 -->
+            <div v-if="showConfig" class="fixed inset-0 bg-black/30 z-20 flex justify-end" @click.self="showConfig=false">
+                <div class="w-full max-w-md bg-white h-full shadow-2xl p-6 overflow-y-auto">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-bold">⚙️ API 配置</h2>
+                        <button @click="showConfig=false" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+                    </div>
+                    <div class="space-y-5">
+                        <div>
+                            <label class="block text-sm font-medium">API 基础地址</label>
+                            <input type="text" v-model="userConfig.apiBase" placeholder="https://api.dify.ai/v1" class="w-full border rounded-lg px-4 py-2">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium">API Key</label>
+                            <input type="password" v-model="userConfig.apiKey" placeholder="app-xxx" class="w-full border rounded-lg px-4 py-2">
+                        </div>
+                        <button @click="saveUserConfig" class="w-full bg-indigo-600 text-white py-2 rounded-lg">保存配置</button>
+                    </div>
                 </div>
             </div>
-        </main>
 
-        <!-- 底部输入区域 -->
-        <div class="border-t bg-white/90 backdrop-blur-sm p-4 shadow-lg">
-            <div class="max-w-3xl mx-auto">
-                <div class="flex items-end gap-3 bg-gray-50 rounded-2xl border border-gray-200 p-2 focus-within:ring-2 focus-within:ring-indigo-300 transition">
-                    <textarea v-model="inputMessage" @keydown.enter.exact="sendMessage" @keydown.enter.shift.exact="inputMessage += '\n'" rows="1"
-                        :disabled="isStreaming || !isApiReady"
-                        placeholder="输入消息... (Enter 发送, Shift+Enter 换行)"
-                        class="flex-1 bg-transparent border-0 resize-none outline-none py-2 px-3 max-h-32 text-gray-700 placeholder-gray-400"
-                        style="min-height: 44px;"></textarea>
-                    <button v-if="!isStreaming" @click="sendMessage" :disabled="!inputMessage.trim() || !isApiReady"
-                        class="p-2 rounded-full transition disabled:opacity-40 disabled:cursor-not-allowed"
-                        :class="inputMessage.trim() && isApiReady ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow' : 'bg-gray-200 text-gray-400'">
-                        <i class="fas fa-paper-plane"></i>
-                    </button>
-                    <button v-else @click="stopStreaming" class="p-2 rounded-full bg-red-100 text-red-600 hover:bg-red-200 transition">
-                        <i class="fas fa-stop"></i>
-                    </button>
+            <!-- 消息区域 -->
+            <main class="flex-1 overflow-y-auto" ref="messageContainer">
+                <div class="max-w-3xl mx-auto px-4 py-6 space-y-5">
+                    <div v-if="messages.length===0" class="flex flex-col items-center justify-center h-64 text-gray-400">
+                        <i class="fas fa-comment-dots text-5xl mb-4 opacity-50"></i>
+                        <p class="text-lg font-medium">开始与康养顾问对话</p>
+                        <p class="text-sm mt-1">默认 API 已配置，可直接使用</p>
+                    </div>
+                    <div v-for="(msg, idx) in messages" :key="msg.id" class="flex" :class="msg.role==='user'?'justify-end':'justify-start'">
+                        <div v-if="msg.role==='assistant'" class="flex items-start gap-2 max-w-[90%]">
+                            <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center"><i class="fas fa-robot text-gray-600"></i></div>
+                            <div class="relative px-4 py-3 rounded-2xl bg-white text-gray-800 border border-gray-100 flex-1">
+                                <div class="prose prose-sm max-w-none" v-html="renderMarkdown(msg.content)"></div>
+                                <div v-if="idx===messages.length-1 && isStreaming && !msg.content" class="typing-indicator flex space-x-1 py-1 mt-1">
+                                    <span></span><span></span><span></span>
+                                </div>
+                            </div>
+                            <button @click="speakMessage(msg)" :disabled="shouldDisableVoice(msg,idx)" class="voice-btn w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center">
+                                <i class="fas fa-volume-up"></i>
+                            </button>
+                        </div>
+                        <div v-else class="flex items-start gap-2 max-w-[90%] flex-row-reverse">
+                            <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center"><i class="fas fa-user text-indigo-600"></i></div>
+                            <div class="relative px-4 py-3 rounded-2xl bg-indigo-600 text-white rounded-tr-none">
+                                <div class="whitespace-pre-wrap">{{ msg.content }}</div>
+                            </div>
+                            <button @click="speakMessage(msg)" class="voice-btn w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center">
+                                <i class="fas fa-volume-up"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div v-if="errorMsg" class="bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded-xl text-sm">{{ errorMsg }}</div>
                 </div>
-                <div class="flex justify-between mt-2 text-xs text-gray-400 px-1">
-                    <span><i class="fas fa-database mr-1"></i> {{ isApiReady ? '✅ API 已就绪' : '⚠️ 请先配置 API Key' }}</span>
-                    <span><i class="fas fa-comment-dots mr-1"></i> 支持流式输出 & Markdown</span>
+            </main>
+
+            <!-- 底部输入 -->
+            <div class="border-t bg-white/90 p-4 shadow-lg">
+                <div class="max-w-3xl mx-auto">
+                    <div class="flex items-end gap-3 bg-gray-50 rounded-2xl border p-2 focus-within:ring-2 focus-within:ring-indigo-300">
+                        <textarea v-model="inputMessage" @keydown.enter.exact="sendMessage" @keydown.enter.shift.exact="inputMessage+='\n'" rows="1"
+                            :disabled="isStreaming || !isApiReady" placeholder="输入消息... (Enter发送)" class="flex-1 bg-transparent border-0 resize-none outline-none py-2 px-3"></textarea>
+                        <button v-if="!isStreaming" @click="sendMessage" :disabled="!inputMessage.trim() || !isApiReady"
+                            class="p-2 rounded-full" :class="inputMessage.trim()&&isApiReady?'bg-indigo-600 text-white':'bg-gray-200 text-gray-400'">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                        <button v-else @click="stopStreaming" class="p-2 rounded-full bg-red-100 text-red-600"><i class="fas fa-stop"></i></button>
+                    </div>
+                    <div class="flex justify-between mt-2 text-xs text-gray-400 px-1">
+                        <span><i class="fas fa-database"></i> {{ isApiReady ? '✅ API已就绪' : '⚠️ 请配置API Key' }}</span>
+                        <span><i class="fas fa-users"></i> 多用户隔离 | 语音播报 | 默认Key已内置</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -186,12 +163,29 @@
     <script>
         const { createApp, ref, onMounted, nextTick, watch } = Vue;
 
-        // 工具函数: 生成简单 UUID
-        function generateUserId() {
-            return 'user-' + Date.now() + '-' + Math.random().toString(36).substring(2, 10);
+        // 默认配置（与最早代码保持一致）
+        const DEFAULT_API_BASE = 'https://api.dify.ai/v1';
+        const DEFAULT_API_KEY = 'app-66HmEsxZuCXDJGjKPQ6D8zN4';
+
+        function generateUserId(username) {
+            return `user-${username}-${Date.now()}-${Math.random().toString(36).substring(2,8)}`;
         }
 
-        // 解析 SSE 流式数据
+        function markdownToPlainText(md) {
+            if (!md) return '';
+            let text = md.replace(/!\[.*?\]\(.*?\)/g, '')
+                         .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+                         .replace(/`([^`]+)`/g, '$1')
+                         .replace(/```[\s\S]*?```/g, '')
+                         .replace(/(\*\*|__)(.*?)\1/g, '$2')
+                         .replace(/(\*|_)(.*?)\1/g, '$2')
+                         .replace(/^#{1,6}\s+/gm, '')
+                         .replace(/^[\s]*[-+*]\s+/gm, '')
+                         .replace(/^\d+\.\s+/gm, '')
+                         .replace(/<[^>]*>/g, '');
+            return text.trim();
+        }
+
         async function* parseSSEStream(reader) {
             const decoder = new TextDecoder('utf-8');
             let buffer = '';
@@ -206,49 +200,38 @@
                     if (trimmed.startsWith('data:')) {
                         const dataStr = trimmed.slice(5).trim();
                         if (dataStr === '[DONE]') continue;
-                        try {
-                            const data = JSON.parse(dataStr);
-                            yield data;
-                        } catch (e) {
-                            console.warn('SSE parse error:', e);
-                        }
+                        try { yield JSON.parse(dataStr); } catch(e) {}
                     }
                 }
             }
         }
 
-        // 全局 Markdown 渲染函数 (带语法高亮)
         function renderMarkdown(content) {
             if (!content) return '';
             try {
-                let rawHtml = marked.parse(content, { breaks: true, gfm: true });
-                // 使用 DOMPurify 过滤 XSS
-                let cleanHtml = DOMPurify.sanitize(rawHtml);
-                // 创建一个临时 div 用于触发代码高亮
+                let html = marked.parse(content, { breaks: true, gfm: true });
+                let clean = DOMPurify.sanitize(html);
                 const div = document.createElement('div');
-                div.innerHTML = cleanHtml;
-                div.querySelectorAll('pre code').forEach((block) => {
-                    hljs.highlightElement(block);
-                });
+                div.innerHTML = clean;
+                div.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block));
                 return div.innerHTML;
-            } catch (err) {
-                console.error('Markdown render error', err);
-                return content;
-            }
+            } catch(e) { return content; }
         }
 
-        // 初始化配置
-        const STORAGE_KEYS = {
-            API_BASE: 'dify_api_base',
-            API_KEY: 'dify_api_key',
-            CONVERSATION_ID: 'dify_conversation_id',
-            USER_ID: 'dify_user_id',
-            MESSAGES: 'dify_messages'
-        };
+        function getUserStoragePrefix(username) {
+            return `dify_multi_${username}_`;
+        }
 
         createApp({
             setup() {
-                // 响应式数据
+                const currentUser = ref(null);
+                const isLoginMode = ref(true);
+                const loginUsername = ref('');
+                const loginPassword = ref('');
+                const regUsername = ref('');
+                const regPassword = ref('');
+                const authError = ref('');
+
                 const messages = ref([]);
                 const inputMessage = ref('');
                 const isStreaming = ref(false);
@@ -259,132 +242,126 @@
                 let abortController = null;
                 const messageContainer = ref(null);
 
-                // 配置信息
-                const config = ref({
-                    apiBase: 'https://api.dify.ai/v1',
-                    apiKey: 'app-66HmEsxZuCXDJGjKPQ6D8zN4'
-                });
+                // 用户自己的API配置，默认使用内置值
+                const userConfig = ref({ apiBase: DEFAULT_API_BASE, apiKey: DEFAULT_API_KEY });
+                const isApiReady = ref(true); // 因为默认有key，所以初始为true
 
-                // 计算属性: API 是否就绪 (有 key)
-                const isApiReady = ref(false);
+                let currentUtterance = null;
 
-                // 滚动到底部
-                const scrollToBottom = () => {
-                    nextTick(() => {
-                        if (messageContainer.value) {
-                            messageContainer.value.scrollTop = messageContainer.value.scrollHeight;
-                        }
-                    });
+                // 用户管理
+                const loadUsers = () => {
+                    const users = localStorage.getItem('dify_multi_users');
+                    return users ? JSON.parse(users) : {};
+                };
+                const saveUsers = (users) => localStorage.setItem('dify_multi_users', JSON.stringify(users));
+
+                const doRegister = () => {
+                    const username = regUsername.value.trim();
+                    const password = regPassword.value.trim();
+                    if (!username || !password) { authError.value = '用户名/密码不能为空'; return; }
+                    const users = loadUsers();
+                    if (users[username]) { authError.value = '用户名已存在'; return; }
+                    users[username] = { password, createdAt: Date.now() };
+                    saveUsers(users);
+                    currentUser.value = { username };
+                    initUserData(username);
+                    authError.value = '';
                 };
 
-                // 保存配置到 localStorage 并重置对话
-                const saveConfigAndReset = () => {
-                    // 保存基础配置
-                    localStorage.setItem(STORAGE_KEYS.API_BASE, config.value.apiBase);
-                    localStorage.setItem(STORAGE_KEYS.API_KEY, config.value.apiKey);
-                    // 重置会话相关
-                    resetConversationState();
-                    isApiReady.value = !!(config.value.apiBase && config.value.apiKey);
+                const doLogin = () => {
+                    const username = loginUsername.value.trim();
+                    const password = loginPassword.value.trim();
+                    if (!username || !password) { authError.value = '请输入用户名和密码'; return; }
+                    const users = loadUsers();
+                    if (!users[username] || users[username].password !== password) {
+                        authError.value = '用户名或密码错误'; return;
+                    }
+                    currentUser.value = { username };
+                    initUserData(username);
+                    authError.value = '';
+                };
+
+                const logout = () => {
+                    if (isStreaming.value) stopStreaming();
+                    currentUser.value = null;
+                    messages.value = [];
+                    conversationId.value = '';
+                    userId.value = '';
+                };
+
+                const initUserData = (username) => {
+                    const prefix = getUserStoragePrefix(username);
+                    // 读取API配置，如果没有保存过，则使用默认值（内置key）
+                    const savedBase = localStorage.getItem(prefix + 'apiBase');
+                    const savedKey = localStorage.getItem(prefix + 'apiKey');
+                    userConfig.value.apiBase = savedBase || DEFAULT_API_BASE;
+                    userConfig.value.apiKey = savedKey || DEFAULT_API_KEY;
+                    isApiReady.value = !!(userConfig.value.apiBase && userConfig.value.apiKey);
+
+                    const storedMessages = localStorage.getItem(prefix + 'messages');
+                    if (storedMessages) {
+                        try {
+                            messages.value = JSON.parse(storedMessages).map(m => ({ ...m, id: m.id || Date.now()+Math.random() }));
+                        } catch(e) { messages.value = []; }
+                    } else { messages.value = []; }
+
+                    const storedConvId = localStorage.getItem(prefix + 'conversationId');
+                    conversationId.value = storedConvId || '';
+
+                    let storedUserId = localStorage.getItem(prefix + 'userId');
+                    if (storedUserId) {
+                        userId.value = storedUserId;
+                    } else {
+                        userId.value = generateUserId(username);
+                        localStorage.setItem(prefix + 'userId', userId.value);
+                    }
+                };
+
+                const saveUserConfig = () => {
+                    const prefix = getUserStoragePrefix(currentUser.value.username);
+                    localStorage.setItem(prefix + 'apiBase', userConfig.value.apiBase);
+                    localStorage.setItem(prefix + 'apiKey', userConfig.value.apiKey);
+                    isApiReady.value = !!(userConfig.value.apiBase && userConfig.value.apiKey);
                     showConfig.value = false;
                     errorMsg.value = '';
-                    // 重新初始化欢迎提示（可选，不清除消息但重置的话新对话比较干净）
-                    messages.value = [];
-                    conversationId.value = '';
-                    localStorage.removeItem(STORAGE_KEYS.CONVERSATION_ID);
-                    localStorage.removeItem(STORAGE_KEYS.MESSAGES);
                 };
 
-                // 重置当前会话 (清空消息、停止流式、清除conversationId)
-                const resetConversationState = () => {
-                    if (isStreaming.value) {
-                        stopStreaming();
+                const saveMessagesToLocal = () => {
+                    if (!currentUser.value) return;
+                    const prefix = getUserStoragePrefix(currentUser.value.username);
+                    const toStore = messages.value.map(m => ({ role: m.role, content: m.content, id: m.id }));
+                    localStorage.setItem(prefix + 'messages', JSON.stringify(toStore.slice(-100)));
+                    if (conversationId.value) {
+                        localStorage.setItem(prefix + 'conversationId', conversationId.value);
                     }
-                    messages.value = [];
-                    conversationId.value = '';
-                    errorMsg.value = '';
-                    localStorage.removeItem(STORAGE_KEYS.CONVERSATION_ID);
-                    localStorage.removeItem(STORAGE_KEYS.MESSAGES);
                 };
 
-                // 新建对话
-                const newConversation = () => {
-                    if (isStreaming.value) {
-                        stopStreaming();
-                    }
-                    messages.value = [];
-                    conversationId.value = '';
-                    errorMsg.value = '';
-                    localStorage.removeItem(STORAGE_KEYS.CONVERSATION_ID);
-                    localStorage.removeItem(STORAGE_KEYS.MESSAGES);
-                    scrollToBottom();
+                const scrollToBottom = () => {
+                    nextTick(() => { if(messageContainer.value) messageContainer.value.scrollTop = messageContainer.value.scrollHeight; });
                 };
 
-                // 停止流式响应
-                const stopStreaming = () => {
-                    if (abortController) {
-                        abortController.abort();
-                        abortController = null;
-                    }
-                    isStreaming.value = false;
-                    // 如果最后一条助手消息内容为空，移除占位消息（避免空白气泡）
-                    if (messages.value.length > 0 && messages.value[messages.value.length-1].role === 'assistant' && !messages.value[messages.value.length-1].content) {
-                        messages.value.pop();
-                    }
-                    errorMsg.value = '';
-                };
-
-                // 发送消息核心逻辑 (支持流式)
                 const sendMessage = async () => {
                     const userMsg = inputMessage.value.trim();
                     if (!userMsg) return;
-                    if (!isApiReady.value || !config.value.apiKey) {
-                        errorMsg.value = '❌ 请先配置有效的 API Key 和 API 地址';
+                    if (!isApiReady.value || !userConfig.value.apiKey) {
+                        errorMsg.value = '请先配置 API Key';
                         showConfig.value = true;
                         return;
                     }
-                    if (isStreaming.value) {
-                        errorMsg.value = '请等待当前消息回复完成';
-                        return;
-                    }
-
-                    // 清除之前的错误
+                    if (isStreaming.value) return;
                     errorMsg.value = '';
-                    // 添加用户消息
-                    const userMessageObj = {
-                        id: Date.now() + '-' + Math.random(),
-                        role: 'user',
-                        content: userMsg
-                    };
-                    messages.value.push(userMessageObj);
+
+                    messages.value.push({ id: Date.now()+'-user', role: 'user', content: userMsg });
                     inputMessage.value = '';
                     scrollToBottom();
 
-                    // 添加占位的助手消息 (空内容，显示加载指示器)
-                    const assistantPlaceholder = {
-                        id: Date.now() + 1 + '-' + Math.random(),
-                        role: 'assistant',
-                        content: ''
-                    };
-                    messages.value.push(assistantPlaceholder);
+                    const assistantId = Date.now()+'-assistant';
+                    messages.value.push({ id: assistantId, role: 'assistant', content: '' });
                     scrollToBottom();
 
-                    // 准备请求参数
-                    const apiBase = config.value.apiBase.endsWith('/') ? config.value.apiBase.slice(0, -1) : config.value.apiBase;
-                    const chatUrl = `${apiBase}/chat-messages`;
-                    const apiKey = config.value.apiKey;
-
-                    // 保证 userId 存在
-                    if (!userId.value) {
-                        let storedUserId = localStorage.getItem(STORAGE_KEYS.USER_ID);
-                        if (storedUserId) {
-                            userId.value = storedUserId;
-                        } else {
-                            userId.value = generateUserId();
-                            localStorage.setItem(STORAGE_KEYS.USER_ID, userId.value);
-                        }
-                    }
-
-                    const requestBody = {
+                    const apiBase = userConfig.value.apiBase.replace(/\/$/, '');
+                    const url = `${apiBase}/chat-messages`;
+                    const body = {
                         inputs: {},
                         query: userMsg,
                         response_mode: 'streaming',
@@ -392,214 +369,102 @@
                         user: userId.value
                     };
 
-                    // 发起流式请求
                     isStreaming.value = true;
                     abortController = new AbortController();
                     let fullAnswer = '';
                     let newConversationId = null;
-                    let streamFinished = false;
 
                     try {
-                        const response = await fetch(chatUrl, {
+                        const res = await fetch(url, {
                             method: 'POST',
                             headers: {
-                                'Authorization': `Bearer ${apiKey}`,
+                                'Authorization': `Bearer ${userConfig.value.apiKey}`,
                                 'Content-Type': 'application/json',
                                 'Accept': 'text/event-stream'
                             },
-                            body: JSON.stringify(requestBody),
+                            body: JSON.stringify(body),
                             signal: abortController.signal
                         });
+                        if (!res.ok) throw new Error(`API错误 ${res.status}`);
 
-                        if (!response.ok) {
-                            const errorText = await response.text();
-                            throw new Error(`API 错误 (${response.status}): ${errorText}`);
-                        }
-
-                        const reader = response.body.getReader();
-                        const eventStream = parseSSEStream(reader);
-
-                        for await (const event of eventStream) {
-                            // 处理不同事件类型
+                        const reader = res.body.getReader();
+                        for await (const event of parseSSEStream(reader)) {
                             if (event.event === 'message') {
                                 if (event.answer) {
                                     fullAnswer += event.answer;
-                                    // 实时更新最后一条助手消息的内容
-                                    const lastMsg = messages.value[messages.value.length - 1];
-                                    if (lastMsg && lastMsg.role === 'assistant') {
-                                        lastMsg.content = fullAnswer;
-                                        scrollToBottom();
-                                    }
+                                    const last = messages.value[messages.value.length-1];
+                                    if (last && last.role === 'assistant') last.content = fullAnswer;
+                                    scrollToBottom();
                                 }
                             } else if (event.event === 'message_end') {
-                                // 流式结束，获取最终的 conversation_id
-                                if (event.conversation_id) {
-                                    newConversationId = event.conversation_id;
+                                newConversationId = event.conversation_id;
+                                if (newConversationId) {
                                     conversationId.value = newConversationId;
-                                    localStorage.setItem(STORAGE_KEYS.CONVERSATION_ID, newConversationId);
+                                    saveMessagesToLocal();
                                 }
-                                streamFinished = true;
                                 break;
                             } else if (event.event === 'error') {
-                                throw new Error(event.message || '流式响应中出现错误');
+                                throw new Error(event.message);
                             }
                         }
-
-                        if (!streamFinished) {
-                            // 如果意外没有 message_end，也结束
-                            console.warn('Stream ended without message_end');
-                        }
-
-                        // 最终确保消息内容不为空字符串且结束流式状态
-                        const lastAssistantMsg = messages.value[messages.value.length - 1];
-                        if (lastAssistantMsg && lastAssistantMsg.role === 'assistant') {
-                            if (lastAssistantMsg.content === '') {
-                                lastAssistantMsg.content = '(空响应)';
-                            }
-                        }
-
+                        const lastMsg = messages.value[messages.value.length-1];
+                        if (lastMsg && lastMsg.content === '') lastMsg.content = '(空响应)';
                     } catch (err) {
-                        console.error('Stream error:', err);
-                        if (err.name === 'AbortError') {
-                            // 用户主动停止，保留已生成部分
-                            errorMsg.value = '已停止生成';
-                        } else {
-                            errorMsg.value = err.message || '请求失败，请检查网络或 API 配置';
-                            // 移除占位消息或标记错误
-                            const lastIdx = messages.value.length - 1;
-                            if (messages.value[lastIdx] && messages.value[lastIdx].role === 'assistant' && messages.value[lastIdx].content === '') {
-                                messages.value[lastIdx].content = `❌ 错误: ${errorMsg.value}`;
-                            } else if (messages.value[lastIdx] && messages.value[lastIdx].role === 'assistant') {
-                                messages.value[lastIdx].content += `\n\n❌ 错误: ${errorMsg.value}`;
-                            } else {
-                                // 极端情况再 push 错误提示消息
-                                messages.value.push({
-                                    id: Date.now(),
-                                    role: 'assistant',
-                                    content: `❌ 连接失败: ${errorMsg.value}`
-                                });
-                            }
+                        if (err.name !== 'AbortError') {
+                            errorMsg.value = err.message || '请求失败';
+                            const last = messages.value[messages.value.length-1];
+                            if (last && last.role === 'assistant') last.content = `❌ 错误: ${errorMsg.value}`;
                         }
-                        scrollToBottom();
                     } finally {
                         isStreaming.value = false;
                         abortController = null;
-                        // 保存当前消息记录到 localStorage (用于刷新后恢复)
                         saveMessagesToLocal();
                         scrollToBottom();
                     }
                 };
 
-                // 保存消息记录到 localStorage (最多保留100条)
-                const saveMessagesToLocal = () => {
-                    try {
-                        const toStore = messages.value.map(msg => ({
-                            role: msg.role,
-                            content: msg.content,
-                            id: msg.id
-                        }));
-                        localStorage.setItem(STORAGE_KEYS.MESSAGES, JSON.stringify(toStore.slice(-100)));
-                    } catch(e) { console.warn(e); }
-                };
-
-                // 加载历史消息
-                const loadMessagesFromLocal = () => {
-                    const stored = localStorage.getItem(STORAGE_KEYS.MESSAGES);
-                    if (stored) {
-                        try {
-                            const parsed = JSON.parse(stored);
-                            messages.value = parsed.map(m => ({ ...m, id: m.id || Date.now() + Math.random() }));
-                            scrollToBottom();
-                        } catch(e) {}
-                    }
-                    // 加载 conversation_id
-                    const storedConvId = localStorage.getItem(STORAGE_KEYS.CONVERSATION_ID);
-                    if (storedConvId) {
-                        conversationId.value = storedConvId;
+                const stopStreaming = () => {
+                    if (abortController) abortController.abort();
+                    isStreaming.value = false;
+                    if (messages.value.length && messages.value[messages.value.length-1].role==='assistant' && !messages.value[messages.value.length-1].content) {
+                        messages.value.pop();
                     }
                 };
 
-                // 加载配置并恢复会话
-                const loadConfig = () => {
-                    const savedBase = localStorage.getItem(STORAGE_KEYS.API_BASE);
-                    const savedKey = localStorage.getItem(STORAGE_KEYS.API_KEY);
-                    if (savedBase) config.value.apiBase = savedBase;
-                    if (savedKey) config.value.apiKey = savedKey;
-                    isApiReady.value = !!(config.value.apiBase && config.value.apiKey);
-                    
-                    // 加载 userId
-                    const savedUserId = localStorage.getItem(STORAGE_KEYS.USER_ID);
-                    if (savedUserId) {
-                        userId.value = savedUserId;
-                    } else {
-                        userId.value = generateUserId();
-                        localStorage.setItem(STORAGE_KEYS.USER_ID, userId.value);
-                    }
-                    
-                    // 恢复消息历史
-                    loadMessagesFromLocal();
+                const speakMessage = (msg) => {
+                    if (!msg.content) return;
+                    if (window.speechSynthesis) window.speechSynthesis.cancel();
+                    const text = msg.role === 'assistant' ? markdownToPlainText(msg.content) : msg.content;
+                    if (!text.trim()) return;
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.lang = 'zh-CN';
+                    window.speechSynthesis.speak(utterance);
+                };
+                const shouldDisableVoice = (msg, idx) => {
+                    if (!msg.content) return true;
+                    if (isStreaming.value && msg.role==='assistant' && idx===messages.value.length-1) return true;
+                    return false;
                 };
 
-                // 监听消息变化自动保存（简单防抖）
-                let saveTimer = null;
-                watch(messages, () => {
-                    if (saveTimer) clearTimeout(saveTimer);
-                    saveTimer = setTimeout(() => {
-                        if (!isStreaming.value) {
-                            saveMessagesToLocal();
-                        }
-                    }, 300);
+                watch([messages, conversationId], () => {
+                    if (currentUser.value && !isStreaming.value) saveMessagesToLocal();
                 }, { deep: true });
 
-                // 监听 conversationId 变化自动保存
-                watch(conversationId, (newId) => {
-                    if (newId) {
-                        localStorage.setItem(STORAGE_KEYS.CONVERSATION_ID, newId);
-                    } else {
-                        localStorage.removeItem(STORAGE_KEYS.CONVERSATION_ID);
-                    }
-                });
-
-                // 滚动时自动跟随（每次消息变化/流式更新主动调scrollToBottom，watch也做一层）
-                watch(() => messages.value.length, () => scrollToBottom());
-                watch(() => messages.value.map(m => m.content).join(''), () => scrollToBottom());
-
-                onMounted(() => {
-                    loadConfig();
-                    // 如果没有历史消息，展示空状态，但显示占位欢迎提示（可选，不做强制欢迎）
-                    if (messages.value.length === 0 && isApiReady.value) {
-                        // 可选静默欢迎
-                    }
-                });
-
                 return {
-                    messages,
-                    inputMessage,
-                    isStreaming,
-                    errorMsg,
-                    showConfig,
-                    config,
-                    isApiReady,
-                    conversationId,
-                    messageContainer,
-                    sendMessage,
-                    newConversation,
-                    stopStreaming,
-                    saveConfigAndReset,
-                    renderMarkdown
+                    currentUser, isLoginMode, loginUsername, loginPassword, regUsername, regPassword, authError,
+                    doRegister, doLogin, logout,
+                    messages, inputMessage, isStreaming, errorMsg, showConfig, userConfig, isApiReady,
+                    messageContainer, conversationId,
+                    sendMessage, stopStreaming, saveUserConfig, renderMarkdown, speakMessage, shouldDisableVoice
                 };
             }
         }).mount('#app');
 
-        // 补充 marked 配置
         if (typeof marked !== 'undefined') {
             marked.setOptions({
-                breaks: true,
-                gfm: true,
-                highlight: function(code, lang) {
-                    if (lang && hljs.getLanguage(lang)) {
-                        return hljs.highlight(code, { language: lang }).value;
-                    }
+                breaks: true, gfm: true,
+                highlight: (code, lang) => {
+                    if (lang && hljs.getLanguage(lang)) return hljs.highlight(code, { language: lang }).value;
                     return hljs.highlightAuto(code).value;
                 }
             });
