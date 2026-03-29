@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>专业康养顾问 - 多用户智能对话</title>
+    <title>专业康养顾问 - 多用户智能对话 (带语音停止)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -12,6 +12,23 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <style>
+        /* 确保全屏高度且滚动正常 */
+        html, body, #app {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        #app {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        /* 消息容器：flex-1 且 overflow-auto，必须配合 min-h-0 防止溢出 */
+        .message-container {
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
+        }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 10px; }
@@ -27,14 +44,19 @@
             40% { transform: scale(1); opacity: 1; }
         }
         .voice-btn:hover { background-color: #e5e7eb; transform: scale(1.05); }
+        .voice-stop-btn:hover { background-color: #fee2e2; transform: scale(1.05); }
         .fade-enter-active, .fade-leave-active { transition: opacity 0.2s; }
         .fade-enter-from, .fade-leave-to { opacity: 0; }
+        .break-words {
+            word-break: break-word;
+            white-space: normal;
+        }
     </style>
 </head>
-<body class="bg-gray-100 font-sans h-screen overflow-hidden">
+<body class="bg-gray-100 font-sans">
     <div id="app">
         <!-- 登录/注册界面 -->
-        <div v-if="!currentUser" class="h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-50">
+        <div v-if="!currentUser" class="h-full flex items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-50">
             <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-8 mx-4">
                 <div class="text-center mb-6">
                     <div class="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg">
@@ -62,8 +84,8 @@
         </div>
 
         <!-- 主聊天界面 (已登录) -->
-        <div v-else class="h-full flex flex-col">
-            <header class="bg-white/80 backdrop-blur-sm border-b shadow-sm sticky top-0 z-10">
+        <div v-else class="h-full flex flex-col overflow-hidden">
+            <header class="bg-white/80 backdrop-blur-sm border-b shadow-sm sticky top-0 z-10 flex-shrink-0">
                 <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
                     <div class="flex items-center space-x-3">
                         <div class="w-8 h-8 bg-indigo-600 rounded-xl flex items-center justify-center shadow-md">
@@ -73,6 +95,10 @@
                     </div>
                     <div class="flex items-center gap-2">
                         <span class="text-sm text-gray-600 hidden sm:inline"><i class="fas fa-user-circle"></i> {{ currentUser.username }}</span>
+                        <!-- 全局语音停止按钮 -->
+                        <button @click="stopSpeaking" class="p-2 rounded-full hover:bg-red-50 transition" title="停止当前语音播报">
+                            <i class="fas fa-stop-circle text-red-500 text-lg"></i>
+                        </button>
                         <button @click="showConfig = !showConfig" class="p-2 rounded-full hover:bg-gray-100" title="API配置">
                             <i class="fas fa-sliders-h text-gray-600"></i>
                         </button>
@@ -104,8 +130,8 @@
                 </div>
             </div>
 
-            <!-- 消息区域 -->
-            <main class="flex-1 overflow-y-auto" ref="messageContainer">
+            <!-- 消息区域：修复滚动问题 -->
+            <main class="message-container" ref="messageContainer">
                 <div class="max-w-3xl mx-auto px-4 py-6 space-y-5">
                     <div v-if="messages.length===0" class="flex flex-col items-center justify-center h-64 text-gray-400">
                         <i class="fas fa-comment-dots text-5xl mb-4 opacity-50"></i>
@@ -114,23 +140,23 @@
                     </div>
                     <div v-for="(msg, idx) in messages" :key="msg.id" class="flex" :class="msg.role==='user'?'justify-end':'justify-start'">
                         <div v-if="msg.role==='assistant'" class="flex items-start gap-2 max-w-[90%]">
-                            <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center"><i class="fas fa-robot text-gray-600"></i></div>
-                            <div class="relative px-4 py-3 rounded-2xl bg-white text-gray-800 border border-gray-100 flex-1">
+                            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center"><i class="fas fa-robot text-gray-600"></i></div>
+                            <div class="relative px-4 py-3 rounded-2xl bg-white text-gray-800 border border-gray-100 flex-1 break-words">
                                 <div class="prose prose-sm max-w-none" v-html="renderMarkdown(msg.content)"></div>
                                 <div v-if="idx===messages.length-1 && isStreaming && !msg.content" class="typing-indicator flex space-x-1 py-1 mt-1">
                                     <span></span><span></span><span></span>
                                 </div>
                             </div>
-                            <button @click="speakMessage(msg)" :disabled="shouldDisableVoice(msg,idx)" class="voice-btn w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center">
+                            <button @click="speakMessage(msg)" :disabled="shouldDisableVoice(msg,idx)" class="voice-btn flex-shrink-0 w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center">
                                 <i class="fas fa-volume-up"></i>
                             </button>
                         </div>
                         <div v-else class="flex items-start gap-2 max-w-[90%] flex-row-reverse">
-                            <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center"><i class="fas fa-user text-indigo-600"></i></div>
-                            <div class="relative px-4 py-3 rounded-2xl bg-indigo-600 text-white rounded-tr-none">
+                            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center"><i class="fas fa-user text-indigo-600"></i></div>
+                            <div class="relative px-4 py-3 rounded-2xl bg-indigo-600 text-white rounded-tr-none break-words">
                                 <div class="whitespace-pre-wrap">{{ msg.content }}</div>
                             </div>
-                            <button @click="speakMessage(msg)" class="voice-btn w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center">
+                            <button @click="speakMessage(msg)" class="voice-btn flex-shrink-0 w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center">
                                 <i class="fas fa-volume-up"></i>
                             </button>
                         </div>
@@ -139,21 +165,26 @@
                 </div>
             </main>
 
-            <!-- 底部输入 -->
-            <div class="border-t bg-white/90 p-4 shadow-lg">
+            <!-- 底部输入区域 -->
+            <div class="border-t bg-white/90 p-4 shadow-lg flex-shrink-0">
                 <div class="max-w-3xl mx-auto">
                     <div class="flex items-end gap-3 bg-gray-50 rounded-2xl border p-2 focus-within:ring-2 focus-within:ring-indigo-300">
                         <textarea v-model="inputMessage" @keydown.enter.exact="sendMessage" @keydown.enter.shift.exact="inputMessage+='\n'" rows="1"
-                            :disabled="isStreaming || !isApiReady" placeholder="输入消息... (Enter发送)" class="flex-1 bg-transparent border-0 resize-none outline-none py-2 px-3"></textarea>
+                            :disabled="isStreaming || !isApiReady" placeholder="输入消息... (Enter发送, Shift+Enter换行)" 
+                            class="flex-1 bg-transparent border-0 resize-none outline-none py-2 px-3 max-h-32 text-gray-700 placeholder-gray-400"
+                            style="min-height: 44px;"></textarea>
                         <button v-if="!isStreaming" @click="sendMessage" :disabled="!inputMessage.trim() || !isApiReady"
-                            class="p-2 rounded-full" :class="inputMessage.trim()&&isApiReady?'bg-indigo-600 text-white':'bg-gray-200 text-gray-400'">
+                            class="p-2 rounded-full transition disabled:opacity-40 disabled:cursor-not-allowed"
+                            :class="inputMessage.trim()&&isApiReady?'bg-indigo-600 text-white hover:bg-indigo-700 shadow':'bg-gray-200 text-gray-400'">
                             <i class="fas fa-paper-plane"></i>
                         </button>
-                        <button v-else @click="stopStreaming" class="p-2 rounded-full bg-red-100 text-red-600"><i class="fas fa-stop"></i></button>
+                        <button v-else @click="stopStreaming" class="p-2 rounded-full bg-red-100 text-red-600 hover:bg-red-200">
+                            <i class="fas fa-stop"></i>
+                        </button>
                     </div>
                     <div class="flex justify-between mt-2 text-xs text-gray-400 px-1">
                         <span><i class="fas fa-database"></i> {{ isApiReady ? '✅ API已就绪' : '⚠️ 请配置API Key' }}</span>
-                        <span><i class="fas fa-users"></i> 多用户隔离 | 语音播报 | 默认Key已内置</span>
+                        <span><i class="fas fa-stop-circle"></i> 顶部红色按钮可停止语音</span>
                     </div>
                 </div>
             </div>
@@ -163,7 +194,7 @@
     <script>
         const { createApp, ref, onMounted, nextTick, watch } = Vue;
 
-        // 默认配置（与最早代码保持一致）
+        // 默认配置
         const DEFAULT_API_BASE = 'https://api.dify.ai/v1';
         const DEFAULT_API_KEY = 'app-66HmEsxZuCXDJGjKPQ6D8zN4';
 
@@ -242,13 +273,19 @@
                 let abortController = null;
                 const messageContainer = ref(null);
 
-                // 用户自己的API配置，默认使用内置值
                 const userConfig = ref({ apiBase: DEFAULT_API_BASE, apiKey: DEFAULT_API_KEY });
-                const isApiReady = ref(true); // 因为默认有key，所以初始为true
+                const isApiReady = ref(true);
 
+                // 语音播报控制
                 let currentUtterance = null;
 
-                // 用户管理
+                const stopSpeaking = () => {
+                    if (window.speechSynthesis) {
+                        window.speechSynthesis.cancel();
+                    }
+                    currentUtterance = null;
+                };
+
                 const loadUsers = () => {
                     const users = localStorage.getItem('dify_multi_users');
                     return users ? JSON.parse(users) : {};
@@ -283,6 +320,7 @@
 
                 const logout = () => {
                     if (isStreaming.value) stopStreaming();
+                    stopSpeaking();
                     currentUser.value = null;
                     messages.value = [];
                     conversationId.value = '';
@@ -291,7 +329,6 @@
 
                 const initUserData = (username) => {
                     const prefix = getUserStoragePrefix(username);
-                    // 读取API配置，如果没有保存过，则使用默认值（内置key）
                     const savedBase = localStorage.getItem(prefix + 'apiBase');
                     const savedKey = localStorage.getItem(prefix + 'apiKey');
                     userConfig.value.apiBase = savedBase || DEFAULT_API_BASE;
@@ -337,7 +374,11 @@
                 };
 
                 const scrollToBottom = () => {
-                    nextTick(() => { if(messageContainer.value) messageContainer.value.scrollTop = messageContainer.value.scrollHeight; });
+                    nextTick(() => {
+                        if (messageContainer.value) {
+                            messageContainer.value.scrollTop = messageContainer.value.scrollHeight;
+                        }
+                    });
                 };
 
                 const sendMessage = async () => {
@@ -433,13 +474,20 @@
 
                 const speakMessage = (msg) => {
                     if (!msg.content) return;
-                    if (window.speechSynthesis) window.speechSynthesis.cancel();
+                    // 如果已有语音在播放，先停止再播报新内容
+                    if (window.speechSynthesis && window.speechSynthesis.speaking) {
+                        window.speechSynthesis.cancel();
+                    }
                     const text = msg.role === 'assistant' ? markdownToPlainText(msg.content) : msg.content;
                     if (!text.trim()) return;
                     const utterance = new SpeechSynthesisUtterance(text);
                     utterance.lang = 'zh-CN';
+                    utterance.onend = () => { currentUtterance = null; };
+                    utterance.onerror = () => { currentUtterance = null; };
+                    currentUtterance = utterance;
                     window.speechSynthesis.speak(utterance);
                 };
+
                 const shouldDisableVoice = (msg, idx) => {
                     if (!msg.content) return true;
                     if (isStreaming.value && msg.role==='assistant' && idx===messages.value.length-1) return true;
@@ -455,7 +503,8 @@
                     doRegister, doLogin, logout,
                     messages, inputMessage, isStreaming, errorMsg, showConfig, userConfig, isApiReady,
                     messageContainer, conversationId,
-                    sendMessage, stopStreaming, saveUserConfig, renderMarkdown, speakMessage, shouldDisableVoice
+                    sendMessage, stopStreaming, saveUserConfig, renderMarkdown, speakMessage, shouldDisableVoice,
+                    stopSpeaking
                 };
             }
         }).mount('#app');
