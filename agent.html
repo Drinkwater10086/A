@@ -417,7 +417,11 @@
                 const userConfig = ref({ apiBase: DEFAULT_API_BASE, apiKey: DEFAULT_API_KEY });
                 const isApiReady = ref(true);
 
+                // ---------- 语音播报增强版 ----------
                 let currentUtterance = null;
+                let speechAllowed = false;  // 是否已获得用户交互授权
+
+                // 停止播报
                 const stopSpeaking = () => {
                     if (window.speechSynthesis) {
                         window.speechSynthesis.cancel();
@@ -425,6 +429,86 @@
                     currentUtterance = null;
                 };
 
+                // 语音播报（兼容自动播放策略 + 等待语音引擎）
+                const speakMessage = async (msg) => {
+                    if (!msg || !msg.content) return;
+
+                    // 检查是否支持语音
+                    if (!window.speechSynthesis) {
+                        errorMsg.value = '您的浏览器不支持语音播报功能。';
+                        setTimeout(() => { errorMsg.value = ''; }, 3000);
+                        return;
+                    }
+
+                    // 如果用户尚未通过点击“启用语音”，则提示并拒绝
+                    if (!speechAllowed) {
+                        if (!localStorage.getItem('speech_warning_shown')) {
+                            errorMsg.value = '🔊 浏览器安全策略限制，请点击页面任意位置后重试语音按钮。';
+                            localStorage.setItem('speech_warning_shown', 'true');
+                            setTimeout(() => { errorMsg.value = ''; }, 4000);
+                        }
+                        return;
+                    }
+
+                    // 停止当前正在播放的语音
+                    stopSpeaking();
+
+                    const text = msg.role === 'assistant' ? markdownToPlainText(msg.content) : msg.content;
+                    if (!text.trim()) return;
+
+                    // 等待语音引擎就绪（voices 列表加载完成）
+                    const speakWithRetry = () => {
+                        const voices = window.speechSynthesis.getVoices();
+                        if (voices.length === 0) {
+                            // 语音包尚未加载，等待 100ms 后重试
+                            setTimeout(speakWithRetry, 100);
+                            return;
+                        }
+
+                        const utterance = new SpeechSynthesisUtterance(text);
+                        utterance.lang = 'zh-CN';
+                        utterance.rate = 1.0;
+                        utterance.pitch = 1.0;
+                        utterance.volume = 1.0;
+
+                        utterance.onend = () => {
+                            currentUtterance = null;
+                        };
+                        utterance.onerror = (event) => {
+                            console.error('语音播报错误:', event.error);
+                            currentUtterance = null;
+                            if (event.error === 'not-allowed') {
+                                errorMsg.value = '🔊 请先点击页面任意位置，再尝试语音播报。';
+                                setTimeout(() => { errorMsg.value = ''; }, 3000);
+                            } else if (event.error === 'interrupted' || event.error === 'canceled') {
+                                // 用户手动停止，不显示错误
+                            } else {
+                                errorMsg.value = '语音播报失败，请重试。';
+                                setTimeout(() => { errorMsg.value = ''; }, 2000);
+                            }
+                        };
+
+                        currentUtterance = utterance;
+                        window.speechSynthesis.speak(utterance);
+                    };
+
+                    speakWithRetry();
+                };
+
+                // 用户首次交互时启用语音权限（解除自动播放限制）
+                const enableSpeechAfterUserInteraction = () => {
+                    if (speechAllowed) return;
+                    speechAllowed = true;
+                    console.log('语音播报已启用（用户已交互）');
+                    // 可选：显示一次成功提示
+                    errorMsg.value = '🔊 语音播报已启用，可正常使用。';
+                    setTimeout(() => { errorMsg.value = ''; }, 2000);
+                    // 移除监听器，避免重复触发
+                    document.removeEventListener('click', enableSpeechAfterUserInteraction);
+                    document.removeEventListener('touchstart', enableSpeechAfterUserInteraction);
+                };
+
+                // ---------- 其余原有函数保持不变 ----------
                 const initDevice = () => {
                     const prefix = getStoragePrefix();
                     const savedBase = localStorage.getItem(prefix + 'apiBase');
@@ -582,21 +666,6 @@
                     scrollToBottom();
                 };
 
-                const speakMessage = (msg) => {
-                    if (!msg.content) return;
-                    if (window.speechSynthesis && window.speechSynthesis.speaking) {
-                        window.speechSynthesis.cancel();
-                    }
-                    const text = msg.role === 'assistant' ? markdownToPlainText(msg.content) : msg.content;
-                    if (!text.trim()) return;
-                    const utterance = new SpeechSynthesisUtterance(text);
-                    utterance.lang = 'zh-CN';
-                    utterance.onend = () => { currentUtterance = null; };
-                    utterance.onerror = () => { currentUtterance = null; };
-                    currentUtterance = utterance;
-                    window.speechSynthesis.speak(utterance);
-                };
-
                 const shouldDisableVoice = (msg, idx) => {
                     if (!msg.content) return true;
                     if (isStreaming.value && msg.role==='assistant' && idx===messages.value.length-1) return true;
@@ -617,6 +686,22 @@
 
                 onMounted(() => {
                     initDevice();
+
+                    // 绑定全局交互监听，用户首次点击/触摸页面任意位置后启用语音
+                    document.addEventListener('click', enableSpeechAfterUserInteraction);
+                    document.addEventListener('touchstart', enableSpeechAfterUserInteraction);
+
+                    // 监听 voiceschanged 事件，确保语音包加载完成后可以立即播放
+                    if (window.speechSynthesis) {
+                        window.speechSynthesis.onvoiceschanged = () => {
+                            console.log('语音包已就绪');
+                        };
+                    }
+
+                    // 检测浏览器是否支持语音
+                    if (!window.speechSynthesis) {
+                        errorMsg.value = '您的浏览器不支持语音播报功能，请升级或更换浏览器。';
+                    }
                 });
 
                 return {
