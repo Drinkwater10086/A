@@ -2,478 +2,225 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>敦煌医学专业康养顾问 - 独立智能对话</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+    <title>敦煌医学·四维灵境 | 首页</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <style>
-        html, body, #app {
-            height: 100%;
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
-        #app {
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+
+        body {
+            background: linear-gradient(145deg, #7a2e1a 0%, #a13e20 100%);
+            font-family: 'Segoe UI', '华文楷书', 'Microsoft YaHei', 'Georgia', serif;
+            min-height: 100vh;
+            padding: 40px 24px;
+            color: #fff3e0;
+            position: relative;
         }
-        .message-container {
-            flex: 1;
-            overflow-y: auto;
-            min-height: 0;
+        /* 敦煌纹样装饰背景 */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: radial-gradient(circle at 10% 20%, rgba(255,215,150,0.08) 2%, transparent 2.5%),
+                              radial-gradient(circle at 85% 70%, rgba(255,200,100,0.1) 1.8%, transparent 2%);
+            background-size: 48px 48px, 64px 64px;
+            pointer-events: none;
+            z-index: 0;
         }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 10px; }
-        .typing-indicator span {
-            display: inline-block; width: 6px; height: 6px; border-radius: 50%;
-            background-color: #9ca3af; margin: 0 2px;
-            animation: typing 1.4s infinite ease-in-out both;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
         }
-        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
-        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
-        @keyframes typing {
-            0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
-            40% { transform: scale(1); opacity: 1; }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 52px;
+            background: rgba(100, 30, 10, 0.4);
+            backdrop-filter: blur(3px);
+            border-radius: 80px;
+            padding: 24px 20px;
+            border: 1px solid #e6b873;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
         }
-        .voice-btn:hover { background-color: #e5e7eb; transform: scale(1.05); }
-        .voice-stop-btn:hover { background-color: #fee2e2; transform: scale(1.05); }
-        .break-words {
-            word-break: break-word;
-            white-space: normal;
+        .hero h1 {
+            font-size: 2.6rem;
+            background: linear-gradient(135deg, #ffdd99, #ffbb66, #f7934b);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: 2px;
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .hero h1 i {
+            background: none;
+            color: #ffc285;
+            font-size: 2.5rem;
+        }
+        .hero p {
+            font-size: 1.2rem;
+            color: #ffe0b5;
+            margin-top: 12px;
+            border-bottom: 1px solid #e6b873;
+            display: inline-block;
+            padding-bottom: 6px;
+            font-style: italic;
+        }
+
+        .grid-2x2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 32px;
+            margin-bottom: 48px;
+        }
+
+        .card {
+            background: rgba(50, 20, 8, 0.75);
+            backdrop-filter: blur(6px);
+            border-radius: 48px;
+            padding: 32px 24px 36px;
+            text-align: center;
+            box-shadow: 0 20px 30px rgba(0,0,0,0.4);
+            transition: all 0.3s ease;
+            border: 1px solid #e6aa6d;
+            cursor: pointer;
+        }
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 30px 40px rgba(0,0,0,0.5);
+            border-color: #ffcc88;
+            background: rgba(70, 30, 12, 0.85);
+        }
+
+        .card-icon {
+            font-size: 3.4rem;
+            color: #ffbc6e;
+            margin-bottom: 18px;
+        }
+        .card h2 {
+            font-size: 1.9rem;
+            margin-bottom: 12px;
+            color: #ffdfb3;
+        }
+        .card p {
+            color: #fae4bc;
+            margin-bottom: 28px;
+            line-height: 1.45;
+        }
+        .btn-card {
+            background: #c96f2c;
+            color: #fff1e0;
+            border: none;
+            padding: 10px 28px;
+            border-radius: 40px;
+            font-weight: bold;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+            text-decoration: none;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .btn-card:hover {
+            background: #e6832c;
+            transform: scale(1.02);
+        }
+
+        .taobao-card {
+            background: linear-gradient(135deg, rgba(120, 45, 15, 0.85), rgba(170, 70, 25, 0.85));
+            border: 1px solid #ffbc6e;
+        }
+        .btn-taobao {
+            background: #f0922e;
+            color: #2c1a0c;
+        }
+        .btn-taobao:hover {
+            background: #ffa843;
+        }
+        /* 网址输入框 */
+        .url-input {
+            width: 85%;
+            padding: 8px 12px;
+            margin: 12px auto 10px;
+            border-radius: 60px;
+            border: none;
+            background: #fff6e8;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #5a2e1a;
+            display: block;
+        }
+        .footer-note {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #dd9f62;
+            color: #ffdfb0;
+            font-size: 0.85rem;
+        }
+        @media (max-width: 680px) {
+            body { padding: 24px 16px; }
+            .hero h1 { font-size: 1.9rem; }
+            .grid-2x2 { grid-template-columns: 1fr; gap: 24px; }
         }
     </style>
 </head>
-<body class="bg-gray-100 font-sans">
-    <div id="app" class="h-full flex flex-col overflow-hidden">
-        <!-- 顶部导航栏 -->
-        <header class="bg-white/80 backdrop-blur-sm border-b shadow-sm flex-shrink-0">
-            <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <div class="w-8 h-8 bg-indigo-600 rounded-xl flex items-center justify-center shadow-md">
-                        <i class="fas fa-robot text-white text-sm"></i>
-                    </div>
-                    <h1 class="text-xl font-semibold bg-gradient-to-r from-indigo-700 to-purple-700 bg-clip-text text-transparent">专业康养顾问</h1>
-                </div>
-                <div class="flex items-center gap-2">
-                    <!-- 语音停止按钮 -->
-                    <button @click="stopSpeaking" class="p-2 rounded-full hover:bg-red-50 transition" title="停止语音播报">
-                        <i class="fas fa-stop-circle text-red-500 text-lg"></i>
-                    </button>
-                    <!-- 新建对话（重置会话，不清除配置） -->
-                    <button @click="newConversation" :disabled="isStreaming" class="p-2 rounded-full hover:bg-gray-100 disabled:opacity-50" title="新建对话">
-                        <i class="fas fa-plus text-gray-600"></i>
-                    </button>
-                    <!-- API 配置按钮 -->
-                    <button @click="showConfig = !showConfig" class="p-2 rounded-full hover:bg-gray-100" title="API配置">
-                        <i class="fas fa-sliders-h text-gray-600"></i>
-                    </button>
-                </div>
-            </div>
-        </header>
+<body>
+<div class="container">
+    <div class="hero">
+        <h1><i class="fas fa-dharmachakra"></i> 敦煌医学·四维灵境 <i class="fas fa-feather-alt"></i></h1>
+        <p>灵韵天香 · 壁画药方 · 体质慧测 · 智慧对话</p>
+    </div>
 
-        <!-- 配置侧边栏 -->
-        <div v-if="showConfig" class="fixed inset-0 bg-black/30 z-20 flex justify-end" @click.self="showConfig=false">
-            <div class="w-full max-w-md bg-white h-full shadow-2xl p-6 overflow-y-auto">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-xl font-bold">⚙️ API 配置</h2>
-                    <button @click="showConfig=false" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
-                </div>
-                <div class="space-y-5">
-                    <div>
-                        <label class="block text-sm font-medium">API 基础地址</label>
-                        <input type="text" v-model="userConfig.apiBase" placeholder="https://api.dify.ai/v1" class="w-full border rounded-lg px-4 py-2">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium">API Key</label>
-                        <input type="password" v-model="userConfig.apiKey" placeholder="app-xxx" class="w-full border rounded-lg px-4 py-2">
-                    </div>
-                    <button @click="saveUserConfig" class="w-full bg-indigo-600 text-white py-2 rounded-lg">保存配置</button>
-                </div>
-            </div>
+    <div class="grid-2x2">
+        <!-- 智能体：跳转至您提供的外部网页（新标签页） -->
+        <div class="card" onclick="window.open('https://drinkwater10086.github.io/A/', '_blank')">
+            <div class="card-icon"><i class="fas fa-robot"></i></div>
+            <h2>🪷 药师佛·智慧体</h2>
+            <p>敦煌医学AI使者，解答养生疑惑，解读壁画古方，随问随答。</p>
+            <span class="btn-card">进入灵境 <i class="fas fa-arrow-right"></i></span>
         </div>
 
-        <!-- 消息区域 -->
-        <main class="message-container" ref="messageContainer">
-            <div class="max-w-3xl mx-auto px-4 py-6 space-y-5">
-                <div v-if="messages.length===0" class="flex flex-col items-center justify-center h-64 text-gray-400">
-                    <i class="fas fa-comment-dots text-5xl mb-4 opacity-50"></i>
-                    <p class="text-lg font-medium">开始与康养顾问对话</p>
-                    <p class="text-sm mt-1">默认 API 已配置，可直接使用 | 语音可随时停止</p>
-                </div>
-                <div v-for="(msg, idx) in messages" :key="msg.id" class="flex" :class="msg.role==='user'?'justify-end':'justify-start'">
-                    <div v-if="msg.role==='assistant'" class="flex items-start gap-2 max-w-[90%]">
-                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center"><i class="fas fa-robot text-gray-600"></i></div>
-                        <div class="relative px-4 py-3 rounded-2xl bg-white text-gray-800 border border-gray-100 flex-1 break-words">
-                            <div class="prose prose-sm max-w-none" v-html="renderMarkdown(msg.content)"></div>
-                            <div v-if="idx===messages.length-1 && isStreaming && !msg.content" class="typing-indicator flex space-x-1 py-1 mt-1">
-                                <span></span><span></span><span></span>
-                            </div>
-                        </div>
-                        <button @click="speakMessage(msg)" :disabled="shouldDisableVoice(msg,idx)" class="voice-btn flex-shrink-0 w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center">
-                            <i class="fas fa-volume-up"></i>
-                        </button>
-                    </div>
-                    <div v-else class="flex items-start gap-2 max-w-[90%] flex-row-reverse">
-                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center"><i class="fas fa-user text-indigo-600"></i></div>
-                        <div class="relative px-4 py-3 rounded-2xl bg-indigo-600 text-white rounded-tr-none break-words">
-                            <div class="whitespace-pre-wrap">{{ msg.content }}</div>
-                        </div>
-                        <button @click="speakMessage(msg)" class="voice-btn flex-shrink-0 w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center">
-                            <i class="fas fa-volume-up"></i>
-                        </button>
-                    </div>
-                </div>
-                <div v-if="errorMsg" class="bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded-xl text-sm">{{ errorMsg }}</div>
-            </div>
-        </main>
+        <!-- 淘宝店铺跳转（可修改下方输入框内的网址） -->
+        <div class="card taobao-card" style="cursor: default;">
+            <div class="card-icon"><i class="fab fa-taobao"></i></div>
+            <h2>🏺 妙香宝坊·同仁堂</h2>
+            <p>百年本草 · 丝路正源。可粘贴任意淘宝/天猫店铺链接。</p>
+            <input type="text" id="shopUrl" class="url-input" value="https://tongrentanghealth.tmall.com" placeholder="粘贴淘宝店铺链接">
+            <button class="btn-card btn-taobao" onclick="window.open(document.getElementById('shopUrl').value, '_blank')" style="margin-top: 8px;">
+                <i class="fas fa-external-link-alt"></i> 前往宝坊
+            </button>
+        </div>
 
-        <!-- 底部输入 -->
-        <div class="border-t bg-white/90 p-4 shadow-lg flex-shrink-0">
-            <div class="max-w-3xl mx-auto">
-                <div class="flex items-end gap-3 bg-gray-50 rounded-2xl border p-2 focus-within:ring-2 focus-within:ring-indigo-300">
-                    <textarea v-model="inputMessage" @keydown.enter.exact="sendMessage" @keydown.enter.shift.exact="inputMessage+='\n'" rows="1"
-                        :disabled="isStreaming || !isApiReady" placeholder="输入消息... (Enter发送, Shift+Enter换行)" 
-                        class="flex-1 bg-transparent border-0 resize-none outline-none py-2 px-3 max-h-32 text-gray-700 placeholder-gray-400"
-                        style="min-height: 44px;"></textarea>
-                    <button v-if="!isStreaming" @click="sendMessage" :disabled="!inputMessage.trim() || !isApiReady"
-                        class="p-2 rounded-full transition disabled:opacity-40 disabled:cursor-not-allowed"
-                        :class="inputMessage.trim()&&isApiReady?'bg-indigo-600 text-white hover:bg-indigo-700 shadow':'bg-gray-200 text-gray-400'">
-                        <i class="fas fa-paper-plane"></i>
-                    </button>
-                    <button v-else @click="stopStreaming" class="p-2 rounded-full bg-red-100 text-red-600 hover:bg-red-200">
-                        <i class="fas fa-stop"></i>
-                    </button>
-                </div>
-                <div class="flex justify-between mt-2 text-xs text-gray-400 px-1">
-                    <span><i class="fas fa-database"></i> {{ isApiReady ? '✅ API已就绪' : '⚠️ 请配置API Key' }}</span>
-                    <span><i class="fas fa-stop-circle"></i> 红色按钮停止语音 | 设备独立数据</span>
-                </div>
-            </div>
+        <!-- 体质自测小工具（独立页面） -->
+        <div class="card" onclick="location.href='constitution.html'">
+            <div class="card-icon"><i class="fas fa-clipboard-list"></i></div>
+            <h2>🌿 九色鹿·体质镜</h2>
+            <p>源自敦煌医籍体质法，五问识偏颇，获壁画灵草调理笺。</p>
+            <span class="btn-card">照见体质 <i class="fas fa-heartbeat"></i></span>
+        </div>
+
+        <!-- 知识科普专栏（独立页面） -->
+        <div class="card" onclick="location.href='knowledge.html'">
+            <div class="card-icon"><i class="fas fa-scroll"></i></div>
+            <h2>📜 藏经洞·医典卷</h2>
+            <p>敦煌遗书医药卷、壁画养生、四季调摄，沉浸式佛国医智。</p>
+            <span class="btn-card">阅卷悟道 <i class="fas fa-leaf"></i></span>
         </div>
     </div>
 
-    <script>
-        const { createApp, ref, onMounted, nextTick, watch } = Vue;
-
-        // 默认配置
-        const DEFAULT_API_BASE = 'https://api.dify.ai/v1';
-        const DEFAULT_API_KEY = 'app-66HmEsxZuCXDJGjKPQ6D8zN4';
-
-        // 生成唯一设备ID（基于随机数 + 时间戳，存储于 localStorage）
-        function getOrCreateDeviceId() {
-            let deviceId = localStorage.getItem('dify_device_id');
-            if (!deviceId) {
-                deviceId = 'dev_' + Date.now() + '_' + Math.random().toString(36).substring(2, 10);
-                localStorage.setItem('dify_device_id', deviceId);
-            }
-            return deviceId;
-        }
-
-        // 生成 Dify 所需的 user 参数（基于设备ID + 随机后缀确保唯一性，但持久化）
-        function getOrCreateUserId(deviceId) {
-            let userId = localStorage.getItem('dify_user_id');
-            if (!userId) {
-                userId = `user_${deviceId}`;
-                localStorage.setItem('dify_user_id', userId);
-            }
-            return userId;
-        }
-
-        function markdownToPlainText(md) {
-            if (!md) return '';
-            let text = md.replace(/!\[.*?\]\(.*?\)/g, '')
-                         .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-                         .replace(/`([^`]+)`/g, '$1')
-                         .replace(/```[\s\S]*?```/g, '')
-                         .replace(/(\*\*|__)(.*?)\1/g, '$2')
-                         .replace(/(\*|_)(.*?)\1/g, '$2')
-                         .replace(/^#{1,6}\s+/gm, '')
-                         .replace(/^[\s]*[-+*]\s+/gm, '')
-                         .replace(/^\d+\.\s+/gm, '')
-                         .replace(/<[^>]*>/g, '');
-            return text.trim();
-        }
-
-        async function* parseSSEStream(reader) {
-            const decoder = new TextDecoder('utf-8');
-            let buffer = '';
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
-                buffer += decoder.decode(value, { stream: true });
-                const lines = buffer.split('\n');
-                buffer = lines.pop() || '';
-                for (const line of lines) {
-                    const trimmed = line.trim();
-                    if (trimmed.startsWith('data:')) {
-                        const dataStr = trimmed.slice(5).trim();
-                        if (dataStr === '[DONE]') continue;
-                        try { yield JSON.parse(dataStr); } catch(e) {}
-                    }
-                }
-            }
-        }
-
-        function renderMarkdown(content) {
-            if (!content) return '';
-            try {
-                let html = marked.parse(content, { breaks: true, gfm: true });
-                let clean = DOMPurify.sanitize(html);
-                const div = document.createElement('div');
-                div.innerHTML = clean;
-                div.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block));
-                return div.innerHTML;
-            } catch(e) { return content; }
-        }
-
-        // 存储前缀（基于设备ID，实现数据隔离）
-        function getStoragePrefix() {
-            const deviceId = getOrCreateDeviceId();
-            return `dify_${deviceId}_`;
-        }
-
-        createApp({
-            setup() {
-                const messages = ref([]);
-                const inputMessage = ref('');
-                const isStreaming = ref(false);
-                const errorMsg = ref('');
-                const showConfig = ref(false);
-                const conversationId = ref('');
-                const userId = ref('');
-                let abortController = null;
-                const messageContainer = ref(null);
-
-                // 用户自己的API配置，默认使用内置值
-                const userConfig = ref({ apiBase: DEFAULT_API_BASE, apiKey: DEFAULT_API_KEY });
-                const isApiReady = ref(true);
-
-                // 语音控制
-                let currentUtterance = null;
-                const stopSpeaking = () => {
-                    if (window.speechSynthesis) {
-                        window.speechSynthesis.cancel();
-                    }
-                    currentUtterance = null;
-                };
-
-                // 初始化或加载用户数据
-                const initDevice = () => {
-                    const prefix = getStoragePrefix();
-                    // 读取 API 配置
-                    const savedBase = localStorage.getItem(prefix + 'apiBase');
-                    const savedKey = localStorage.getItem(prefix + 'apiKey');
-                    userConfig.value.apiBase = savedBase || DEFAULT_API_BASE;
-                    userConfig.value.apiKey = savedKey || DEFAULT_API_KEY;
-                    isApiReady.value = !!(userConfig.value.apiBase && userConfig.value.apiKey);
-
-                    // 读取对话历史
-                    const storedMessages = localStorage.getItem(prefix + 'messages');
-                    if (storedMessages) {
-                        try {
-                            messages.value = JSON.parse(storedMessages).map(m => ({ ...m, id: m.id || Date.now()+Math.random() }));
-                        } catch(e) { messages.value = []; }
-                    } else {
-                        messages.value = [];
-                    }
-
-                    // 读取 conversation_id
-                    const storedConvId = localStorage.getItem(prefix + 'conversationId');
-                    conversationId.value = storedConvId || '';
-
-                    // 读取或创建 userId (用于 Dify API)
-                    const storedUserId = localStorage.getItem(prefix + 'userId');
-                    if (storedUserId) {
-                        userId.value = storedUserId;
-                    } else {
-                        const deviceId = getOrCreateDeviceId();
-                        userId.value = `user_${deviceId}`;
-                        localStorage.setItem(prefix + 'userId', userId.value);
-                    }
-                };
-
-                const saveUserConfig = () => {
-                    const prefix = getStoragePrefix();
-                    localStorage.setItem(prefix + 'apiBase', userConfig.value.apiBase);
-                    localStorage.setItem(prefix + 'apiKey', userConfig.value.apiKey);
-                    isApiReady.value = !!(userConfig.value.apiBase && userConfig.value.apiKey);
-                    showConfig.value = false;
-                    errorMsg.value = '';
-                };
-
-                const saveMessagesToLocal = () => {
-                    const prefix = getStoragePrefix();
-                    const toStore = messages.value.map(m => ({ role: m.role, content: m.content, id: m.id }));
-                    localStorage.setItem(prefix + 'messages', JSON.stringify(toStore.slice(-100)));
-                    if (conversationId.value) {
-                        localStorage.setItem(prefix + 'conversationId', conversationId.value);
-                    }
-                };
-
-                const scrollToBottom = () => {
-                    nextTick(() => {
-                        if (messageContainer.value) {
-                            messageContainer.value.scrollTop = messageContainer.value.scrollHeight;
-                        }
-                    });
-                };
-
-                const sendMessage = async () => {
-                    const userMsg = inputMessage.value.trim();
-                    if (!userMsg) return;
-                    if (!isApiReady.value || !userConfig.value.apiKey) {
-                        errorMsg.value = '请先配置 API Key';
-                        showConfig.value = true;
-                        return;
-                    }
-                    if (isStreaming.value) return;
-                    errorMsg.value = '';
-
-                    messages.value.push({ id: Date.now()+'-user', role: 'user', content: userMsg });
-                    inputMessage.value = '';
-                    scrollToBottom();
-
-                    const assistantId = Date.now()+'-assistant';
-                    messages.value.push({ id: assistantId, role: 'assistant', content: '' });
-                    scrollToBottom();
-
-                    const apiBase = userConfig.value.apiBase.replace(/\/$/, '');
-                    const url = `${apiBase}/chat-messages`;
-                    const body = {
-                        inputs: {},
-                        query: userMsg,
-                        response_mode: 'streaming',
-                        conversation_id: conversationId.value || undefined,
-                        user: userId.value
-                    };
-
-                    isStreaming.value = true;
-                    abortController = new AbortController();
-                    let fullAnswer = '';
-                    let newConversationId = null;
-
-                    try {
-                        const res = await fetch(url, {
-                            method: 'POST',
-                            headers: {
-                                'Authorization': `Bearer ${userConfig.value.apiKey}`,
-                                'Content-Type': 'application/json',
-                                'Accept': 'text/event-stream'
-                            },
-                            body: JSON.stringify(body),
-                            signal: abortController.signal
-                        });
-                        if (!res.ok) throw new Error(`API错误 ${res.status}`);
-
-                        const reader = res.body.getReader();
-                        for await (const event of parseSSEStream(reader)) {
-                            if (event.event === 'message') {
-                                if (event.answer) {
-                                    fullAnswer += event.answer;
-                                    const last = messages.value[messages.value.length-1];
-                                    if (last && last.role === 'assistant') last.content = fullAnswer;
-                                    scrollToBottom();
-                                }
-                            } else if (event.event === 'message_end') {
-                                newConversationId = event.conversation_id;
-                                if (newConversationId) {
-                                    conversationId.value = newConversationId;
-                                    saveMessagesToLocal();
-                                }
-                                break;
-                            } else if (event.event === 'error') {
-                                throw new Error(event.message);
-                            }
-                        }
-                        const lastMsg = messages.value[messages.value.length-1];
-                        if (lastMsg && lastMsg.content === '') lastMsg.content = '(空响应)';
-                    } catch (err) {
-                        if (err.name !== 'AbortError') {
-                            errorMsg.value = err.message || '请求失败';
-                            const last = messages.value[messages.value.length-1];
-                            if (last && last.role === 'assistant') last.content = `❌ 错误: ${errorMsg.value}`;
-                        }
-                    } finally {
-                        isStreaming.value = false;
-                        abortController = null;
-                        saveMessagesToLocal();
-                        scrollToBottom();
-                    }
-                };
-
-                const stopStreaming = () => {
-                    if (abortController) abortController.abort();
-                    isStreaming.value = false;
-                    if (messages.value.length && messages.value[messages.value.length-1].role==='assistant' && !messages.value[messages.value.length-1].content) {
-                        messages.value.pop();
-                    }
-                };
-
-                const newConversation = () => {
-                    if (isStreaming.value) stopStreaming();
-                    messages.value = [];
-                    conversationId.value = '';
-                    errorMsg.value = '';
-                    const prefix = getStoragePrefix();
-                    localStorage.removeItem(prefix + 'messages');
-                    localStorage.removeItem(prefix + 'conversationId');
-                    scrollToBottom();
-                };
-
-                const speakMessage = (msg) => {
-                    if (!msg.content) return;
-                    if (window.speechSynthesis && window.speechSynthesis.speaking) {
-                        window.speechSynthesis.cancel();
-                    }
-                    const text = msg.role === 'assistant' ? markdownToPlainText(msg.content) : msg.content;
-                    if (!text.trim()) return;
-                    const utterance = new SpeechSynthesisUtterance(text);
-                    utterance.lang = 'zh-CN';
-                    utterance.onend = () => { currentUtterance = null; };
-                    utterance.onerror = () => { currentUtterance = null; };
-                    currentUtterance = utterance;
-                    window.speechSynthesis.speak(utterance);
-                };
-
-                const shouldDisableVoice = (msg, idx) => {
-                    if (!msg.content) return true;
-                    if (isStreaming.value && msg.role==='assistant' && idx===messages.value.length-1) return true;
-                    return false;
-                };
-
-                // 自动保存
-                watch([messages, conversationId], () => {
-                    if (!isStreaming.value) saveMessagesToLocal();
-                }, { deep: true });
-
-                onMounted(() => {
-                    initDevice();
-                });
-
-                return {
-                    messages, inputMessage, isStreaming, errorMsg, showConfig, userConfig, isApiReady,
-                    messageContainer, conversationId,
-                    sendMessage, stopStreaming, newConversation, saveUserConfig, renderMarkdown,
-                    speakMessage, shouldDisableVoice, stopSpeaking
-                };
-            }
-        }).mount('#app');
-
-        if (typeof marked !== 'undefined') {
-            marked.setOptions({
-                breaks: true, gfm: true,
-                highlight: (code, lang) => {
-                    if (lang && hljs.getLanguage(lang)) return hljs.highlight(code, { language: lang }).value;
-                    return hljs.highlightAuto(code).value;
-                }
-            });
-        }
-    </script>
+    <div class="footer-note">
+        <i class="fas fa-pagoda"></i> 敦煌医学 · 慈悲润生 | 智能体已连接灵境 | 自测与科普源自敦煌古方智慧
+    </div>
+</div>
 </body>
 </html>
