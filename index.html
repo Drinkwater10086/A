@@ -13,24 +13,50 @@
         }
 
         body {
-            background: linear-gradient(145deg, #7a2e1a 0%, #a13e20 100%);
+            background-color: #2a160a;  /* 后备色 */
             font-family: 'Segoe UI', '华文楷书', 'Microsoft YaHei', 'Georgia', serif;
             min-height: 100vh;
             padding: 40px 24px;
             color: #fff3e0;
             position: relative;
+            overflow-x: hidden;
         }
-        /* 敦煌纹样装饰背景 */
+
+        /* ----- 虚化背景图片：使用您本地的 image.jpg ----- */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* 关键修改：改成您自己的图片文件名 */
+            background-image: url('image.jpg');
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            filter: blur(12px);      /* 虚化程度，可以调大或调小（如8px, 16px） */
+            transform: scale(1.05);  /* 防止边缘露出硬边 */
+            z-index: -2;
+            pointer-events: none;
+            will-change: transform;
+        }
+
+        /* 敦煌纹样装饰（光点效果）保留，增加层次感 */
         body::before {
             content: "";
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-image: radial-gradient(circle at 10% 20%, rgba(255,215,150,0.08) 2%, transparent 2.5%),
-                              radial-gradient(circle at 85% 70%, rgba(255,200,100,0.1) 1.8%, transparent 2%);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(circle at 10% 20%, rgba(255,215,150,0.12) 2%, transparent 2.5%),
+                              radial-gradient(circle at 85% 70%, rgba(255,200,100,0.15) 1.8%, transparent 2%);
             background-size: 48px 48px, 64px 64px;
             pointer-events: none;
-            z-index: 0;
+            z-index: -1;
         }
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -41,8 +67,8 @@
         .hero {
             text-align: center;
             margin-bottom: 52px;
-            background: rgba(100, 30, 10, 0.4);
-            backdrop-filter: blur(3px);
+            background: rgba(100, 30, 10, 0.45);
+            backdrop-filter: blur(4px);
             border-radius: 80px;
             padding: 24px 20px;
             border: 1px solid #e6b873;
@@ -82,7 +108,7 @@
         }
 
         .card {
-            background: rgba(50, 20, 8, 0.75);
+            background: rgba(50, 20, 8, 0.78);
             backdrop-filter: blur(6px);
             border-radius: 48px;
             padding: 32px 24px 36px;
@@ -96,7 +122,7 @@
             transform: translateY(-8px);
             box-shadow: 0 30px 40px rgba(0,0,0,0.5);
             border-color: #ffcc88;
-            background: rgba(70, 30, 12, 0.85);
+            background: rgba(70, 30, 12, 0.88);
         }
 
         .card-icon {
@@ -147,7 +173,6 @@
         .btn-taobao:hover {
             background: #ffa843;
         }
-        /* 网址输入框 */
         .url-input {
             width: 85%;
             padding: 8px 12px;
@@ -183,7 +208,6 @@
     </div>
 
     <div class="grid-2x2">
-        <!-- 智能体：跳转至您指定的 agent.html 网页（新标签页） -->
         <div class="card" onclick="window.open('https://drinkwater10086.github.io/A/agent.html', '_blank')">
             <div class="card-icon"><i class="fas fa-robot"></i></div>
             <h2>🪷 药师佛·智慧体</h2>
@@ -191,7 +215,6 @@
             <span class="btn-card">进入灵境 <i class="fas fa-arrow-right"></i></span>
         </div>
 
-        <!-- 淘宝店铺跳转（可修改下方输入框内的网址） -->
         <div class="card taobao-card">
             <div class="card-icon"><i class="fab fa-taobao"></i></div>
             <h2>🏺 妙香宝坊·同仁堂</h2>
@@ -202,7 +225,6 @@
             </button>
         </div>
 
-        <!-- 体质自测小工具（独立页面） -->
         <div class="card" onclick="location.href='constitution.html'">
             <div class="card-icon"><i class="fas fa-clipboard-list"></i></div>
             <h2>🌿 九色鹿·体质镜</h2>
@@ -210,7 +232,6 @@
             <span class="btn-card">照见体质 <i class="fas fa-heartbeat"></i></span>
         </div>
 
-        <!-- 知识科普专栏（独立页面） -->
         <div class="card" onclick="location.href='knowledge.html'">
             <div class="card-icon"><i class="fas fa-scroll"></i></div>
             <h2>📜 藏经洞·医典卷</h2>
