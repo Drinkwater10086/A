@@ -138,6 +138,7 @@
         .taobao-card {
             background: linear-gradient(135deg, rgba(120, 45, 15, 0.85), rgba(170, 70, 25, 0.85));
             border: 1px solid #ffbc6e;
+            cursor: default;
         }
         .btn-taobao {
             background: #f0922e;
@@ -182,8 +183,8 @@
     </div>
 
     <div class="grid-2x2">
-        <!-- 智能体：跳转至您提供的外部网页（新标签页） -->
-        <div class="card" onclick="window.open('https://drinkwater10086.github.io/A/', '_blank')">
+        <!-- 智能体：跳转至您指定的 agent.html 网页（新标签页） -->
+        <div class="card" onclick="window.open('https://drinkwater10086.github.io/A/agent.html', '_blank')">
             <div class="card-icon"><i class="fas fa-robot"></i></div>
             <h2>🪷 药师佛·智慧体</h2>
             <p>敦煌医学AI使者，解答养生疑惑，解读壁画古方，随问随答。</p>
@@ -191,7 +192,7 @@
         </div>
 
         <!-- 淘宝店铺跳转（可修改下方输入框内的网址） -->
-        <div class="card taobao-card" style="cursor: default;">
+        <div class="card taobao-card">
             <div class="card-icon"><i class="fab fa-taobao"></i></div>
             <h2>🏺 妙香宝坊·同仁堂</h2>
             <p>百年本草 · 丝路正源。可粘贴任意淘宝/天猫店铺链接。</p>
