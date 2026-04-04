@@ -47,6 +47,13 @@
             word-break: break-word;
             white-space: normal;
         }
+        /* 确保移动端点击区域舒适 */
+        .nav-btn {
+            transition: all 0.2s ease;
+        }
+        .nav-btn:active {
+            transform: scale(0.95);
+        }
     </style>
 </head>
 <body class="bg-gray-100 font-sans">
@@ -62,16 +69,20 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <!-- 语音停止按钮 -->
-                    <button @click="stopSpeaking" class="p-2 rounded-full hover:bg-red-50 transition" title="停止语音播报">
+                    <button @click="stopSpeaking" class="nav-btn p-2 rounded-full hover:bg-red-50 transition" title="停止语音播报">
                         <i class="fas fa-stop-circle text-red-500 text-lg"></i>
                     </button>
                     <!-- 新建对话（重置会话，不清除配置） -->
-                    <button @click="newConversation" :disabled="isStreaming" class="p-2 rounded-full hover:bg-gray-100 disabled:opacity-50" title="新建对话">
+                    <button @click="newConversation" :disabled="isStreaming" class="nav-btn p-2 rounded-full hover:bg-gray-100 disabled:opacity-50" title="新建对话">
                         <i class="fas fa-plus text-gray-600"></i>
                     </button>
                     <!-- API 配置按钮 -->
-                    <button @click="showConfig = !showConfig" class="p-2 rounded-full hover:bg-gray-100" title="API配置">
+                    <button @click="showConfig = !showConfig" class="nav-btn p-2 rounded-full hover:bg-gray-100" title="API配置">
                         <i class="fas fa-sliders-h text-gray-600"></i>
+                    </button>
+                    <!-- 新增：返回主页按钮 (跳转到需求指定链接) -->
+                    <button @click="goBackToHome" class="nav-btn p-2 rounded-full hover:bg-indigo-100 transition" title="返回主页">
+                        <i class="fas fa-home text-indigo-600 text-lg"></i>
                     </button>
                 </div>
             </div>
@@ -152,7 +163,7 @@
                 </div>
                 <div class="flex justify-between mt-2 text-xs text-gray-400 px-1">
                     <span><i class="fas fa-database"></i> {{ isApiReady ? '✅ API已就绪' : '⚠️ 请配置API Key' }}</span>
-                    <span><i class="fas fa-stop-circle"></i> 红色按钮停止语音 | 设备独立数据</span>
+                    <span><i class="fas fa-home"></i> 主页按钮 | 独立设备数据</span>
                 </div>
             </div>
         </div>
@@ -161,7 +172,7 @@
     <script>
         const { createApp, ref, onMounted, nextTick, watch } = Vue;
 
-        // 默认配置
+        // 默认配置（内置可用的API，开箱即用）
         const DEFAULT_API_BASE = 'https://api.dify.ai/v1';
         const DEFAULT_API_KEY = 'app-66HmEsxZuCXDJGjKPQ6D8zN4';
 
@@ -175,7 +186,7 @@
             return deviceId;
         }
 
-        // 生成 Dify 所需的 user 参数（基于设备ID + 随机后缀确保唯一性，但持久化）
+        // 生成 Dify 所需的 user 参数（基于设备ID，确保会话连续性）
         function getOrCreateUserId(deviceId) {
             let userId = localStorage.getItem('dify_user_id');
             if (!userId) {
@@ -232,7 +243,7 @@
             } catch(e) { return content; }
         }
 
-        // 存储前缀（基于设备ID，实现数据隔离）
+        // 存储前缀（基于设备ID，实现数据隔离，每个设备独立的对话历史）
         function getStoragePrefix() {
             const deviceId = getOrCreateDeviceId();
             return `dify_${deviceId}_`;
@@ -250,7 +261,7 @@
                 let abortController = null;
                 const messageContainer = ref(null);
 
-                // 用户自己的API配置，默认使用内置值
+                // 用户自己的API配置，默认使用内置值（开箱即用）
                 const userConfig = ref({ apiBase: DEFAULT_API_BASE, apiKey: DEFAULT_API_KEY });
                 const isApiReady = ref(true);
 
@@ -263,7 +274,7 @@
                     currentUtterance = null;
                 };
 
-                // 初始化或加载用户数据
+                // 初始化或加载用户数据（基于设备ID隔离存储）
                 const initDevice = () => {
                     const prefix = getStoragePrefix();
                     // 读取 API 配置
@@ -324,6 +335,7 @@
                     });
                 };
 
+                // 核心对话发送函数 (流式响应)
                 const sendMessage = async () => {
                     const userMsg = inputMessage.value.trim();
                     if (!userMsg) return;
@@ -370,7 +382,6 @@
                             signal: abortController.signal
                         });
                         if (!res.ok) throw new Error(`API错误 ${res.status}`);
-
                         const reader = res.body.getReader();
                         for await (const event of parseSSEStream(reader)) {
                             if (event.event === 'message') {
@@ -447,7 +458,19 @@
                     return false;
                 };
 
-                // 自动保存
+                // 新增：返回主页按钮逻辑 (跳转到需求指定链接)
+                const goBackToHome = () => {
+                    // 优雅处理：如果正在流式输出，可以选择停止但不强制等待，直接跳转
+                    if (isStreaming.value) {
+                        // 可选：停止当前流式请求避免控制台报错，提升体验
+                        if (abortController) abortController.abort();
+                        isStreaming.value = false;
+                    }
+                    // 执行页面跳转 (根据需求返回到指定URL)
+                    window.location.href = 'https://drinkwater10086.github.io/A/index.html';
+                };
+
+                // 自动保存消息和会话ID
                 watch([messages, conversationId], () => {
                     if (!isStreaming.value) saveMessagesToLocal();
                 }, { deep: true });
@@ -457,14 +480,29 @@
                 });
 
                 return {
-                    messages, inputMessage, isStreaming, errorMsg, showConfig, userConfig, isApiReady,
-                    messageContainer, conversationId,
-                    sendMessage, stopStreaming, newConversation, saveUserConfig, renderMarkdown,
-                    speakMessage, shouldDisableVoice, stopSpeaking
+                    messages,
+                    inputMessage,
+                    isStreaming,
+                    errorMsg,
+                    showConfig,
+                    userConfig,
+                    isApiReady,
+                    messageContainer,
+                    conversationId,
+                    sendMessage,
+                    stopStreaming,
+                    newConversation,
+                    saveUserConfig,
+                    renderMarkdown,
+                    speakMessage,
+                    shouldDisableVoice,
+                    stopSpeaking,
+                    goBackToHome     // 暴露返回主页方法
                 };
             }
         }).mount('#app');
 
+        // 额外配置marked与highlight
         if (typeof marked !== 'undefined') {
             marked.setOptions({
                 breaks: true, gfm: true,
