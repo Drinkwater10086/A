@@ -12,6 +12,41 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <style>
+        /* ----- 虚化背景图片（与首页保持一致）----- */
+        body {
+            position: relative;
+            background-color: #2a160a;  /* 深色后备 */
+        }
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('image.jpg');
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            filter: blur(12px);          /* 虚化程度 */
+            transform: scale(1.05);
+            z-index: -2;
+            pointer-events: none;
+            will-change: transform;
+        }
+        /* 可选：叠加一层极淡的暗色遮罩，增加文字对比度（不影响模糊效果） */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.25);
+            z-index: -1;
+            pointer-events: none;
+        }
+
         html, body, #app {
             height: 100%;
             margin: 0;
@@ -21,6 +56,9 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            position: relative;
+            z-index: 1;
+            background-color: transparent; /* 完全透出底层虚化背景 */
         }
         .message-container {
             flex: 1;
@@ -28,8 +66,8 @@
             min-height: 0;
         }
         ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 10px; }
+        ::-webkit-scrollbar-track { background: rgba(241, 241, 241, 0.6); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: rgba(193, 193, 193, 0.8); border-radius: 10px; }
         .typing-indicator span {
             display: inline-block; width: 6px; height: 6px; border-radius: 50%;
             background-color: #9ca3af; margin: 0 2px;
@@ -47,16 +85,43 @@
             word-break: break-word;
             white-space: normal;
         }
-        /* 确保移动端点击区域舒适 */
         .nav-btn {
             transition: all 0.2s ease;
         }
         .nav-btn:active {
             transform: scale(0.95);
         }
+        /* 调整卡片、消息气泡的背景透明度，让模糊背景若隐若现，同时保证文字清晰 */
+        header {
+            background-color: rgba(255, 255, 255, 0.85) !important;
+            backdrop-filter: blur(4px);
+        }
+        .message-container .bg-white {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+        }
+        .message-container .bg-indigo-600 {
+            background-color: rgba(79, 70, 229, 0.9) !important;
+        }
+        .border-t {
+            background-color: rgba(255, 255, 255, 0.85) !important;
+            backdrop-filter: blur(4px);
+        }
+        .bg-gray-50 {
+            background-color: rgba(249, 250, 251, 0.9) !important;
+        }
+        /* 配置侧边栏保持不透明，便于阅读 */
+        .fixed.inset-0.bg-black\/30 {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .fixed.inset-0.bg-black\/30 > div {
+            background-color: white !important;
+        }
+        .typing-indicator span {
+            background-color: #6b7280;
+        }
     </style>
 </head>
-<body class="bg-gray-100 font-sans">
+<body class="font-sans">
     <div id="app" class="h-full flex flex-col overflow-hidden">
         <!-- 顶部导航栏 -->
         <header class="bg-white/80 backdrop-blur-sm border-b shadow-sm flex-shrink-0">
@@ -68,19 +133,15 @@
                     <h1 class="text-xl font-semibold bg-gradient-to-r from-indigo-700 to-purple-700 bg-clip-text text-transparent">专业康养顾问</h1>
                 </div>
                 <div class="flex items-center gap-2">
-                    <!-- 语音停止按钮 -->
                     <button @click="stopSpeaking" class="nav-btn p-2 rounded-full hover:bg-red-50 transition" title="停止语音播报">
                         <i class="fas fa-stop-circle text-red-500 text-lg"></i>
                     </button>
-                    <!-- 新建对话（重置会话，不清除配置） -->
                     <button @click="newConversation" :disabled="isStreaming" class="nav-btn p-2 rounded-full hover:bg-gray-100 disabled:opacity-50" title="新建对话">
                         <i class="fas fa-plus text-gray-600"></i>
                     </button>
-                    <!-- API 配置按钮 -->
                     <button @click="showConfig = !showConfig" class="nav-btn p-2 rounded-full hover:bg-gray-100" title="API配置">
                         <i class="fas fa-sliders-h text-gray-600"></i>
                     </button>
-                    <!-- 新增：返回主页按钮 (跳转到需求指定链接) -->
                     <button @click="goBackToHome" class="nav-btn p-2 rounded-full hover:bg-indigo-100 transition" title="返回主页">
                         <i class="fas fa-home text-indigo-600 text-lg"></i>
                     </button>
@@ -112,15 +173,15 @@
         <!-- 消息区域 -->
         <main class="message-container" ref="messageContainer">
             <div class="max-w-3xl mx-auto px-4 py-6 space-y-5">
-                <div v-if="messages.length===0" class="flex flex-col items-center justify-center h-64 text-gray-400">
-                    <i class="fas fa-comment-dots text-5xl mb-4 opacity-50"></i>
+                <div v-if="messages.length===0" class="flex flex-col items-center justify-center h-64 text-gray-500">
+                    <i class="fas fa-comment-dots text-5xl mb-4 opacity-60"></i>
                     <p class="text-lg font-medium">开始与康养顾问对话</p>
                     <p class="text-sm mt-1">默认 API 已配置，可直接使用 | 语音可随时停止</p>
                 </div>
                 <div v-for="(msg, idx) in messages" :key="msg.id" class="flex" :class="msg.role==='user'?'justify-end':'justify-start'">
                     <div v-if="msg.role==='assistant'" class="flex items-start gap-2 max-w-[90%]">
                         <div class="flex-shrink-0 w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center"><i class="fas fa-robot text-gray-600"></i></div>
-                        <div class="relative px-4 py-3 rounded-2xl bg-white text-gray-800 border border-gray-100 flex-1 break-words">
+                        <div class="relative px-4 py-3 rounded-2xl bg-white text-gray-800 border border-gray-100 flex-1 break-words shadow-sm">
                             <div class="prose prose-sm max-w-none" v-html="renderMarkdown(msg.content)"></div>
                             <div v-if="idx===messages.length-1 && isStreaming && !msg.content" class="typing-indicator flex space-x-1 py-1 mt-1">
                                 <span></span><span></span><span></span>
@@ -132,7 +193,7 @@
                     </div>
                     <div v-else class="flex items-start gap-2 max-w-[90%] flex-row-reverse">
                         <div class="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center"><i class="fas fa-user text-indigo-600"></i></div>
-                        <div class="relative px-4 py-3 rounded-2xl bg-indigo-600 text-white rounded-tr-none break-words">
+                        <div class="relative px-4 py-3 rounded-2xl bg-indigo-600 text-white rounded-tr-none break-words shadow-sm">
                             <div class="whitespace-pre-wrap">{{ msg.content }}</div>
                         </div>
                         <button @click="speakMessage(msg)" class="voice-btn flex-shrink-0 w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center">
@@ -161,7 +222,7 @@
                         <i class="fas fa-stop"></i>
                     </button>
                 </div>
-                <div class="flex justify-between mt-2 text-xs text-gray-400 px-1">
+                <div class="flex justify-between mt-2 text-xs text-gray-500 px-1">
                     <span><i class="fas fa-database"></i> {{ isApiReady ? '✅ API已就绪' : '⚠️ 请配置API Key' }}</span>
                     <span><i class="fas fa-home"></i> 主页按钮 | 独立设备数据</span>
                 </div>
@@ -176,7 +237,6 @@
         const DEFAULT_API_BASE = 'https://api.dify.ai/v1';
         const DEFAULT_API_KEY = 'app-66HmEsxZuCXDJGjKPQ6D8zN4';
 
-        // 生成唯一设备ID（基于随机数 + 时间戳，存储于 localStorage）
         function getOrCreateDeviceId() {
             let deviceId = localStorage.getItem('dify_device_id');
             if (!deviceId) {
@@ -186,7 +246,6 @@
             return deviceId;
         }
 
-        // 生成 Dify 所需的 user 参数（基于设备ID，确保会话连续性）
         function getOrCreateUserId(deviceId) {
             let userId = localStorage.getItem('dify_user_id');
             if (!userId) {
@@ -243,7 +302,6 @@
             } catch(e) { return content; }
         }
 
-        // 存储前缀（基于设备ID，实现数据隔离，每个设备独立的对话历史）
         function getStoragePrefix() {
             const deviceId = getOrCreateDeviceId();
             return `dify_${deviceId}_`;
@@ -261,11 +319,9 @@
                 let abortController = null;
                 const messageContainer = ref(null);
 
-                // 用户自己的API配置，默认使用内置值（开箱即用）
                 const userConfig = ref({ apiBase: DEFAULT_API_BASE, apiKey: DEFAULT_API_KEY });
                 const isApiReady = ref(true);
 
-                // 语音控制
                 let currentUtterance = null;
                 const stopSpeaking = () => {
                     if (window.speechSynthesis) {
@@ -274,17 +330,14 @@
                     currentUtterance = null;
                 };
 
-                // 初始化或加载用户数据（基于设备ID隔离存储）
                 const initDevice = () => {
                     const prefix = getStoragePrefix();
-                    // 读取 API 配置
                     const savedBase = localStorage.getItem(prefix + 'apiBase');
                     const savedKey = localStorage.getItem(prefix + 'apiKey');
                     userConfig.value.apiBase = savedBase || DEFAULT_API_BASE;
                     userConfig.value.apiKey = savedKey || DEFAULT_API_KEY;
                     isApiReady.value = !!(userConfig.value.apiBase && userConfig.value.apiKey);
 
-                    // 读取对话历史
                     const storedMessages = localStorage.getItem(prefix + 'messages');
                     if (storedMessages) {
                         try {
@@ -294,11 +347,9 @@
                         messages.value = [];
                     }
 
-                    // 读取 conversation_id
                     const storedConvId = localStorage.getItem(prefix + 'conversationId');
                     conversationId.value = storedConvId || '';
 
-                    // 读取或创建 userId (用于 Dify API)
                     const storedUserId = localStorage.getItem(prefix + 'userId');
                     if (storedUserId) {
                         userId.value = storedUserId;
@@ -335,7 +386,6 @@
                     });
                 };
 
-                // 核心对话发送函数 (流式响应)
                 const sendMessage = async () => {
                     const userMsg = inputMessage.value.trim();
                     if (!userMsg) return;
@@ -458,19 +508,14 @@
                     return false;
                 };
 
-                // 新增：返回主页按钮逻辑 (跳转到需求指定链接)
                 const goBackToHome = () => {
-                    // 优雅处理：如果正在流式输出，可以选择停止但不强制等待，直接跳转
                     if (isStreaming.value) {
-                        // 可选：停止当前流式请求避免控制台报错，提升体验
                         if (abortController) abortController.abort();
                         isStreaming.value = false;
                     }
-                    // 执行页面跳转 (根据需求返回到指定URL)
                     window.location.href = 'https://drinkwater10086.github.io/A/index.html';
                 };
 
-                // 自动保存消息和会话ID
                 watch([messages, conversationId], () => {
                     if (!isStreaming.value) saveMessagesToLocal();
                 }, { deep: true });
@@ -497,12 +542,11 @@
                     speakMessage,
                     shouldDisableVoice,
                     stopSpeaking,
-                    goBackToHome     // 暴露返回主页方法
+                    goBackToHome
                 };
             }
         }).mount('#app');
 
-        // 额外配置marked与highlight
         if (typeof marked !== 'undefined') {
             marked.setOptions({
                 breaks: true, gfm: true,
