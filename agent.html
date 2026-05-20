@@ -97,7 +97,7 @@
             transform: scale(0.95);
         }
         
-        /* ========= 响应式样式：兼容手机、平板、桌面 ========= */
+        /* ========= 响应式样式 ========= */
         .message-container .flex {
             max-width: 100%;
         }
@@ -409,7 +409,7 @@
                 const userConfig = ref({ apiBase: DEFAULT_API_BASE, apiKey: DEFAULT_API_KEY });
                 const isApiReady = ref(true);
 
-                // ---------- 语音播报 ----------
+                // 语音相关
                 let currentUtterance = null;
                 let speechAllowed = false;
 
@@ -476,7 +476,7 @@
                     document.removeEventListener('touchstart', enableSpeechAfterUserInteraction);
                 };
 
-                // ---------- 核心功能 ----------
+                // 核心功能
                 const initDevice = () => {
                     const prefix = getStoragePrefix();
                     const savedBase = localStorage.getItem(prefix + 'apiBase');
@@ -646,29 +646,31 @@
                     window.location.href = 'https://drinkwater10086.github.io/A/index.html';
                 };
 
-                // ---------- 新增：接收体质测试结果并填入输入框 ----------
-                const loadResultFromUrl = () => {
+                // 新增：接收体质测试结果，填入并自动发送
+                let autoSent = false; // 防止重复自动发送
+                const loadResultAndSend = async () => {
+                    if (autoSent) return;
                     const urlParams = new URLSearchParams(window.location.search);
                     const resultParam = urlParams.get('result');
-                    if (resultParam) {
+                    if (resultParam && !autoSent) {
                         try {
                             const decoded = decodeURIComponent(resultParam);
                             if (decoded && decoded.trim()) {
                                 inputMessage.value = decoded;
-                                // 可选：自动聚焦或显示提示
-                                errorMsg.value = '✨ 已加载体质辨识结果，可点击发送咨询康养顾问。';
-                                setTimeout(() => { errorMsg.value = ''; }, 3000);
-                                // 自动将光标移到输入框末尾
-                                nextTick(() => {
-                                    const textarea = document.querySelector('textarea');
-                                    if (textarea) {
-                                        textarea.focus();
-                                        textarea.setSelectionRange(decoded.length, decoded.length);
-                                    }
-                                });
+                                autoSent = true;
+                                // 等待 DOM 更新后自动发送
+                                await nextTick();
+                                // 如果 API 未就绪，等待一小段时间（配置可能已存在）
+                                if (!isApiReady.value) {
+                                    errorMsg.value = '⏳ API 未就绪，请检查配置后手动发送。';
+                                    setTimeout(() => { errorMsg.value = ''; }, 3000);
+                                    return;
+                                }
+                                // 自动发送
+                                await sendMessage();
                             }
                         } catch(e) {
-                            console.warn('解析result参数失败', e);
+                            console.warn('自动发送失败', e);
                         }
                     }
                 };
@@ -677,9 +679,8 @@
                     if (!isStreaming.value) saveMessagesToLocal();
                 }, { deep: true });
 
-                onMounted(() => {
+                onMounted(async () => {
                     initDevice();
-                    // 监听用户交互以启用语音
                     document.addEventListener('click', enableSpeechAfterUserInteraction);
                     document.addEventListener('touchstart', enableSpeechAfterUserInteraction);
                     if (window.speechSynthesis) {
@@ -690,8 +691,9 @@
                     if (!window.speechSynthesis) {
                         errorMsg.value = '您的浏览器不支持语音播报功能，请升级或更换浏览器。';
                     }
-                    // 处理URL参数中的体质结果
-                    loadResultFromUrl();
+                    // 等待一下确保 API 配置和组件完全初始化
+                    await nextTick();
+                    await loadResultAndSend();
                 });
 
                 return {
