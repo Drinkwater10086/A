@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>莫高窟第196窟·净齿图与口腔医学</title><style>*{margin:0;padding:0;box-sizing:border-box;}body{background:#fef7e8;font-family:'Segoe UI','Noto Serif SC',serif;}.container{max-width:1000px;margin:0 auto;padding:2rem 1.5rem;}.back-link{display:inline-block;margin-bottom:2rem;background:#e5d5bd;padding:0.5rem 1.2rem;border-radius:40px;text-decoration:none;color:#5a3e28;}.feature-canvas{background:#f9efdf;border-radius:32px;padding:1rem;margin:1.5rem 0;text-align:center;}canvas{max-width:100%;border-radius:24px;}h1{color:#744e24;}h2{color:#9b6a36;border-left:5px solid #c28a42;padding-left:1rem;margin:1.5rem 0 1rem;}.ref-box{background:#f8f0e2;border-radius:24px;padding:1.2rem;margin:2rem 0;border-left:4px solid #c28a42;}.badge{background:#efe2d0;display:inline-block;padding:0.2rem 0.8rem;border-radius:30px;}</style></head>
+<body><div class="container"><a href="index.html" class="back-link">← 返回主站</a>
+<div class="article-header"><h1>🦷 莫高窟第196窟·净齿图</h1><div class="subtitle">晚唐壁画中的杨柳枝揩齿 · 世界口腔医学珍贵图像</div></div>
+<div class="feature-canvas"><canvas id="toothCanvas" width="600" height="240" style="width:100%; aspect-ratio:600/240"></canvas></div>
+<p>敦煌莫高窟第196窟（晚唐）壁画中有一幅生动的“净齿图”，绘一僧人右手持杨柳枝，左手捧净瓶，正在做揩齿清洁。这是目前中国最早表现口腔卫生的壁画之一，证实了唐代佛教“嚼杨枝”净齿习俗的流行。此外，藏经洞出土文献P.2704《净齿药方》记载以“胡盐、麝香、细辛”等药物制成洁齿粉末，用于治疗齿痛和保持口腔清洁。</p>
+<h2>🏛️ 壁画与医学史意义</h2>
+<p>除了第196窟，莫高窟第159窟、第9窟也有类似净齿画面。结合写本《净齿药方》可知，唐代敦煌地区已形成系统的口腔护理知识，比欧洲现代口腔卫生学早数百年。王惠民研究员在《敦煌研究》中详细论证了这些图像与佛经《律部》的关系，是世界口腔医学史的珍贵史料。</p>
+<h2>📜 相关文献与编号</h2>
+<p><span class="badge">莫高窟第196窟 东壁门南</span><span class="badge">法藏 P.2704《净齿药方》</span><span class="badge">S. 6055《齿木方》</span></p>
+<div class="ref-box"><strong>📚 参考文献</strong><br>1. 王惠民《敦煌壁画中的净齿图与古代口腔医学》，《敦煌研究》2003年第3期。<br>2. 马继兴《敦煌医药文献辑校·净齿药方》，江苏古籍1998。<br>3. 高启安《敦煌饮食文化探微·口腔清洁》，甘肃教育出版社2011。</div>
+<footer>图文原创 · 依据敦煌壁画及写本学术成果</footer></div>
+<script>
+    const c=document.getElementById('toothCanvas'),ctx=c.getContext('2d');
+    function draw(){let w=c.clientWidth,h=240;c.width=w;c.height=h;ctx.fillStyle="#f9efdf";ctx.fillRect(0,0,w,h);ctx.fillStyle="#3f2a16";ctx.font=`${Math.floor(h*0.12)}px "KaiTi"`;ctx.fillText("净齿图·第196窟",15,45);ctx.beginPath();ctx.moveTo(90,120);ctx.lineTo(140,60);ctx.lineTo(155,75);ctx.lineTo(105,135);ctx.fillStyle="#9d7942";ctx.fill();ctx.fillStyle="#517e3a";ctx.fillRect(125,48,14,28);ctx.fillStyle="#a8632e";ctx.fillText("杨柳枝",80,155);ctx.fillStyle="#b27438";ctx.beginPath();ctx.arc(270,95,28,0,Math.PI*2);ctx.fill();ctx.fillStyle="#f9eedb";ctx.font=`26px "Segoe UI"`;ctx.fillText("🦷",260,108);ctx.fillStyle="#ad6d38";ctx.fillText("净齿药方",260,150);}
+    window.addEventListener('load',()=>{draw();window.addEventListener('resize',()=>draw());});
+</script>
+</body>
+</html>

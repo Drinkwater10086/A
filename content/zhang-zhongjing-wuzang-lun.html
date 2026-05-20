@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>敦煌《张仲景五脏论》· 脏腑辨证遗珍</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{background:#fef7e8;font-family:'Segoe UI','Noto Serif SC',serif;color:#2c2418;line-height:1.6;}
+        .container{max-width:1000px;margin:0 auto;padding:2rem 1.5rem;}
+        .back-link{display:inline-block;margin-bottom:2rem;background:#e5d5bd;padding:0.5rem 1.2rem;border-radius:40px;text-decoration:none;color:#5a3e28;font-weight:500;transition:0.2s;}
+        .back-link:hover{background:#d4c0a2;}
+        .article-header{border-bottom:2px solid #d9c5a7;padding-bottom:1rem;margin-bottom:2rem;}
+        h1{font-size:2.2rem;color:#744e24;margin-bottom:0.5rem;}
+        .subtitle{color:#8b6942;font-style:italic;}
+        .feature-canvas{background:#f9efdf;border-radius:32px;padding:1rem;margin:1.5rem 0;text-align:center;}
+        canvas{max-width:100%;height:auto;background:#fcf5e8;border-radius:24px;box-shadow:0 4px 12px rgba(0,0,0,0.05);}
+        h2{font-size:1.6rem;color:#9b6a36;margin:1.5rem 0 1rem;border-left:5px solid #c28a42;padding-left:1rem;}
+        p{margin-bottom:1rem;color:#3e2e1e;}
+        .ref-box{background:#f8f0e2;border-radius:24px;padding:1.2rem;margin:2rem 0;font-size:0.9rem;border-left:4px solid #c28a42;}
+        .ref-box strong{color:#865d32;}
+        .badge{background:#efe2d0;display:inline-block;padding:0.2rem 0.8rem;border-radius:30px;font-size:0.75rem;margin-right:0.5rem;color:#7b4d2c;}
+        footer{text-align:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid #e2cfb0;font-size:0.8rem;color:#8a765a;}
+    </style>
+</head>
+<body>
+<div class="container">
+    <a href="index.html" class="back-link">← 返回主站</a>
+    <div class="article-header"><h1>📜 敦煌《张仲景五脏论》</h1><div class="subtitle">早期脏腑辨证的写本遗珍 · 英藏法藏互证</div></div>
+    <div class="feature-canvas"><canvas id="wzCanvas" width="600" height="240" style="width:100%; aspect-ratio:600/240"></canvas></div>
+    <p>敦煌藏经洞出土医学卷子中，《张仲景五脏论》是研究唐以前中医辨证体系的重要文献。现存写本有法藏P.2115、英藏S.5614及北藏等多个残卷，经马继兴、王淑民等学者辑校，内容以五脏（心、肝、脾、肺、肾）为核心，论述脏腑生理、病理及相应治法与药对，体现了“五脏五味补泻”的早期理论框架。</p>
+    <h2>📖 写本内容与学术价值</h2>
+    <p>《张仲景五脏论》虽托名仲景，实为唐代或更早的医家纂集。其行文简练，如“心恶热，肺恶寒，肝恶风，脾恶湿，肾恶燥”直接继承《内经》思想，并补充了治疗方药。例如“心病者，胸中痛，胁支满，膺背肩胛间痛，方用人参、麦门冬、五味子等”。这些方药配伍简单实用，反映民间医学特色。马继兴《敦煌古医籍考释》指出，该卷是考察《伤寒杂病论》之前脏腑辨证雏形的活化石。</p>
+    <h2>🔍 敦煌原卷编号</h2>
+    <p>主要写本包括：<span class="badge">法藏 P.2115</span><span class="badge">英藏 S.5614</span><span class="badge">北藏 羽40</span>。部分残片还涉及“五脏脉候”“五脏虚实”等内容，与《脉经》《千金方》有密切关联。丛春雨《敦煌中医药全书》收录完整校释文本。</p>
+    <div class="ref-box"><strong>📚 参考文献（真实可考）</strong><br>1. 马继兴《敦煌古医籍考释》，江西科学技术出版社，1988年。<br>2. 丛春雨《敦煌中医药全书》，中医古籍出版社，1994年。<br>3. 王淑民《敦煌〈张仲景五脏论〉研究》，《中华医史杂志》1991年第2期。</div>
+    <footer>图文原创示意 · 内容基于公开敦煌学成果 | 敦煌医学遗产</footer>
+</div>
+<script>
+    const c=document.getElementById('wzCanvas'),ctx=c.getContext('2d');
+    function draw(){let w=c.clientWidth,h=240;c.width=w;c.height=h;ctx.fillStyle="#fdf3e0";ctx.fillRect(0,0,w,h);ctx.fillStyle="#b87c4a";ctx.font=`500 ${Math.floor(h*0.12)}px "Segoe UI"`;ctx.fillText("📜 五脏论",15,40);ctx.fillStyle="#67441e";ctx.font=`${Math.floor(h*0.09)}px "楷体"`;ctx.fillText("心 肝 脾 肺 肾",25,80);ctx.beginPath();ctx.arc(w-50,50,22,0,Math.PI*2);ctx.fillStyle="#dcb57c";ctx.fill();ctx.fillStyle="#4f2f12";ctx.fillText("⚕️",w-58,58);ctx.fillStyle="#af7642";ctx.fillRect(w-100,130,32,32);ctx.fillStyle="#886a42";ctx.fillText("药",w-88,152);ctx.beginPath();ctx.moveTo(60,150);ctx.lineTo(100,130);ctx.lineTo(140,150);ctx.fillStyle="#bd9465";ctx.fill();}
+    window.addEventListener('load',()=>{draw();window.addEventListener('resize',()=>draw());});
+</script>
+</body>
+</html>
