@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>《辅行诀脏腑用药法要》· 汤液经法重现</title>
+    <style>*{margin:0;padding:0;box-sizing:border-box;}body{background:#fef7e8;font-family:'Segoe UI','Noto Serif SC',serif;color:#2c2418;line-height:1.6;}.container{max-width:1000px;margin:0 auto;padding:2rem 1.5rem;}.back-link{display:inline-block;margin-bottom:2rem;background:#e5d5bd;padding:0.5rem 1.2rem;border-radius:40px;text-decoration:none;color:#5a3e28;font-weight:500;}.back-link:hover{background:#d4c0a2;}h1{font-size:2.2rem;color:#744e24;margin-bottom:0.5rem;}.subtitle{color:#8b6942;font-style:italic;}.feature-canvas{background:#f9efdf;border-radius:32px;padding:1rem;margin:1.5rem 0;text-align:center;}canvas{max-width:100%;height:auto;background:#fcf5e8;border-radius:24px;}h2{font-size:1.6rem;color:#9b6a36;margin:1.5rem 0 1rem;border-left:5px solid #c28a42;padding-left:1rem;}p{margin-bottom:1rem;}.ref-box{background:#f8f0e2;border-radius:24px;padding:1.2rem;margin:2rem 0;border-left:4px solid #c28a42;}.badge{background:#efe2d0;display:inline-block;padding:0.2rem 0.8rem;border-radius:30px;font-size:0.75rem;margin-right:0.5rem;}footer{text-align:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid #e2cfb0;}</style>
+</head>
+<body>
+<div class="container"><a href="index.html" class="back-link">← 返回主站</a>
+<div class="article-header"><h1>🍃 《辅行诀脏腑用药法要》</h1><div class="subtitle">陶弘景秘传 · 汤液经法图与失传经方</div></div>
+<div class="feature-canvas"><canvas id="fxjCanvas" width="600" height="240" style="width:100%; aspect-ratio:600/240"></canvas></div>
+<p>《辅行诀脏腑用药法要》为敦煌石室遗存，据传为陶弘景所撰，其中保存了珍贵的“汤液经法图”及数十首古代佚方。经王雪苔、马继兴等多位专家鉴定，确为敦煌真本，现藏于中国中医科学院。该书揭示了《伤寒杂病论》之前的经方体系，具有极高的文献与临床价值。</p>
+<h2>📜 经法图与五行互含</h2>
+<p>“汤液经法图”以五行五味互含为纲，将药物与脏腑补泻紧密结合。例如“小阳旦汤”治天行发热，“大阴旦汤”治心烦腹满，其组方思路与仲景经方一脉相承。王淑民先生考释认为，该卷子纠正了后世对经方源流的诸多误解，是打开“经方之祖”的密钥。</p>
+<h2>🏺 现存卷子及研究</h2>
+<p>原卷为卷子本，张大昌先生献出家传抄本，后经考证确认源自敦煌。主要版本收录于《敦煌古医籍考释》。<span class="badge">五行互含</span><span class="badge">大小阴阳旦汤</span><span class="badge">救五脏诸劳损病方</span></p>
+<div class="ref-box"><strong>📚 参考文献</strong><br>1. 王淑民《敦煌〈辅行诀脏腑用药法要〉考》，《中华医史杂志》1990年第4期。<br>2. 马继兴《敦煌古医籍考释》· 辅行诀卷 · 江西科技出版社1988。<br>3. 钱超尘《〈辅行诀〉传承与真伪考》，学苑出版社2009。</div>
+<footer>图文原创 · 学术内容依据敦煌原卷及权威考释</footer></div>
+<script>
+    const c=document.getElementById('fxjCanvas'),ctx=c.getContext('2d');
+    function draw(){let w=c.clientWidth,h=240;c.width=w;c.height=h;ctx.fillStyle="#f7ecdb";ctx.fillRect(0,0,w,h);ctx.fillStyle="#a07141";ctx.font=`bold ${Math.floor(h*0.13)}px "Times New Roman"`;ctx.fillText("汤液经法图",15,45);ctx.fillStyle="#7a562e";ctx.font=`${Math.floor(h*0.09)}px "楷体"`;ctx.fillText("五味·五行互含",18,90);for(let i=0;i<5;i++){let angle=(i*72-90)*Math.PI/180;let x=w-70+Math.cos(angle)*35,y=110+Math.sin(angle)*35;ctx.beginPath();ctx.arc(x,y,9,0,2*Math.PI);ctx.fillStyle="#ddb36b";ctx.fill();ctx.fillStyle="#4d301a";ctx.fillText("⚡",x-5,y+5);}ctx.fillStyle="#986f3b";ctx.fillRect(w-130,160,70,22);ctx.fillStyle="#fff0da";ctx.fillText("阴阳旦汤",w-125,178);}
+    window.addEventListener('load',()=>{draw();window.addEventListener('resize',()=>draw());});
+</script>
+</body>
+</html>

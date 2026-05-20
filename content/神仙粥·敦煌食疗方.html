@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>神仙粥·敦煌食疗方</title><style>*{margin:0;padding:0;box-sizing:border-box;}body{background:#fef7e8;font-family:'Segoe UI','Noto Serif SC',serif;}.container{max-width:1000px;margin:0 auto;padding:2rem 1.5rem;}.back-link{display:inline-block;margin-bottom:2rem;background:#e5d5bd;padding:0.5rem 1.2rem;border-radius:40px;text-decoration:none;color:#5a3e28;}.feature-canvas{background:#f9efdf;border-radius:32px;padding:1rem;margin:1.5rem 0;text-align:center;}canvas{max-width:100%;border-radius:24px;}h1{color:#744e24;}h2{color:#9b6a36;border-left:5px solid #c28a42;padding-left:1rem;margin:1.5rem 0 1rem;}.ref-box{background:#f8f0e2;border-radius:24px;padding:1.2rem;margin:2rem 0;border-left:4px solid #c28a42;}.badge{background:#efe2d0;display:inline-block;padding:0.2rem 0.8rem;border-radius:30px;}</style></head>
+<body><div class="container"><a href="index.html" class="back-link">← 返回主站</a>
+<div class="article-header"><h1>🍲 神仙粥 · 敦煌食疗方</h1><div class="subtitle">P.3810《呼吸静功妙诀》附方 · 药食同源智慧</div></div>
+<div class="feature-canvas"><canvas id="zhouCanvas" width="600" height="240" style="width:100%; aspect-ratio:600/240"></canvas></div>
+<p>敦煌写卷P.3810《呼吸静功妙诀》后附有“神仙粥”一方：“山药蒸熟，去皮；芡实煮熟，去壳；韭菜籽炒，研末；与粳米同煮粥，空心食之。” 此粥补肾益精、健脾养胃，反映唐代敦煌地区道医与食疗文化。此外S.76《食疗本草》残卷及多种药酒、枸杞煎方亦在敦煌出现，证明药食同源的理念在丝路广为流行。</p>
+<h2>🥣 配方与养生机理</h2>
+<p>神仙粥中山药补脾肺，芡实固肾涩精，韭菜籽温补肾阳，配粳米养胃，适合于虚劳、腰膝酸软者。丛春雨《敦煌中医药全书》认为这是唐宋时期服食养生的典型代表，与现代营养学倡导的植物性饮食不谋而合。</p>
+<h2>📜 相关写本</h2>
+<p><span class="badge">法藏 P.3810</span><span class="badge">英藏 S.76</span> 另有《枸杞煎方》《服地黄方》等，体现敦煌医方中浓厚的道家色彩。</p>
+<div class="ref-box"><strong>📚 参考文献</strong><br>1. 丛春雨《敦煌中医药全书》，中医古籍出版社1994年，食疗卷。<br>2. 王明《道家与敦煌养生文献》，《敦煌研究》2000年第3期。<br>3. 李应存《敦煌神仙粥方考释》，《甘肃中医》2005。</div>
+<footer>图文原创 · 基于敦煌食疗残卷</footer></div>
+<script>
+    const c=document.getElementById('zhouCanvas'),ctx=c.getContext('2d');
+    function draw(){let w=c.clientWidth,h=240;c.width=w;c.height=h;ctx.fillStyle="#fdf0de";ctx.fillRect(0,0,w,h);ctx.fillStyle="#b95f2a";ctx.font=`bold ${Math.floor(h*0.12)}px "楷体"`;ctx.fillText("神仙粥",15,45);ctx.fillStyle="#8b613c";ctx.font=`${Math.floor(h*0.09)}px "Segoe UI"`;ctx.fillText("山药 芡实 韭菜籽",20,90);ctx.beginPath();ctx.ellipse(300,110,55,30,0,0,Math.PI*2);ctx.fillStyle="#dbb57b";ctx.fill();ctx.fillStyle="#f9e5bf";ctx.beginPath();ctx.ellipse(300,100,48,22,0,0,Math.PI*2);ctx.fill();ctx.fillStyle="#af753d";ctx.fillText("🥣",285,112);ctx.fillRect(270,125,70,15);ctx.fillStyle="#6c4825";ctx.fillText("枸杞煎方",280,165);}
+    window.addEventListener('load',()=>{draw();window.addEventListener('resize',()=>draw());});
+</script>
+</body>
+</html>

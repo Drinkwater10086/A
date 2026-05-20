@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>《灸经图》· 敦煌灸法图谱</title><style>*{margin:0;padding:0;box-sizing:border-box;}body{background:#fef7e8;font-family:'Segoe UI','Noto Serif SC',serif;line-height:1.6;}.container{max-width:1000px;margin:0 auto;padding:2rem 1.5rem;}.back-link{display:inline-block;margin-bottom:2rem;background:#e5d5bd;padding:0.5rem 1.2rem;border-radius:40px;text-decoration:none;color:#5a3e28;}.back-link:hover{background:#d4c0a2;}h1{font-size:2.2rem;color:#744e24;}h2{font-size:1.6rem;color:#9b6a36;border-left:5px solid #c28a42;padding-left:1rem;margin:1.5rem 0 1rem;}.feature-canvas{background:#f9efdf;border-radius:32px;padding:1rem;margin:1.5rem 0;text-align:center;}canvas{max-width:100%;background:#fcf5e8;border-radius:24px;}.ref-box{background:#f8f0e2;border-radius:24px;padding:1.2rem;margin:2rem 0;border-left:4px solid #c28a42;}.badge{background:#efe2d0;display:inline-block;padding:0.2rem 0.8rem;border-radius:30px;font-size:0.75rem;margin-right:0.5rem;}footer{text-align:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid #e2cfb0;}</style></head>
+<body><div class="container"><a href="index.html" class="back-link">← 返回主站</a>
+<div class="article-header"><h1>🔥 《灸经图》· 敦煌灸法图谱</h1><div class="subtitle">英藏S.6168/S.6262 · 现存最早灸法明堂图</div></div>
+<div class="feature-canvas"><canvas id="jiuCanvas" width="600" height="240" style="width:100%; aspect-ratio:600/240"></canvas></div>
+<p>敦煌《灸经图》残卷（编号S.6168、S.6262）是现存最早的灸法图谱专篇，卷中绘有明堂人形图，标注腧穴位置及主治病症，如“堂中”“颊车髓孔”“风市”等唐代民间灸穴，用于治疗半身不遂、风痫、腰痛等。其图文并茂的形式比宋明灸图更为古朴，体现了唐代民间针灸的真实水平。</p>
+<h2>📌 内容特色与临床价值</h2>
+<p>《灸经图》将腧穴与病症直接对应，例如“灸风痫法：灸鼻柱上一穴，又灸两耳上卷耳取之……”。取穴方法简捷实用，且部分穴名为后世医籍罕见，具有独特的文献价值。黄龙祥教授在《中国针灸学术史大纲》中高度评价该图是探究唐代针灸标准化前多样化生态的重要遗存。</p>
+<h2>🏺 原卷信息</h2>
+<p><span class="badge">英藏 S.6168</span><span class="badge">英藏 S.6262</span> 两段残片可缀合，现藏于大英图书馆。与敦煌其他针灸写本《新集备急灸经》共同构成唐代灸法体系。</p>
+<div class="ref-box"><strong>📚 参考文献</strong><br>1. 黄龙祥《中国针灸学术史大纲》，华夏出版社2001年，第五章“敦煌针灸文献”。<br>2. 马继兴《敦煌医药文献辑校》，江苏古籍出版社1998。<br>3. 王雪苔《〈灸经图〉考释》，《针灸临床杂志》1995。</div>
+<footer>图文原创 · 依据敦煌原卷学术成果</footer></div>
+<script>
+    const c=document.getElementById('jiuCanvas'),ctx=c.getContext('2d');
+    function draw(){let w=c.clientWidth,h=240;c.width=w;c.height=h;ctx.fillStyle="#f4e9d8";ctx.fillRect(0,0,w,h);ctx.fillStyle="#925e2c";ctx.font=`bold ${Math.floor(h*0.12)}px "KaiTi"`;ctx.fillText("灸经图",15,40);ctx.beginPath();ctx.moveTo(80,65);ctx.lineTo(130,40);ctx.lineTo(180,65);ctx.lineTo(180,160);ctx.lineTo(80,160);ctx.fillStyle="#e2cdaf";ctx.fill();for(let i=0;i<5;i++){ctx.beginPath();ctx.arc(130,75+i*18,6,0,2*Math.PI);ctx.fillStyle="#d4954b";ctx.fill();ctx.fillStyle="#2f2113";ctx.fillText("穴",126,79+i*18);}ctx.fillStyle="#c29357";ctx.fillRect(260,55,70,100);ctx.fillStyle="#fff8ed";ctx.fillText("明堂图",275,95);ctx.fillText("灸风痫",275,135);}
+    window.addEventListener('load',()=>{draw();window.addEventListener('resize',()=>draw());});
+</script>
+</body>
+</html>

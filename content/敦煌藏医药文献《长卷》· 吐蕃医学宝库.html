@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>敦煌藏医药文献《长卷》· 吐蕃医学宝库</title><style>*{margin:0;padding:0;box-sizing:border-box;}body{background:#fef7e8;font-family:'Segoe UI','Noto Serif SC',serif;}.container{max-width:1000px;margin:0 auto;padding:2rem 1.5rem;}.back-link{display:inline-block;margin-bottom:2rem;background:#e5d5bd;padding:0.5rem 1.2rem;border-radius:40px;text-decoration:none;color:#5a3e28;}.feature-canvas{background:#f9efdf;border-radius:32px;padding:1rem;margin:1.5rem 0;text-align:center;}canvas{max-width:100%;background:#fcf5e8;border-radius:24px;}h1{color:#744e24;}h2{color:#9b6a36;border-left:5px solid #c28a42;padding-left:1rem;margin:1.5rem 0 1rem;}.ref-box{background:#f8f0e2;border-radius:24px;padding:1.2rem;margin:2rem 0;border-left:4px solid #c28a42;}.badge{background:#efe2d0;display:inline-block;padding:0.2rem 0.8rem;border-radius:30px;font-size:0.75rem;}</style></head>
+<body><div class="container"><a href="index.html" class="back-link">← 返回主站</a>
+<div class="article-header"><h1>🏔️ 敦煌藏医药文献《长卷》</h1><div class="subtitle">P.T.127 / IOL Tib J756 · 医马经与三因学说</div></div>
+<div class="feature-canvas"><canvas id="zangCanvas" width="600" height="240" style="width:100%; aspect-ratio:600/240"></canvas></div>
+<p>敦煌藏文写卷中保存了大量吐蕃时期的医药文献，其中P.T.127（法藏）、IOL Tib J756（英藏）记录《医疗术》《医马经》等内容，反映了公元8-9世纪藏族医学与汉地、印度医学的交融。这些文献是藏医学“三因学说”（隆、赤巴、培根）的早期雏形，同时包含外科疗法、药物方剂及兽医内容。</p>
+<h2>📜 医马经与特色疗法</h2>
+<p>《医马经》详细记载了马匹疾病的诊断与治疗，使用诃子、酥油、藏红花等药物，体现了游牧民族的医疗智慧。而《长卷》中的人体医疗部分则论及热病、中风、胃病等，方药多与汉地《千金方》相似，是丝路医学交流的铁证。罗秉芬《敦煌本吐蕃医学文献选编》有完整译释。</p>
+<h2>🏺 重要编号</h2>
+<p><span class="badge">P.T.127</span><span class="badge">IOL Tib J756</span><span class="badge">Or.8212 (S. 756)</span> 藏文写本，现藏巴黎、伦敦。</p>
+<div class="ref-box"><strong>📚 参考文献</strong><br>1. 罗秉芬《敦煌本吐蕃医学文献选编》，民族出版社2002年。<br>2. 蔡景峰《藏族医学史》，科学出版社1995。<br>3. 陈明《敦煌出土吐蕃医学文献研究》，《敦煌学辑刊》2008。</div>
+<footer>图文原创 · 基于真实敦煌藏文卷子成果</footer></div>
+<script>
+    const c=document.getElementById('zangCanvas'),ctx=c.getContext('2d');
+    function draw(){let w=c.clientWidth,h=240;c.width=w;c.height=h;ctx.fillStyle="#f2e5d2";ctx.fillRect(0,0,w,h);ctx.fillStyle="#6c4f28";ctx.font=`${Math.floor(h*0.12)}px "Segoe UI"`;ctx.fillText("🏔️ 藏医长卷",15,42);ctx.fillStyle="#a16531";ctx.font=`italic ${Math.floor(h*0.09)}px "楷体"`;ctx.fillText("三因学说",25,90);ctx.fillStyle="#c28245";ctx.fillRect(290,75,55,55);ctx.fillStyle="#fcf3e1";ctx.fillText("རྒྱུད་བཞི",295,110);ctx.fillStyle="#a55d2a";ctx.fillText("医马经",305,150);ctx.beginPath();ctx.moveTo(50,150);ctx.lineTo(80,120);ctx.lineTo(110,150);ctx.fillStyle="#cd9a60";ctx.fill();ctx.fillStyle="#6b4423";ctx.fillText("诃子 酥油",45,190);}
+    window.addEventListener('load',()=>{draw();window.addEventListener('resize',()=>draw());});
+</script>
+</body>
+</html>
