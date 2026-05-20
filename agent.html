@@ -98,11 +98,9 @@
         }
         
         /* ========= 响应式样式：兼容手机、平板、桌面 ========= */
-        /* 基础消息气泡最大宽度 */
         .message-container .flex {
             max-width: 100%;
         }
-        /* 助手和用户消息气泡宽度自适应 */
         .message-container .flex .max-w-\[90\%\] {
             max-width: 85%;
         }
@@ -116,7 +114,6 @@
                 max-width: 70%;
             }
         }
-        /* 手机横屏或小屏手机 (<=480px) */
         @media (max-width: 480px) {
             .message-container .flex .max-w-\[90\%\] {
                 max-width: 92%;
@@ -148,7 +145,6 @@
                 height: 32px;
             }
         }
-        /* 超小屏 (<=380px) 进一步紧凑 */
         @media (max-width: 380px) {
             header .flex.items-center {
                 gap: 0.5rem;
@@ -162,13 +158,11 @@
                 height: 28px;
             }
         }
-        /* 平板竖屏 */
         @media (min-width: 768px) and (max-width: 1023px) {
             .message-container .flex .max-w-\[90\%\] {
                 max-width: 75%;
             }
         }
-        /* 横屏模式优化 */
         @media (orientation: landscape) and (max-height: 500px) {
             header {
                 padding-top: 4px;
@@ -184,7 +178,6 @@
                 margin-top: 0;
             }
         }
-        /* 调整卡片背景透明度保持可读 */
         header {
             background-color: rgba(255, 255, 255, 0.85) !important;
             backdrop-filter: blur(4px);
@@ -211,9 +204,8 @@
         .typing-indicator span {
             background-color: #6b7280;
         }
-        /* 输入框textarea自动适应高度 */
         textarea {
-            font-size: 16px; /* 避免iOS缩放 */
+            font-size: 16px;
         }
     </style>
 </head>
@@ -417,11 +409,10 @@
                 const userConfig = ref({ apiBase: DEFAULT_API_BASE, apiKey: DEFAULT_API_KEY });
                 const isApiReady = ref(true);
 
-                // ---------- 语音播报增强版 ----------
+                // ---------- 语音播报 ----------
                 let currentUtterance = null;
-                let speechAllowed = false;  // 是否已获得用户交互授权
+                let speechAllowed = false;
 
-                // 停止播报
                 const stopSpeaking = () => {
                     if (window.speechSynthesis) {
                         window.speechSynthesis.cancel();
@@ -429,18 +420,13 @@
                     currentUtterance = null;
                 };
 
-                // 语音播报（兼容自动播放策略 + 等待语音引擎）
                 const speakMessage = async (msg) => {
                     if (!msg || !msg.content) return;
-
-                    // 检查是否支持语音
                     if (!window.speechSynthesis) {
                         errorMsg.value = '您的浏览器不支持语音播报功能。';
                         setTimeout(() => { errorMsg.value = ''; }, 3000);
                         return;
                     }
-
-                    // 如果用户尚未通过点击“启用语音”，则提示并拒绝
                     if (!speechAllowed) {
                         if (!localStorage.getItem('speech_warning_shown')) {
                             errorMsg.value = '🔊 浏览器安全策略限制，请点击页面任意位置后重试语音按钮。';
@@ -449,66 +435,48 @@
                         }
                         return;
                     }
-
-                    // 停止当前正在播放的语音
                     stopSpeaking();
-
                     const text = msg.role === 'assistant' ? markdownToPlainText(msg.content) : msg.content;
                     if (!text.trim()) return;
-
-                    // 等待语音引擎就绪（voices 列表加载完成）
                     const speakWithRetry = () => {
                         const voices = window.speechSynthesis.getVoices();
                         if (voices.length === 0) {
-                            // 语音包尚未加载，等待 100ms 后重试
                             setTimeout(speakWithRetry, 100);
                             return;
                         }
-
                         const utterance = new SpeechSynthesisUtterance(text);
                         utterance.lang = 'zh-CN';
                         utterance.rate = 1.0;
                         utterance.pitch = 1.0;
                         utterance.volume = 1.0;
-
-                        utterance.onend = () => {
-                            currentUtterance = null;
-                        };
+                        utterance.onend = () => { currentUtterance = null; };
                         utterance.onerror = (event) => {
                             console.error('语音播报错误:', event.error);
                             currentUtterance = null;
                             if (event.error === 'not-allowed') {
                                 errorMsg.value = '🔊 请先点击页面任意位置，再尝试语音播报。';
                                 setTimeout(() => { errorMsg.value = ''; }, 3000);
-                            } else if (event.error === 'interrupted' || event.error === 'canceled') {
-                                // 用户手动停止，不显示错误
-                            } else {
+                            } else if (event.error !== 'interrupted' && event.error !== 'canceled') {
                                 errorMsg.value = '语音播报失败，请重试。';
                                 setTimeout(() => { errorMsg.value = ''; }, 2000);
                             }
                         };
-
                         currentUtterance = utterance;
                         window.speechSynthesis.speak(utterance);
                     };
-
                     speakWithRetry();
                 };
 
-                // 用户首次交互时启用语音权限（解除自动播放限制）
                 const enableSpeechAfterUserInteraction = () => {
                     if (speechAllowed) return;
                     speechAllowed = true;
-                    console.log('语音播报已启用（用户已交互）');
-                    // 可选：显示一次成功提示
                     errorMsg.value = '🔊 语音播报已启用，可正常使用。';
                     setTimeout(() => { errorMsg.value = ''; }, 2000);
-                    // 移除监听器，避免重复触发
                     document.removeEventListener('click', enableSpeechAfterUserInteraction);
                     document.removeEventListener('touchstart', enableSpeechAfterUserInteraction);
                 };
 
-                // ---------- 其余原有函数保持不变 ----------
+                // ---------- 核心功能 ----------
                 const initDevice = () => {
                     const prefix = getStoragePrefix();
                     const savedBase = localStorage.getItem(prefix + 'apiBase');
@@ -528,7 +496,6 @@
 
                     const storedConvId = localStorage.getItem(prefix + 'conversationId');
                     conversationId.value = storedConvId || '';
-
                     const storedUserId = localStorage.getItem(prefix + 'userId');
                     if (storedUserId) {
                         userId.value = storedUserId;
@@ -580,8 +547,7 @@
                     inputMessage.value = '';
                     scrollToBottom();
 
-                    const assistantId = Date.now()+'-assistant';
-                    messages.value.push({ id: assistantId, role: 'assistant', content: '' });
+                    messages.value.push({ id: Date.now()+'-assistant', role: 'assistant', content: '' });
                     scrollToBottom();
 
                     const apiBase = userConfig.value.apiBase.replace(/\/$/, '');
@@ -680,28 +646,52 @@
                     window.location.href = 'https://drinkwater10086.github.io/A/index.html';
                 };
 
+                // ---------- 新增：接收体质测试结果并填入输入框 ----------
+                const loadResultFromUrl = () => {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const resultParam = urlParams.get('result');
+                    if (resultParam) {
+                        try {
+                            const decoded = decodeURIComponent(resultParam);
+                            if (decoded && decoded.trim()) {
+                                inputMessage.value = decoded;
+                                // 可选：自动聚焦或显示提示
+                                errorMsg.value = '✨ 已加载体质辨识结果，可点击发送咨询康养顾问。';
+                                setTimeout(() => { errorMsg.value = ''; }, 3000);
+                                // 自动将光标移到输入框末尾
+                                nextTick(() => {
+                                    const textarea = document.querySelector('textarea');
+                                    if (textarea) {
+                                        textarea.focus();
+                                        textarea.setSelectionRange(decoded.length, decoded.length);
+                                    }
+                                });
+                            }
+                        } catch(e) {
+                            console.warn('解析result参数失败', e);
+                        }
+                    }
+                };
+
                 watch([messages, conversationId], () => {
                     if (!isStreaming.value) saveMessagesToLocal();
                 }, { deep: true });
 
                 onMounted(() => {
                     initDevice();
-
-                    // 绑定全局交互监听，用户首次点击/触摸页面任意位置后启用语音
+                    // 监听用户交互以启用语音
                     document.addEventListener('click', enableSpeechAfterUserInteraction);
                     document.addEventListener('touchstart', enableSpeechAfterUserInteraction);
-
-                    // 监听 voiceschanged 事件，确保语音包加载完成后可以立即播放
                     if (window.speechSynthesis) {
                         window.speechSynthesis.onvoiceschanged = () => {
                             console.log('语音包已就绪');
                         };
                     }
-
-                    // 检测浏览器是否支持语音
                     if (!window.speechSynthesis) {
                         errorMsg.value = '您的浏览器不支持语音播报功能，请升级或更换浏览器。';
                     }
+                    // 处理URL参数中的体质结果
+                    loadResultFromUrl();
                 });
 
                 return {
