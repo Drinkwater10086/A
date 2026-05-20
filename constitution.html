@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>敦煌医学·九种体质辨识 | 灵蕴敦煌 康养本源</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* 虚化背景，敦煌壁画质感 */
+        body {
+            position: relative;
+            background-color: #2e241f;
+        }
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://picsum.photos/id/104/1920/1080');
+            background-size: cover;
+            background-position: center;
+            filter: blur(14px);
+            transform: scale(1.05);
+            z-index: -2;
+            pointer-events: none;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(20, 12, 8, 0.55);
+            z-index: -1;
+        }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #e9dbc3; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #b96f3a; border-radius: 10px; }
+        .question-card {
+            transition: all 0.2s ease;
+            background: rgba(255, 248, 235, 0.92);
+            backdrop-filter: blur(2px);
+        }
+        .question-card:hover {
+            background: rgba(255, 248, 235, 0.98);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        .dunhuang-border {
+            border-left: 4px solid #c27e4a;
+        }
+        .btn-dunhuang {
+            background: linear-gradient(135deg, #b9692c 0%, #8b411c 100%);
+            transition: transform 0.1s ease;
+        }
+        .btn-dunhuang:active { transform: scale(0.97); }
+        .result-card {
+            background: rgba(255, 250, 240, 0.96);
+            backdrop-filter: blur(4px);
+        }
+        .radio-group label {
+            transition: all 0.1s;
+            cursor: pointer;
+        }
+        .radio-group input:checked + span {
+            background-color: #c27e4a;
+            border-color: #c27e4a;
+            color: white;
+        }
+        @media (max-width: 640px) {
+            .radio-group label span {
+                font-size: 0.7rem;
+                padding: 0.2rem 0.4rem;
+            }
+        }
+    </style>
+</head>
+<body class="font-serif antialiased">
+
+<div class="container mx-auto px-4 py-6 max-w-6xl">
+    <!-- 敦煌题记 -->
+    <div class="text-center mb-6">
+        <div class="inline-block bg-amber-900/60 backdrop-blur rounded-2xl px-6 py-2 shadow-lg">
+            <h1 class="text-3xl md:text-4xl font-bold text-amber-50 tracking-wide"><i class="fas fa-landmark mr-2 text-amber-300"></i>敦煌医学·灵枢体质辨</h1>
+            <p class="text-amber-100 text-sm md:text-base mt-1">依王琦60条目《中医体质量表》· 融敦煌养生智慧</p>
+        </div>
+    </div>
+
+    <!-- 测试主表单 -->
+    <div class="bg-white/30 backdrop-blur-sm rounded-3xl shadow-2xl p-4 md:p-6 mb-8">
+        <div class="flex items-center gap-3 mb-5 border-b border-amber-300/50 pb-3">
+            <i class="fas fa-feather-alt text-3xl text-amber-800"></i>
+            <div>
+                <h2 class="text-2xl font-bold text-stone-800">九种体质辨察（完整60问）</h2>
+                <p class="text-stone-600 text-sm">依据近一年真实感受选择，每题按程度评分（1→5分：没有→总是）</p>
+            </div>
+        </div>
+        <form id="constitutionForm">
+            <div id="questionsContainer" class="space-y-6"></div>
+            <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+                <button type="button" id="submitBtn" class="btn-dunhuang text-white font-bold py-3 px-8 rounded-full shadow-lg text-lg flex items-center justify-center gap-2 transition hover:opacity-90">
+                    <i class="fas fa-stethoscope"></i> 辨体明质 · 获取结果
+                </button>
+                <button type="button" id="resetBtn" class="bg-amber-700/70 hover:bg-amber-800 text-white font-semibold py-3 px-6 rounded-full shadow flex items-center gap-2 transition">
+                    <i class="fas fa-undo-alt"></i> 重置问卷
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- 结果展示区 + 敦煌特色导引 -->
+    <div id="resultArea" class="result-card rounded-2xl p-5 md:p-6 shadow-xl border border-amber-200/80 hidden transition-all">
+        <div class="flex flex-wrap items-center gap-3 border-b border-amber-200 pb-3 mb-4">
+            <i class="fas fa-dragon text-3xl text-amber-700"></i>
+            <h3 class="text-2xl font-bold text-stone-800">✨ 敦煌 · 体质箴言</h3>
+            <span class="text-xs bg-amber-100 px-3 py-1 rounded-full text-amber-800">融合《明堂五脏论》古法</span>
+        </div>
+        <div id="resultContent" class="space-y-4 text-stone-700"></div>
+        <div class="mt-6 flex flex-wrap gap-4 justify-between items-center">
+            <div class="text-sm text-stone-500 bg-amber-50/70 p-2 rounded-lg"><i class="fas fa-scroll mr-1"></i> 禀赋承古，颐养天真</div>
+            <button id="toConsultBtn" class="bg-amber-800 hover:bg-amber-900 text-white font-bold py-3 px-7 rounded-full shadow-md transition flex items-center gap-2 text-lg">
+                <i class="fas fa-comment-medical"></i> 敦煌康养顾问 · 携质问询
+                <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+    
+    <footer class="mt-10 text-center text-amber-100 text-xs py-4 rounded-xl">
+        <i class="fas fa-leaf"></i> 基于王琦60条目中医体质量表 · 敦煌医学启发调养  |  本结果仅供健康参考，不构成医学诊断
+    </footer>
+</div>
+
+<script>
+    // --------------------------------------------------------------
+    // 完整60条目 (依据原版中医体质量表docx + 国家标准体质分类)
+    // 每条归属体质 & 是否逆向计分
+    // --------------------------------------------------------------
+    const QUESTIONS = [
+        // 平和质关联 (核心3条)
+        { id: "q1", text: "您精力充沛吗？", category: "pinghe", reverse: false, catName: "平和质" },
+        { id: "q2", text: "您容易疲乏吗？", category: "pinghe", reverse: true, catName: "平和质" },
+        { id: "q53", text: "您应变能力强，能适应外界环境的各种变化吗？", category: "pinghe", reverse: false, catName: "平和质" },
+        // 气虚质条目
+        { id: "q2_qi", text: "您容易疲乏吗？", category: "qixu", reverse: false, catName: "气虚质" },
+        { id: "q3", text: "您容易气短（呼吸短促，接不上气）吗？", category: "qixu", reverse: false, catName: "气虚质" },
+        { id: "q4", text: "您容易心慌吗？", category: "qixu", reverse: false, catName: "气虚质" },
+        { id: "q5", text: "您容易头晕或站起时晕眩吗？", category: "qixu", reverse: false, catName: "气虚质" },
+        { id: "q6", text: "您喜欢安静、懒得说话吗？", category: "qixu", reverse: false, catName: "气虚质" },
+        { id: "q7", text: "您说话声音低弱无力吗？", category: "qixu", reverse: false, catName: "气虚质" },
+        { id: "q8", text: "您容易忘事吗？", category: "qixu", reverse: false, catName: "气虚质" },
+        // 阳虚质条目
+        { id: "q18", text: "您手脚发凉吗？", category: "yangxu", reverse: false, catName: "阳虚质" },
+        { id: "q19", text: "您胃脘部、背部或腰膝部怕冷吗？", category: "yangxu", reverse: false, catName: "阳虚质" },
+        { id: "q20", text: "您感到怕冷、衣服比别人穿得多吗？", category: "yangxu", reverse: false, catName: "阳虚质" },
+        { id: "q22", text: "您比一般人耐受不了寒冷（冬天的寒冷或夏天的冷空调、电扇等）吗？", category: "yangxu", reverse: false, catName: "阳虚质" },
+        { id: "q52", text: "您吃（喝）凉的东西会感到不舒服或者怕吃（喝）凉的吗？", category: "yangxu", reverse: false, catName: "阳虚质" },
+        // 阴虚质条目
+        { id: "q17", text: "您感到手脚心发热吗？", category: "yinxu", reverse: false, catName: "阴虚质" },
+        { id: "q21", text: "您感到身体、脸上发热吗？", category: "yinxu", reverse: false, catName: "阴虚质" },
+        { id: "q29", text: "您口唇干燥吗？", category: "yinxu", reverse: false, catName: "阴虚质" },
+        { id: "q35", text: "您的口唇比一般人红吗？", category: "yinxu", reverse: false, catName: "阴虚质" },
+        { id: "q38", text: "您面部两颧潮红或偏红吗？", category: "yinxu", reverse: false, catName: "阴虚质" },
+        { id: "q44", text: "您感到眼睛干涩吗？", category: "yinxu", reverse: false, catName: "阴虚质" },
+        { id: "q46", text: "您感到口干咽燥、总想喝水吗？", category: "yinxu", reverse: false, catName: "阴虚质" },
+        // 痰湿质条目
+        { id: "q16", text: "您感到身体沉重不轻松或不爽快吗？", category: "tanshi", reverse: false, catName: "痰湿质" },
+        { id: "q28", text: "您容易出粘汗（汗出粘腻不爽）吗？", category: "tanshi", reverse: false, catName: "痰湿质" },
+        { id: "q39", text: "您面部或鼻部有油腻感或者油亮发光吗？", category: "tanshi", reverse: false, catName: "痰湿质" },
+        { id: "q49", text: "您嘴里有粘粘的感觉吗？", category: "tanshi", reverse: false, catName: "痰湿质" },
+        { id: "q50", text: "您舌苔厚腻或有舌苔厚厚的感觉吗？", category: "tanshi", reverse: false, catName: "痰湿质" },
+        { id: "q51", text: "您平素痰多，特别是常感到咽喉部有痰块吗？", category: "tanshi", reverse: false, catName: "痰湿质" },
+        { id: "q56", text: "您大便粘滞不爽、有解不尽的感觉吗？", category: "tanshi", reverse: false, catName: "痰湿质" },
+        { id: "q58", text: "您腹部肥满松软吗？", category: "tanshi", reverse: false, catName: "痰湿质" },
+        // 湿热质条目
+        { id: "q14", text: "您感到胸闷或腹部胀满吗？", category: "shire", reverse: false, catName: "湿热质" },
+        { id: "q41", text: "您易生痤疮或疮疖吗？", category: "shire", reverse: false, catName: "湿热质" },
+        { id: "q48", text: "您感到口苦或嘴里有异味吗？", category: "shire", reverse: false, catName: "湿热质" },
+        { id: "q59", text: "您小便时尿道有发热感、尿色浓（深）吗？", category: "shire", reverse: false, catName: "湿热质" },
+        { id: "q60_f", text: "您带下色黄（白带颜色发黄）吗？（女性回答）", category: "shire", reverse: false, catName: "湿热质" },
+        { id: "q60_m", text: "您的阴囊潮湿多汗吗？（男性回答）", category: "shire", reverse: false, catName: "湿热质" },
+        // 血瘀质条目
+        { id: "q33", text: "您的皮肤常在不知不觉中出现乌青或青紫瘀斑（皮下出血）吗？", category: "xueyu", reverse: false, catName: "血瘀质" },
+        { id: "q34", text: "您的皮肤一抓就红，并出现抓痕吗？", category: "xueyu", reverse: false, catName: "血瘀质" },
+        { id: "q36", text: "您的皮肤粗糙吗？", category: "xueyu", reverse: false, catName: "血瘀质" },
+        { id: "q37", text: "您身体上有哪里疼痛吗？", category: "xueyu", reverse: false, catName: "血瘀质" },
+        { id: "q40", text: "您面色晦暗，或容易出现暗斑吗？", category: "xueyu", reverse: false, catName: "血瘀质" },
+        { id: "q43", text: "您容易有黑眼圈吗？", category: "xueyu", reverse: false, catName: "血瘀质" },
+        { id: "q45", text: "您口唇颜色偏暗吗？", category: "xueyu", reverse: false, catName: "血瘀质" },
+        // 气郁质条目
+        { id: "q9", text: "您感到闷闷不乐、情绪低沉吗？", category: "qiyu", reverse: false, catName: "气郁质" },
+        { id: "q10", text: "您容易精神紧张、焦虑不安吗？", category: "qiyu", reverse: false, catName: "气郁质" },
+        { id: "q11", text: "您多愁善感、感情脆弱吗？", category: "qiyu", reverse: false, catName: "气郁质" },
+        { id: "q12", text: "您容易感到害怕或受到惊吓吗？", category: "qiyu", reverse: false, catName: "气郁质" },
+        { id: "q13", text: "您肋胁部或乳房胀痛吗？", category: "qiyu", reverse: false, catName: "气郁质" },
+        { id: "q15", text: "您无缘无故叹气吗？", category: "qiyu", reverse: false, catName: "气郁质" },
+        { id: "q47", text: "您咽喉部有异物感，且吐之不出、咽之不下吗？", category: "qiyu", reverse: false, catName: "气郁质" },
+        // 特禀质条目
+        { id: "q23", text: "您比别人容易患感冒吗？", category: "tebing", reverse: false, catName: "特禀质" },
+        { id: "q24", text: "您不是感冒也会打喷嚏吗？", category: "tebing", reverse: false, catName: "特禀质" },
+        { id: "q25", text: "您不是感冒也会鼻塞、流鼻涕吗？", category: "tebing", reverse: false, catName: "特禀质" },
+        { id: "q26", text: "您有因季节变化、温度变化或异味等原因而咳喘的现象吗？", category: "tebing", reverse: false, catName: "特禀质" },
+        { id: "q30", text: "您容易过敏（药物、食物、气味、花粉、季节等）吗？", category: "tebing", reverse: false, catName: "特禀质" },
+        { id: "q31", text: "您的皮肤容易起荨麻疹（风团、风疹块、风疙瘩）吗？", category: "tebing", reverse: false, catName: "特禀质" },
+        { id: "q32", text: "您的皮肤因过敏出现过紫癜（紫红色瘀点、瘀斑）吗？", category: "tebing", reverse: false, catName: "特禀质" },
+        // 补充条目
+        { id: "q27", text: "您活动量稍大就容易汗出伴气短乏力吗？", category: "qixu", reverse: false, catName: "气虚质" },
+        { id: "q42", text: "您上眼睑比别人肿（上眼睑有轻微隆起的现象）吗？", category: "tanshi", reverse: false, catName: "痰湿质" },
+        { id: "q54", text: "您容易失眠吗？", category: "yinxu", reverse: false, catName: "阴虚质" },
+        { id: "q55", text: "您受凉或吃（喝）凉的东西后，容易腹泻、拉肚子吗？", category: "yangxu", reverse: false, catName: "阳虚质" },
+        { id: "q57", text: "您容易便秘或大便干燥吗？", category: "yinxu", reverse: false, catName: "阴虚质" }
+    ];
+
+    // 体质类别映射
+    const CATEGORY_MAP = {
+        pinghe: { name: "平和质", itemCount: 3 },
+        qixu: { name: "气虚质", itemCount: 9 },
+        yangxu: { name: "阳虚质", itemCount: 6 },
+        yinxu: { name: "阴虚质", itemCount: 9 },
+        tanshi: { name: "痰湿质", itemCount: 9 },
+        shire: { name: "湿热质", itemCount: 6 },
+        xueyu: { name: "血瘀质", itemCount: 7 },
+        qiyu: { name: "气郁质", itemCount: 7 },
+        tebing: { name: "特禀质", itemCount: 7 }
+    };
+    // 更新实际条目个数
+    function updateItemCounts() {
+        for(let cat in CATEGORY_MAP) {
+            let count = QUESTIONS.filter(q => q.category === cat).length;
+            if(count > 0) CATEGORY_MAP[cat].itemCount = count;
+        }
+    }
+    updateItemCounts();
+
+    // 获取某类别原始分（处理逆向）
+    function getCategoryRawScore(category, answers) {
+        let total = 0;
+        QUESTIONS.forEach(q => {
+            if (q.category === category) {
+                let val = answers[q.id];
+                if (val === undefined) val = 1;
+                if (q.reverse) val = 6 - val;
+                total += val;
+            }
+        });
+        return total;
+    }
+
+    function computeTransformScore(rawScore, itemCount) {
+        if (itemCount === 0) return 0;
+        return ((rawScore - itemCount) / (itemCount * 4)) * 100;
+    }
+
+    function getPingheStatus(pingheScore, otherScoresArray) {
+        const allLess30 = otherScoresArray.every(s => s < 30);
+        const allLess40 = otherScoresArray.every(s => s < 40);
+        if (pingheScore >= 60 && allLess30) return "是";
+        if (pingheScore >= 60 && allLess40) return "基本是";
+        return "否";
+    }
+
+    function getPiandaoStatus(score) {
+        if (score >= 40) return "是";
+        if (score >= 30 && score < 40) return "倾向是";
+        return "否";
+    }
+
+    function getMainConstitution(pingheStatus, pingheScore, piandaoDetails) {
+        const activePiandao = piandaoDetails.filter(p => p.status === "是");
+        if (pingheStatus === "是" && activePiandao.length === 0) {
+            return { name: "平和质", key: "pinghe", score: pingheScore, desc: "阴阳气血调和，体态适中，精力充沛" };
+        }
+        if (activePiandao.length > 0) {
+            const main = activePiandao.reduce((max,cur) => cur.score > max.score ? cur : max, activePiandao[0]);
+            return { name: main.name, key: main.key, score: main.score, desc: `偏颇倾向，${main.name}特征为主` };
+        }
+        const tendency = piandaoDetails.filter(p => p.status === "倾向是");
+        if (tendency.length > 0) {
+            const mainTen = tendency.reduce((max,cur) => cur.score > max.score ? cur : max, tendency[0]);
+            return { name: mainTen.name, key: mainTen.key, score: mainTen.score, desc: `倾向${mainTen.name}，注意调理` };
+        }
+        if (pingheStatus === "基本是") {
+            return { name: "平和质", key: "pinghe", score: pingheScore, desc: "总体平和，略有偏颇倾向" };
+        }
+        if (piandaoDetails.length) {
+            const highest = piandaoDetails.reduce((max,cur) => cur.score > max.score ? cur : max, piandaoDetails[0]);
+            return { name: highest.name, key: highest.key, score: highest.score, desc: `${highest.name}倾向初显，宜及早调养` };
+        }
+        return { name: "平和质待定", key: "pinghe", score: 50, desc: "请重新细致测评" };
+    }
+
+    function getDunhuangAdvice(mainConstitution) {
+        const advMap = {
+            "平和质": "敦煌《呼吸静功妙诀》推崇“恬淡虚无”，可习八段锦、食“神仙粥”巩固正气。顺应四时，享沙州之寿。",
+            "气虚质": "源自敦煌大补脾汤智慧，当“实脾调气血”，宜黄芪、山药食养，常做敦煌导引术“升阳益气式”，忌过劳。",
+            "阳虚质": "敦煌医理曰“阳主卫外”，宜艾灸关元、命门，服食肉桂生姜，晨起攀三危山日华以壮阳气。",
+            "阴虚质": "禀赋阴亏，效法敦煌“养阴润燥法”，多食百合、麦冬，静坐鸣天鼓，忌熬夜，月牙泉侧涵养真阴。",
+            "痰湿质": "壁画行脚僧导引启示：宜少食肥甘，佩兰、薏米代茶饮，勤习“祛痰消脂功”，步履鸣沙山助运化。",
+            "湿热质": "敦煌古方采“泻黄散”意，食绿豆、赤小豆，避免暑湿，可习敦煌莲花坐减烦热。",
+            "血瘀质": "“通则不痛”，仿敦煌经脉理论，服山楂、玫瑰，导引按跷疏经络，宜常沐阳关暖阳。",
+            "气郁质": "敦煌《明堂五脏论》言肝喜条达，饮佛手柑、合欢花茶，登鸣沙山远眺，疏解郁结。",
+            "特禀质": "禀赋不耐，择敦煌“甘草调和法”，黄芪固表，避开致敏原，常习腹式呼吸安肺气。"
+        };
+        return advMap[mainConstitution.name] || "调摄阴阳，法于自然，敦煌养生智慧伴您康宁。";
+    }
+
+    // 渲染60个题目分组
+    function renderQuestions() {
+        const container = document.getElementById('questionsContainer');
+        if(!container) return;
+        const groupOrder = [
+            "平和质", "气虚质", "阳虚质", "阴虚质", "痰湿质", "湿热质", "血瘀质", "气郁质", "特禀质"
+        ];
+        let html = '';
+        groupOrder.forEach(groupName => {
+            const catKey = Object.keys(CATEGORY_MAP).find(k => CATEGORY_MAP[k].name === groupName);
+            if(!catKey) return;
+            const groupQuestions = QUESTIONS.filter(q => q.category === catKey);
+            if(groupQuestions.length === 0) return;
+            html += `<div class="bg-amber-50/70 rounded-xl p-4 shadow-sm dunhuang-border mb-6">
+                        <h3 class="text-xl font-bold text-amber-900 flex items-center gap-2 mb-3"><i class="fas fa-star-of-life"></i>${groupName} · 条目</h3>
+                        <div class="space-y-4">`;
+            groupQuestions.forEach(q => {
+                html += `<div class="border-b border-amber-200 pb-3">
+                            <label class="block text-stone-800 font-medium mb-2">${q.text}</label>
+                            <div class="radio-group flex flex-wrap gap-1 sm:gap-3 justify-start">
+                                ${[1,2,3,4,5].map(score => {
+                                    let label = ["没有(从不)","很少(偶尔)","有时(有些)","经常(相当)","总是(非常)"][score-1];
+                                    return `<label class="flex items-center gap-1 bg-white/60 rounded-full px-3 py-1 border border-amber-300 hover:bg-amber-100 transition">
+                                                <input type="radio" name="${q.id}" value="${score}" class="hidden peer">
+                                                <span class="text-sm font-medium peer-checked:bg-amber-600 peer-checked:text-white px-2 py-1 rounded-full">${label}</span>
+                                            </label>`;
+                                }).join('')}
+                            </div>
+                         </div>`;
+            });
+            html += `</div></div>`;
+        });
+        container.innerHTML = html;
+        // 默认勾选"没有(1分)"
+        QUESTIONS.forEach(q => {
+            const defaultRadio = document.querySelector(`input[name="${q.id}"][value="1"]`);
+            if(defaultRadio) defaultRadio.checked = true;
+        });
+    }
+
+    function collectAnswers() {
+        let answers = {};
+        QUESTIONS.forEach(q => {
+            const selected = document.querySelector(`input[name="${q.id}"]:checked`);
+            answers[q.id] = selected ? parseInt(selected.value,10) : 1;
+        });
+        return answers;
+    }
+
+    function computeResults(answers) {
+        let transformScores = {};
+        for(let cat in CATEGORY_MAP) {
+            const raw = getCategoryRawScore(cat, answers);
+            const trans = computeTransformScore(raw, CATEGORY_MAP[cat].itemCount);
+            transformScores[cat] = Math.min(100, Math.max(0, trans));
+        }
+        const pingheScore = transformScores.pinghe;
+        const otherKeys = ['qixu','yangxu','yinxu','tanshi','shire','xueyu','qiyu','tebing'];
+        const otherScores = otherKeys.map(k => transformScores[k]);
+        const pingheStatus = getPingheStatus(pingheScore, otherScores);
+        const piandaoDetails = otherKeys.map(k => ({
+            key: k, name: CATEGORY_MAP[k].name, score: transformScores[k], status: getPiandaoStatus(transformScores[k])
+        }));
+        const main = getMainConstitution(pingheStatus, pingheScore, piandaoDetails);
+        const highPiandao = piandaoDetails.filter(p => (p.status === "是" || p.status === "倾向是") && p.name !== main.name).sort((a,b)=>b.score-a.score);
+        return { pingheScore, pingheStatus, piandaoDetails, mainConstitution: main, transformScores, highPiandao };
+    }
+
+    function displayResults(result) {
+        const resultDiv = document.getElementById('resultArea');
+        const contentDiv = document.getElementById('resultContent');
+        if(!resultDiv || !contentDiv) return;
+        const main = result.mainConstitution;
+        const allScores = result.transformScores;
+        const advice = getDunhuangAdvice(main);
+        let scoresHtml = `<div class="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm bg-amber-50 p-3 rounded-lg">
+                            <span class="font-bold">平和质: ${Math.round(allScores.pinghe)}分 (${result.pingheStatus})</span>
+                            ${result.piandaoDetails.map(p => `<span class="font-bold">${p.name}: ${Math.round(p.score)}分 (${p.status})</span>`).join('')}
+                          </div>`;
+        let extraNote = "";
+        if(result.highPiandao.length) {
+            extraNote = `<div class="italic text-amber-800 text-sm mt-2"><i class="fas fa-hand-peace"></i> 兼夹倾向：${result.highPiandao.map(p=>p.name).join('、')} 亦需注意调理。</div>`;
+        }
+        const dunhuangPres = `<div class="bg-amber-100/70 border-l-8 border-amber-700 p-4 rounded-r-2xl"><i class="fas fa-praying-hands text-amber-800 mr-2"></i><span class="font-medium">敦煌调摄箴言：</span> ${advice}</div>`;
+        contentDiv.innerHTML = `
+            <div class="flex flex-wrap items-baseline gap-2">
+                <span class="text-3xl font-bold text-amber-800">${main.name}</span>
+                <span class="bg-amber-200 text-amber-900 px-3 py-1 rounded-full text-sm">转化分 ${Math.round(main.score)}</span>
+                <span class="text-stone-600"><i class="fas fa-yin-yang"></i> ${main.desc}</span>
+            </div>
+            <p class="text-stone-700 text-base leading-relaxed mt-2">基于王琦60条目标准及国标转化公式，为您辨识主要体质。</p>
+            ${scoresHtml}
+            ${extraNote}
+            ${dunhuangPres}
+            <p class="text-xs text-stone-400 pt-2">※ 体质可因调摄而移，敦煌养生法提倡因质施养，顺应四时。</p>
+        `;
+        resultDiv.classList.remove('hidden');
+        window.scrollTo({ top: resultDiv.offsetTop - 20, behavior: 'smooth' });
+        
+        // 生成用于传递给康养顾问的结果文本
+        const resultText = `【敦煌体质辨识】我的主要体质类型：${main.name}（转化分${Math.round(main.score)}分）。其他体质情况：${result.piandaoDetails.filter(p=>p.status==="是"||p.status==="倾向是").map(p=>`${p.name}${p.status==="是"?"(是)":"(倾向)"}${Math.round(p.score)}分`).join('；') || "无明显偏颇"}。请依据敦煌医学智慧，为我提供个性化的康养建议（食疗、导引、理法等）。`;
+        sessionStorage.setItem('dunhuang_constitution_result', resultText);
+        
+        const toConsult = document.getElementById('toConsultBtn');
+        if(toConsult) {
+            toConsult.onclick = () => {
+                const encoded = encodeURIComponent(resultText);
+                // 修改为指定跳转网址
+                window.location.href = `https://drinkwater10086.github.io/A/agent.html?result=${encoded}`;
+            };
+        }
+    }
+
+    function init() {
+        renderQuestions();
+        const submitBtn = document.getElementById('submitBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        submitBtn.addEventListener('click', () => {
+            const answers = collectAnswers();
+            const results = computeResults(answers);
+            displayResults(results);
+        });
+        resetBtn.addEventListener('click', () => {
+            QUESTIONS.forEach(q => {
+                const radio = document.querySelector(`input[name="${q.id}"][value="1"]`);
+                if(radio) radio.checked = true;
+            });
+            document.getElementById('resultArea')?.classList.add('hidden');
+        });
+    }
+    init();
+</script>
+</body>
+</html>
