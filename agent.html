@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>敦煌医学专业康养顾问 - 独立智能对话</title>
+    <title>敦煌医学专业康养顾问 - 智能对话</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -12,7 +12,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <style>
-        /* ----- 虚化背景图片（与首页保持一致）----- */
         body {
             position: relative;
             background-color: #2a160a;
@@ -32,7 +31,6 @@
             transform: scale(1.05);
             z-index: -2;
             pointer-events: none;
-            will-change: transform;
         }
         body::before {
             content: "";
@@ -45,12 +43,7 @@
             z-index: -1;
             pointer-events: none;
         }
-
-        html, body, #app {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-        }
+        html, body, #app { height: 100%; margin: 0; padding: 0; }
         #app {
             display: flex;
             flex-direction: column;
@@ -59,15 +52,10 @@
             z-index: 1;
             background-color: transparent;
         }
-        .message-container {
-            flex: 1;
-            overflow-y: auto;
-            min-height: 0;
-            -webkit-overflow-scrolling: touch;
-        }
+        .message-container { flex: 1; overflow-y: auto; min-height: 0; }
         ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: rgba(241, 241, 241, 0.5); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb { background: rgba(193, 193, 193, 0.8); border-radius: 10px; }
+        ::-webkit-scrollbar-track { background: rgba(241,241,241,0.5); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: rgba(193,193,193,0.8); border-radius: 10px; }
         .typing-indicator span {
             display: inline-block; width: 6px; height: 6px; border-radius: 50%;
             background-color: #9ca3af; margin: 0 2px;
@@ -76,168 +64,62 @@
         .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
         .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
         @keyframes typing {
-            0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
+            0%,80%,100% { transform: scale(0.6); opacity: 0.5; }
             40% { transform: scale(1); opacity: 1; }
         }
         .voice-btn:hover { background-color: #e5e7eb; transform: scale(1.05); }
-        .voice-stop-btn:hover { background-color: #fee2e2; transform: scale(1.05); }
-        .break-words {
-            word-break: break-word;
-            white-space: normal;
-        }
         .nav-btn {
             transition: all 0.2s ease;
-            min-width: 36px;
-            min-height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            min-width: 36px; min-height: 36px;
+            display: flex; align-items: center; justify-content: center;
         }
-        .nav-btn:active {
-            transform: scale(0.95);
-        }
-        
-        /* ========= 响应式样式 ========= */
-        .message-container .flex {
-            max-width: 100%;
-        }
-        .message-container .flex .max-w-\[90\%\] {
-            max-width: 85%;
-        }
-        @media (min-width: 640px) {
-            .message-container .flex .max-w-\[90\%\] {
-                max-width: 80%;
-            }
-        }
-        @media (min-width: 1024px) {
-            .message-container .flex .max-w-\[90\%\] {
-                max-width: 70%;
-            }
-        }
-        @media (max-width: 480px) {
-            .message-container .flex .max-w-\[90\%\] {
-                max-width: 92%;
-            }
-            .message-container .px-4 {
-                padding-left: 12px;
-                padding-right: 12px;
-            }
-            header .max-w-5xl {
-                padding-left: 12px;
-                padding-right: 12px;
-            }
-            .border-t .max-w-3xl {
-                padding-left: 8px;
-                padding-right: 8px;
-            }
-            .nav-btn {
-                width: 36px;
-                height: 36px;
-            }
-            h1.text-xl {
-                font-size: 1.2rem;
-            }
-            .hero-text {
-                font-size: 0.9rem;
-            }
-            .voice-btn, .voice-stop-btn {
-                width: 32px;
-                height: 32px;
-            }
-        }
-        @media (max-width: 380px) {
-            header .flex.items-center {
-                gap: 0.5rem;
-            }
-            .nav-btn {
-                width: 32px;
-                height: 32px;
-            }
-            .voice-btn {
-                width: 28px;
-                height: 28px;
-            }
-        }
-        @media (min-width: 768px) and (max-width: 1023px) {
-            .message-container .flex .max-w-\[90\%\] {
-                max-width: 75%;
-            }
-        }
-        @media (orientation: landscape) and (max-height: 500px) {
-            header {
-                padding-top: 4px;
-                padding-bottom: 4px;
-            }
-            .message-container {
-                padding-bottom: 8px;
-            }
-            .border-t {
-                padding: 8px;
-            }
-            .typing-indicator {
-                margin-top: 0;
-            }
-        }
+        .nav-btn:active { transform: scale(0.95); }
         header {
-            background-color: rgba(255, 255, 255, 0.85) !important;
+            background-color: rgba(255, 255, 255, 0.9) !important;
             backdrop-filter: blur(4px);
         }
-        .message-container .bg-white {
-            background-color: rgba(255, 255, 255, 0.92) !important;
-        }
-        .message-container .bg-indigo-600 {
-            background-color: rgba(79, 70, 229, 0.92) !important;
-        }
-        .border-t {
-            background-color: rgba(255, 255, 255, 0.85) !important;
-            backdrop-filter: blur(4px);
-        }
-        .bg-gray-50 {
-            background-color: rgba(249, 250, 251, 0.9) !important;
-        }
-        .fixed.inset-0.bg-black\/30 {
-            background-color: rgba(0, 0, 0, 0.5);
-        }
-        .fixed.inset-0.bg-black\/30 > div {
-            background-color: white !important;
-        }
-        .typing-indicator span {
-            background-color: #6b7280;
-        }
-        textarea {
-            font-size: 16px;
+        .message-container .bg-white { background-color: rgba(255,255,255,0.92) !important; }
+        .message-container .bg-indigo-600 { background-color: rgba(79,70,229,0.92) !important; }
+        .border-t { background-color: rgba(255,255,255,0.85) !important; backdrop-filter: blur(4px); }
+        .bg-gray-50 { background-color: rgba(249,250,251,0.9) !important; }
+        textarea { font-size: 16px; }
+        @media (max-width: 640px) {
+            .nav-btn { width: 36px; height: 36px; }
+            h1.text-xl { font-size: 1.1rem; }
         }
     </style>
 </head>
-<body class="font-sans">
+<body>
     <div id="app" class="h-full flex flex-col overflow-hidden">
-        <!-- 顶部导航栏 -->
-        <header class="bg-white/80 backdrop-blur-sm border-b shadow-sm flex-shrink-0">
+        <!-- 顶部导航栏 - 确保标题清晰可见 -->
+        <header class="bg-white/90 backdrop-blur-sm border-b shadow-md flex-shrink-0">
             <div class="max-w-5xl mx-auto px-4 py-2 sm:py-3 flex items-center justify-between">
                 <div class="flex items-center space-x-2 sm:space-x-3">
-                    <div class="w-7 h-7 sm:w-8 sm:h-8 bg-indigo-600 rounded-xl flex items-center justify-center shadow-md">
-                        <i class="fas fa-robot text-white text-xs sm:text-sm"></i>
+                    <div class="w-8 h-8 bg-amber-700 rounded-xl flex items-center justify-center shadow-md">
+                        <i class="fas fa-dharmachakra text-white text-sm"></i>
                     </div>
-                    <h1 class="text-base sm:text-xl font-semibold bg-gradient-to-r from-indigo-700 to-purple-700 bg-clip-text text-transparent">专业康养顾问</h1>
+                    <h1 class="text-lg sm:text-xl font-bold bg-gradient-to-r from-amber-800 to-indigo-800 bg-clip-text text-transparent">
+                        <i class="fas fa-feather-alt text-amber-700 mr-1"></i>敦煌医学·专业康养顾问
+                    </h1>
                 </div>
                 <div class="flex items-center gap-1 sm:gap-2">
-                    <button @click="stopSpeaking" class="nav-btn p-1.5 sm:p-2 rounded-full hover:bg-red-50 transition" title="停止语音播报">
-                        <i class="fas fa-stop-circle text-red-500 text-base sm:text-lg"></i>
+                    <button @click="stopSpeaking" class="nav-btn p-1.5 rounded-full hover:bg-red-50" title="停止语音">
+                        <i class="fas fa-stop-circle text-red-500 text-lg"></i>
                     </button>
-                    <button @click="newConversation" :disabled="isStreaming" class="nav-btn p-1.5 sm:p-2 rounded-full hover:bg-gray-100 disabled:opacity-50" title="新建对话">
-                        <i class="fas fa-plus text-gray-600 text-base sm:text-lg"></i>
+                    <button @click="newConversation" :disabled="isStreaming" class="nav-btn p-1.5 rounded-full hover:bg-gray-100 disabled:opacity-50" title="新建对话">
+                        <i class="fas fa-plus text-gray-600 text-lg"></i>
                     </button>
-                    <button @click="showConfig = !showConfig" class="nav-btn p-1.5 sm:p-2 rounded-full hover:bg-gray-100" title="API配置">
-                        <i class="fas fa-sliders-h text-gray-600 text-base sm:text-lg"></i>
+                    <button @click="showConfig = !showConfig" class="nav-btn p-1.5 rounded-full hover:bg-gray-100" title="API配置">
+                        <i class="fas fa-sliders-h text-gray-600 text-lg"></i>
                     </button>
-                    <button @click="goBackToHome" class="nav-btn p-1.5 sm:p-2 rounded-full hover:bg-indigo-100 transition" title="返回主页">
-                        <i class="fas fa-home text-indigo-600 text-base sm:text-lg"></i>
+                    <button @click="goBackToHome" class="nav-btn p-1.5 rounded-full hover:bg-indigo-100" title="返回主页">
+                        <i class="fas fa-home text-indigo-600 text-lg"></i>
                     </button>
                 </div>
             </div>
         </header>
 
-        <!-- 配置侧边栏 -->
+        <!-- 配置侧边栏（同前） -->
         <div v-if="showConfig" class="fixed inset-0 bg-black/30 z-20 flex justify-end" @click.self="showConfig=false">
             <div class="w-full max-w-md bg-white h-full shadow-2xl p-6 overflow-y-auto">
                 <div class="flex justify-between items-center mb-6">
@@ -260,32 +142,34 @@
 
         <!-- 消息区域 -->
         <main class="message-container" ref="messageContainer">
-            <div class="max-w-5xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-5">
-                <div v-if="messages.length===0" class="flex flex-col items-center justify-center h-48 sm:h-64 text-gray-500">
-                    <i class="fas fa-comment-dots text-4xl sm:text-5xl mb-3 opacity-60"></i>
-                    <p class="text-base sm:text-lg font-medium">开始与康养顾问对话</p>
-                    <p class="text-xs sm:text-sm mt-1 text-center px-4">默认 API 已配置，可直接使用 | 语音可随时停止</p>
+            <div class="max-w-5xl mx-auto px-3 sm:px-4 py-4 space-y-4">
+                <div v-if="messages.length===0" class="flex flex-col items-center justify-center h-48 text-gray-500">
+                    <i class="fas fa-comment-dots text-5xl mb-3 opacity-60"></i>
+                    <p class="text-lg font-medium">开始与康养顾问对话</p>
+                    <p class="text-sm mt-1">默认 API 已配置 | 语音可随时停止</p>
                 </div>
                 <div v-for="(msg, idx) in messages" :key="msg.id" class="flex" :class="msg.role==='user'?'justify-end':'justify-start'">
-                    <div v-if="msg.role==='assistant'" class="flex items-start gap-1.5 sm:gap-2 max-w-[85%] sm:max-w-[80%] lg:max-w-[70%]">
-                        <div class="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gray-200 flex items-center justify-center"><i class="fas fa-robot text-gray-600 text-xs sm:text-sm"></i></div>
-                        <div class="relative px-3 py-2 sm:px-4 sm:py-3 rounded-2xl bg-white text-gray-800 border border-gray-100 flex-1 break-words shadow-sm text-sm sm:text-base">
+                    <!-- 助手消息 -->
+                    <div v-if="msg.role==='assistant'" class="flex items-start gap-2 max-w-[85%] sm:max-w-[80%]">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center"><i class="fas fa-robot text-gray-600"></i></div>
+                        <div class="relative px-4 py-3 rounded-2xl bg-white text-gray-800 border shadow-sm">
                             <div class="prose prose-sm max-w-none" v-html="renderMarkdown(msg.content)"></div>
-                            <div v-if="idx===messages.length-1 && isStreaming && !msg.content" class="typing-indicator flex space-x-1 py-1 mt-1">
+                            <div v-if="idx===messages.length-1 && isStreaming && !msg.content" class="typing-indicator flex space-x-1 py-1">
                                 <span></span><span></span><span></span>
                             </div>
                         </div>
-                        <button @click="speakMessage(msg)" :disabled="shouldDisableVoice(msg,idx)" class="voice-btn flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center">
-                            <i class="fas fa-volume-up text-xs sm:text-sm"></i>
+                        <button @click="speakMessage(msg)" :disabled="shouldDisableVoice(msg,idx)" class="voice-btn w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center">
+                            <i class="fas fa-volume-up"></i>
                         </button>
                     </div>
-                    <div v-else class="flex items-start gap-1.5 sm:gap-2 max-w-[85%] sm:max-w-[80%] lg:max-w-[70%] flex-row-reverse">
-                        <div class="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-indigo-100 flex items-center justify-center"><i class="fas fa-user text-indigo-600 text-xs sm:text-sm"></i></div>
-                        <div class="relative px-3 py-2 sm:px-4 sm:py-3 rounded-2xl bg-indigo-600 text-white rounded-tr-none break-words shadow-sm text-sm sm:text-base">
+                    <!-- 用户消息 -->
+                    <div v-else class="flex items-start gap-2 max-w-[85%] sm:max-w-[80%] flex-row-reverse">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center"><i class="fas fa-user text-indigo-600"></i></div>
+                        <div class="relative px-4 py-3 rounded-2xl bg-indigo-600 text-white rounded-tr-none shadow-sm">
                             <div class="whitespace-pre-wrap">{{ msg.content }}</div>
                         </div>
-                        <button @click="speakMessage(msg)" class="voice-btn flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center">
-                            <i class="fas fa-volume-up text-xs sm:text-sm"></i>
+                        <button @click="speakMessage(msg)" class="voice-btn w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center">
+                            <i class="fas fa-volume-up"></i>
                         </button>
                     </div>
                 </div>
@@ -296,23 +180,23 @@
         <!-- 底部输入 -->
         <div class="border-t bg-white/90 p-2 sm:p-4 shadow-lg flex-shrink-0">
             <div class="max-w-3xl mx-auto">
-                <div class="flex items-end gap-2 sm:gap-3 bg-gray-50 rounded-2xl border p-1.5 sm:p-2 focus-within:ring-2 focus-within:ring-indigo-300">
+                <div class="flex items-end gap-3 bg-gray-50 rounded-2xl border p-2 focus-within:ring-2 focus-within:ring-indigo-300">
                     <textarea v-model="inputMessage" @keydown.enter.exact="sendMessage" @keydown.enter.shift.exact="inputMessage+='\n'" rows="1"
                         :disabled="isStreaming || !isApiReady" placeholder="输入消息... (Enter发送, Shift+Enter换行)" 
-                        class="flex-1 bg-transparent border-0 resize-none outline-none py-2 px-2 sm:px-3 max-h-32 text-gray-700 placeholder-gray-400 text-sm sm:text-base"
+                        class="flex-1 bg-transparent border-0 resize-none outline-none py-2 px-3 max-h-32 text-gray-700 placeholder-gray-400 text-sm"
                         style="min-height: 40px;"></textarea>
                     <button v-if="!isStreaming" @click="sendMessage" :disabled="!inputMessage.trim() || !isApiReady"
-                        class="p-2 rounded-full transition disabled:opacity-40 disabled:cursor-not-allowed"
-                        :class="inputMessage.trim()&&isApiReady?'bg-indigo-600 text-white hover:bg-indigo-700 shadow':'bg-gray-200 text-gray-400'">
-                        <i class="fas fa-paper-plane text-sm sm:text-base"></i>
+                        class="p-2 rounded-full transition disabled:opacity-40"
+                        :class="inputMessage.trim()&&isApiReady?'bg-indigo-600 text-white hover:bg-indigo-700':'bg-gray-200 text-gray-400'">
+                        <i class="fas fa-paper-plane"></i>
                     </button>
                     <button v-else @click="stopStreaming" class="p-2 rounded-full bg-red-100 text-red-600 hover:bg-red-200">
-                        <i class="fas fa-stop text-sm sm:text-base"></i>
+                        <i class="fas fa-stop"></i>
                     </button>
                 </div>
                 <div class="flex justify-between mt-2 text-xs text-gray-500 px-1">
                     <span><i class="fas fa-database"></i> {{ isApiReady ? '✅ API已就绪' : '⚠️ 请配置API Key' }}</span>
-                    <span><i class="fas fa-home"></i> 主页按钮 | 独立设备数据</span>
+                    <span><i class="fas fa-home"></i> 返回主页 | 体质结果自动发送</span>
                 </div>
             </div>
         </div>
@@ -414,24 +298,22 @@
                 let speechAllowed = false;
 
                 const stopSpeaking = () => {
-                    if (window.speechSynthesis) {
-                        window.speechSynthesis.cancel();
-                    }
+                    if (window.speechSynthesis) window.speechSynthesis.cancel();
                     currentUtterance = null;
                 };
 
                 const speakMessage = async (msg) => {
-                    if (!msg || !msg.content) return;
+                    if (!msg?.content) return;
                     if (!window.speechSynthesis) {
-                        errorMsg.value = '您的浏览器不支持语音播报功能。';
-                        setTimeout(() => { errorMsg.value = ''; }, 3000);
+                        errorMsg.value = '浏览器不支持语音播报。';
+                        setTimeout(() => errorMsg.value = '', 3000);
                         return;
                     }
                     if (!speechAllowed) {
                         if (!localStorage.getItem('speech_warning_shown')) {
-                            errorMsg.value = '🔊 浏览器安全策略限制，请点击页面任意位置后重试语音按钮。';
+                            errorMsg.value = '🔊 请先点击页面任意位置启用语音。';
                             localStorage.setItem('speech_warning_shown', 'true');
-                            setTimeout(() => { errorMsg.value = ''; }, 4000);
+                            setTimeout(() => errorMsg.value = '', 4000);
                         }
                         return;
                     }
@@ -440,26 +322,14 @@
                     if (!text.trim()) return;
                     const speakWithRetry = () => {
                         const voices = window.speechSynthesis.getVoices();
-                        if (voices.length === 0) {
-                            setTimeout(speakWithRetry, 100);
-                            return;
-                        }
+                        if (voices.length === 0) { setTimeout(speakWithRetry, 100); return; }
                         const utterance = new SpeechSynthesisUtterance(text);
                         utterance.lang = 'zh-CN';
                         utterance.rate = 1.0;
-                        utterance.pitch = 1.0;
-                        utterance.volume = 1.0;
-                        utterance.onend = () => { currentUtterance = null; };
+                        utterance.onend = () => currentUtterance = null;
                         utterance.onerror = (event) => {
-                            console.error('语音播报错误:', event.error);
-                            currentUtterance = null;
-                            if (event.error === 'not-allowed') {
-                                errorMsg.value = '🔊 请先点击页面任意位置，再尝试语音播报。';
-                                setTimeout(() => { errorMsg.value = ''; }, 3000);
-                            } else if (event.error !== 'interrupted' && event.error !== 'canceled') {
-                                errorMsg.value = '语音播报失败，请重试。';
-                                setTimeout(() => { errorMsg.value = ''; }, 2000);
-                            }
+                            if (event.error !== 'interrupted' && event.error !== 'canceled')
+                                errorMsg.value = '语音播报失败。';
                         };
                         currentUtterance = utterance;
                         window.speechSynthesis.speak(utterance);
@@ -470,8 +340,8 @@
                 const enableSpeechAfterUserInteraction = () => {
                     if (speechAllowed) return;
                     speechAllowed = true;
-                    errorMsg.value = '🔊 语音播报已启用，可正常使用。';
-                    setTimeout(() => { errorMsg.value = ''; }, 2000);
+                    errorMsg.value = '🔊 语音播报已启用。';
+                    setTimeout(() => errorMsg.value = '', 2000);
                     document.removeEventListener('click', enableSpeechAfterUserInteraction);
                     document.removeEventListener('touchstart', enableSpeechAfterUserInteraction);
                 };
@@ -487,15 +357,10 @@
 
                     const storedMessages = localStorage.getItem(prefix + 'messages');
                     if (storedMessages) {
-                        try {
-                            messages.value = JSON.parse(storedMessages).map(m => ({ ...m, id: m.id || Date.now()+Math.random() }));
-                        } catch(e) { messages.value = []; }
-                    } else {
-                        messages.value = [];
-                    }
+                        try { messages.value = JSON.parse(storedMessages).map(m => ({ ...m, id: m.id || Date.now()+Math.random() })); } catch(e) { messages.value = []; }
+                    } else { messages.value = []; }
 
-                    const storedConvId = localStorage.getItem(prefix + 'conversationId');
-                    conversationId.value = storedConvId || '';
+                    conversationId.value = localStorage.getItem(prefix + 'conversationId') || '';
                     const storedUserId = localStorage.getItem(prefix + 'userId');
                     if (storedUserId) {
                         userId.value = storedUserId;
@@ -519,17 +384,11 @@
                     const prefix = getStoragePrefix();
                     const toStore = messages.value.map(m => ({ role: m.role, content: m.content, id: m.id }));
                     localStorage.setItem(prefix + 'messages', JSON.stringify(toStore.slice(-100)));
-                    if (conversationId.value) {
-                        localStorage.setItem(prefix + 'conversationId', conversationId.value);
-                    }
+                    if (conversationId.value) localStorage.setItem(prefix + 'conversationId', conversationId.value);
                 };
 
                 const scrollToBottom = () => {
-                    nextTick(() => {
-                        if (messageContainer.value) {
-                            messageContainer.value.scrollTop = messageContainer.value.scrollHeight;
-                        }
-                    });
+                    nextTick(() => { if (messageContainer.value) messageContainer.value.scrollTop = messageContainer.value.scrollHeight; });
                 };
 
                 const sendMessage = async () => {
@@ -588,10 +447,8 @@
                                 }
                             } else if (event.event === 'message_end') {
                                 newConversationId = event.conversation_id;
-                                if (newConversationId) {
-                                    conversationId.value = newConversationId;
-                                    saveMessagesToLocal();
-                                }
+                                if (newConversationId) conversationId.value = newConversationId;
+                                saveMessagesToLocal();
                                 break;
                             } else if (event.event === 'error') {
                                 throw new Error(event.message);
@@ -639,16 +496,13 @@
                 };
 
                 const goBackToHome = () => {
-                    if (isStreaming.value) {
-                        if (abortController) abortController.abort();
-                        isStreaming.value = false;
-                    }
+                    if (isStreaming.value && abortController) abortController.abort();
                     window.location.href = 'https://drinkwater10086.github.io/A/index.html';
                 };
 
-                // 新增：接收体质测试结果，填入并自动发送
-                let autoSent = false; // 防止重复自动发送
-                const loadResultAndSend = async () => {
+                // 自动接收并发送体质结果
+                let autoSent = false;
+                const loadAndSendResult = async () => {
                     if (autoSent) return;
                     const urlParams = new URLSearchParams(window.location.search);
                     const resultParam = urlParams.get('result');
@@ -658,63 +512,34 @@
                             if (decoded && decoded.trim()) {
                                 inputMessage.value = decoded;
                                 autoSent = true;
-                                // 等待 DOM 更新后自动发送
                                 await nextTick();
-                                // 如果 API 未就绪，等待一小段时间（配置可能已存在）
                                 if (!isApiReady.value) {
-                                    errorMsg.value = '⏳ API 未就绪，请检查配置后手动发送。';
-                                    setTimeout(() => { errorMsg.value = ''; }, 3000);
+                                    errorMsg.value = '⏳ API未就绪，请配置后手动发送。';
+                                    setTimeout(() => errorMsg.value = '', 3000);
                                     return;
                                 }
-                                // 自动发送
                                 await sendMessage();
                             }
-                        } catch(e) {
-                            console.warn('自动发送失败', e);
-                        }
+                        } catch(e) { console.warn('自动发送失败', e); }
                     }
                 };
 
-                watch([messages, conversationId], () => {
-                    if (!isStreaming.value) saveMessagesToLocal();
-                }, { deep: true });
+                watch([messages, conversationId], () => { if (!isStreaming.value) saveMessagesToLocal(); }, { deep: true });
 
                 onMounted(async () => {
                     initDevice();
                     document.addEventListener('click', enableSpeechAfterUserInteraction);
                     document.addEventListener('touchstart', enableSpeechAfterUserInteraction);
-                    if (window.speechSynthesis) {
-                        window.speechSynthesis.onvoiceschanged = () => {
-                            console.log('语音包已就绪');
-                        };
-                    }
-                    if (!window.speechSynthesis) {
-                        errorMsg.value = '您的浏览器不支持语音播报功能，请升级或更换浏览器。';
-                    }
-                    // 等待一下确保 API 配置和组件完全初始化
+                    if (!window.speechSynthesis) errorMsg.value = '浏览器不支持语音播报。';
                     await nextTick();
-                    await loadResultAndSend();
+                    await loadAndSendResult();
                 });
 
                 return {
-                    messages,
-                    inputMessage,
-                    isStreaming,
-                    errorMsg,
-                    showConfig,
-                    userConfig,
-                    isApiReady,
-                    messageContainer,
-                    conversationId,
-                    sendMessage,
-                    stopStreaming,
-                    newConversation,
-                    saveUserConfig,
-                    renderMarkdown,
-                    speakMessage,
-                    shouldDisableVoice,
-                    stopSpeaking,
-                    goBackToHome
+                    messages, inputMessage, isStreaming, errorMsg, showConfig,
+                    userConfig, isApiReady, messageContainer, conversationId,
+                    sendMessage, stopStreaming, newConversation, saveUserConfig,
+                    renderMarkdown, speakMessage, shouldDisableVoice, stopSpeaking, goBackToHome
                 };
             }
         }).mount('#app');
