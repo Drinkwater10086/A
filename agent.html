@@ -421,12 +421,25 @@
                     try {
                         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
-                        // 选择浏览器支持的音频编码
+                        // 关键改动：优先选用 Dify 明确支持的音频格式
+                        // 优先级：audio/mp4 > audio/mp3 > audio/webm
                         let mimeType = '';
-                        if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) mimeType = 'audio/webm;codecs=opus';
-                        else if (MediaRecorder.isTypeSupported('audio/webm')) mimeType = 'audio/webm';
-                        else if (MediaRecorder.isTypeSupported('audio/mp4')) mimeType = 'audio/mp4';
-                        else if (MediaRecorder.isTypeSupported('audio/ogg')) mimeType = 'audio/ogg';
+                        if (typeof MediaRecorder !== 'undefined') {
+                            const candidates = [
+                                'audio/mp4',
+                                'audio/mp4;codecs=mp4a.40.2',
+                                'audio/mpeg',
+                                'audio/mp3',
+                                'audio/webm;codecs=opus',
+                                'audio/webm'
+                            ];
+                            for (const c of candidates) {
+                                if (MediaRecorder.isTypeSupported(c)) {
+                                    mimeType = c;
+                                    break;
+                                }
+                            }
+                        }
 
                         const options = mimeType ? { mimeType } : undefined;
                         mediaRecorder = new MediaRecorder(stream, options);
@@ -437,7 +450,7 @@
                         };
 
                         mediaRecorder.onstop = async () => {
-                            const type = mediaRecorder.mimeType || mimeType || 'audio/webm';
+                            const type = mediaRecorder.mimeType || mimeType || 'audio/mp4';
                             const audioBlob = new Blob(audioChunks, { type });
                             stream.getTracks().forEach(t => t.stop());
                             await transcribeAudio(audioBlob, type);
@@ -469,12 +482,15 @@
                     const apiBase = userConfig.value.apiBase.replace(/\/$/, '');
                     const url = `${apiBase}/audio-to-text`;
 
-                    // 根据 mimeType 决定扩展名
-                    let ext = 'webm';
-                    if (mimeType.includes('mp4') || mimeType.includes('m4a')) ext = 'mp4';
-                    else if (mimeType.includes('ogg')) ext = 'ogg';
-                    else if (mimeType.includes('wav')) ext = 'wav';
-                    else if (mimeType.includes('mpeg')) ext = 'mp3';
+                    // 根据 mimeType 决定文件扩展名（Dify 支持 mp3 / mp4 / m4a / wav / webm / mpga）
+                    let ext = 'mp4';
+                    const t = (mimeType || '').toLowerCase();
+                    if (t.includes('mp4') || t.includes('m4a')) ext = 'mp4';
+                    else if (t.includes('mpeg') || t.includes('mp3')) ext = 'mp3';
+                    else if (t.includes('wav')) ext = 'wav';
+                    else if (t.includes('webm')) ext = 'webm';
+                    else if (t.includes('mpga')) ext = 'mpga';
+                    else if (t.includes('ogg')) ext = 'ogg';
 
                     const formData = new FormData();
                     formData.append('file', audioBlob, `recording.${ext}`);
@@ -492,21 +508,20 @@
                         });
                         if (!res.ok) {
                             const errText = await res.text().catch(() => '');
-                            throw new Error(`识别失败 ${res.status}${errText ? ' - ' + errText.slice(0,80) : ''}`);
+                            throw new Error(`识别失败 ${res.status}${errText ? ' - ' + errText.slice(0,120) : ''}`);
                         }
                         const data = await res.json();
                         if (data.text && data.text.trim()) {
                             inputMessage.value += (inputMessage.value && !inputMessage.value.endsWith(' ') ? ' ' : '') + data.text.trim();
+                            errorMsg.value = '';
                         } else {
                             errorMsg.value = '未识别到有效语音，请重试';
                             setTimeout(() => errorMsg.value = '', 2500);
-                            return;
                         }
-                        errorMsg.value = '';
                     } catch (err) {
                         console.error(err);
                         errorMsg.value = '语音识别失败：' + err.message;
-                        setTimeout(() => errorMsg.value = '', 4000);
+                        setTimeout(() => errorMsg.value = '', 5000);
                     }
                 };
                 // ========== 语音转文字结束 ==========
