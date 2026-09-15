@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>敦煌医学·四维灵境 | 首页</title>
+    <title>黄帝内经·敦煌医脉 | 四维灵境</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         * {
@@ -13,16 +13,16 @@
         }
 
         body {
-            background-color: #2a160a;
+            background-color: #f5ecd9;
             font-family: 'Segoe UI', '华文楷书', 'Microsoft YaHei', 'Georgia', serif;
             min-height: 100vh;
             padding: 20px 16px;
-            color: #fff3e0;
+            color: #4a3728;
             position: relative;
             overflow-x: hidden;
         }
 
-        /* 虚化背景图片 */
+        /* 虚化背景图片 · 敦煌医脉暖褐质感 */
         body::after {
             content: "";
             position: fixed;
@@ -34,14 +34,14 @@
             background-size: cover;
             background-position: center center;
             background-repeat: no-repeat;
-            filter: blur(12px);
+            filter: blur(14px) sepia(0.35) brightness(0.96) saturate(0.85);
             transform: scale(1.05);
             z-index: -2;
             pointer-events: none;
             will-change: transform;
         }
 
-        /* 敦煌纹样装饰（光点） */
+        /* 敦煌医脉光点 + 内经云气 */
         body::before {
             content: "";
             position: fixed;
@@ -49,9 +49,12 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: radial-gradient(circle at 10% 20%, rgba(255,215,150,0.12) 2%, transparent 2.5%),
-                              radial-gradient(circle at 85% 70%, rgba(255,200,100,0.15) 1.8%, transparent 2%);
-            background-size: 48px 48px, 64px 64px;
+            background-color: rgba(245, 236, 217, 0.55);
+            background-image: radial-gradient(circle at 12% 22%, rgba(180,140,90,0.12) 1.8%, transparent 2.4%),
+                              radial-gradient(circle at 82% 68%, rgba(200,160,100,0.1) 1.5%, transparent 2%),
+                              radial-gradient(circle at 45% 88%, rgba(160,120,70,0.08) 2.2%, transparent 3%),
+                              radial-gradient(circle at 30% 12%, rgba(190,150,100,0.09) 1.6%, transparent 2.2%);
+            background-size: 56px 56px, 72px 72px, 96px 96px, 88px 88px;
             pointer-events: none;
             z-index: -1;
         }
@@ -64,19 +67,39 @@
             padding: 0 8px;
         }
 
+        /* 顶部标题 · 敦煌医脉牌匾风 */
         .hero {
             text-align: center;
             margin-bottom: 40px;
-            background: rgba(100, 30, 10, 0.45);
-            backdrop-filter: blur(4px);
-            border-radius: 60px;
-            padding: 20px 16px;
-            border: 1px solid #e6b873;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            background: rgba(252, 248, 240, 0.92);
+            backdrop-filter: blur(6px);
+            border-radius: 20px;
+            padding: 24px 16px;
+            border: 1px solid #e0d0b4;
+            box-shadow: 0 4px 20px rgba(140,110,70,0.1);
+            position: relative;
         }
+
+        /* 素问灵枢小印 */
+        .hero::after {
+            content: "素问 · 灵枢 · 敦煌遗书";
+            position: absolute;
+            bottom: -12px;
+            right: 30px;
+            background: #a87c4a;
+            color: #fef9f0;
+            font-size: 0.62rem;
+            padding: 2px 14px;
+            border-radius: 30px;
+            letter-spacing: 2px;
+            font-style: italic;
+            opacity: 0.9;
+            box-shadow: 0 2px 6px rgba(140,110,70,0.2);
+        }
+
         .hero h1 {
             font-size: 1.8rem;
-            background: linear-gradient(135deg, #ffdd99, #ffbb66, #f7934b);
+            background: linear-gradient(135deg, #8b5e34, #a87c4a, #c49a6c);
             background-clip: text;
             -webkit-background-clip: text;
             color: transparent;
@@ -89,17 +112,29 @@
         }
         .hero h1 i {
             background: none;
-            color: #ffc285;
+            color: #a87c4a;
             font-size: 1.8rem;
         }
         .hero p {
             font-size: 1rem;
-            color: #ffe0b5;
-            margin-top: 10px;
-            border-bottom: 1px solid #e6b873;
+            color: #7a5c3c;
+            margin-top: 12px;
             display: inline-block;
             padding-bottom: 5px;
             font-style: italic;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #dcc9a8;
+        }
+
+        /* 上古天真论前缀 */
+        .hero p::before {
+            content: "「上古天真」";
+            font-size: 0.65rem;
+            color: #a08762;
+            margin-right: 8px;
+            font-style: normal;
+            opacity: 0.9;
+            letter-spacing: 1px;
         }
 
         .grid-2x2 {
@@ -109,96 +144,157 @@
             margin-bottom: 40px;
         }
 
+        /* 卡片 · 敦煌医脉典籍风 */
         .card {
-            background: rgba(50, 20, 8, 0.78);
+            background: rgba(252, 248, 240, 0.92);
             backdrop-filter: blur(6px);
-            border-radius: 40px;
-            padding: 24px 16px 28px;
+            border-radius: 16px;
+            padding: 28px 20px 32px;
             text-align: center;
-            box-shadow: 0 20px 30px rgba(0,0,0,0.4);
+            box-shadow: 0 4px 16px rgba(140,110,70,0.1);
             transition: all 0.3s ease;
-            border: 1px solid #e6aa6d;
+            border: 1px solid #e0d0b4;
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
         }
+
+        /* 卡片内暗纹·内经卦象 */
+        .card::before {
+            content: "☰ ☷ ☵ ☲";
+            position: absolute;
+            bottom: 10px;
+            right: 14px;
+            font-size: 0.7rem;
+            color: #c49a6c;
+            opacity: 0.35;
+            letter-spacing: 6px;
+            font-family: 'Segoe UI', 'Noto Sans Symbols', sans-serif;
+            pointer-events: none;
+        }
+
         .card:hover {
             transform: translateY(-6px);
-            box-shadow: 0 30px 40px rgba(0,0,0,0.5);
-            border-color: #ffcc88;
-            background: rgba(70, 30, 12, 0.88);
+            box-shadow: 0 12px 28px rgba(140,110,70,0.18);
+            border-color: #c49a6c;
+            background: rgba(255, 252, 246, 0.96);
         }
 
         .card-icon {
-            font-size: 2.8rem;
-            color: #ffbc6e;
-            margin-bottom: 12px;
+            font-size: 2.6rem;
+            color: #a87c4a;
+            margin-bottom: 14px;
         }
         .card h2 {
-            font-size: 1.5rem;
-            margin-bottom: 10px;
-            color: #ffdfb3;
+            font-size: 1.4rem;
+            margin-bottom: 12px;
+            color: #5c3e1e;
+            letter-spacing: 0.5px;
         }
         .card p {
-            color: #fae4bc;
-            margin-bottom: 20px;
-            line-height: 1.4;
-            font-size: 0.9rem;
+            color: #7a5c3c;
+            margin-bottom: 22px;
+            line-height: 1.6;
+            font-size: 0.88rem;
         }
+
+        /* 内经引文样式 */
+        .card p i {
+            color: #a87c4a;
+            margin-right: 4px;
+        }
+
+        /* 按钮 · 敦煌赭石 */
         .btn-card {
-            background: #c96f2c;
-            color: #fff1e0;
+            background: #a87c4a;
+            color: #fef9f0;
             border: none;
-            padding: 8px 20px;
+            padding: 9px 22px;
             border-radius: 40px;
-            font-weight: bold;
-            font-size: 0.9rem;
+            font-weight: 500;
+            font-size: 0.88rem;
             display: inline-flex;
             align-items: center;
             gap: 6px;
             cursor: pointer;
             transition: 0.2s;
             text-decoration: none;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            box-shadow: 0 3px 8px rgba(140,110,70,0.18);
+            border: 1px solid #c49a6c;
         }
         .btn-card:hover {
-            background: #e6832c;
+            background: #8f683c;
             transform: scale(1.02);
         }
 
+        /* 淘宝宝坊卡片 */
         .taobao-card {
-            background: linear-gradient(135deg, rgba(120, 45, 15, 0.85), rgba(170, 70, 25, 0.85));
-            border: 1px solid #ffbc6e;
+            background: linear-gradient(145deg, rgba(252,248,240,0.95), rgba(245,232,210,0.95));
+            border: 1px solid #dcc9a8;
             cursor: default;
         }
+        .taobao-card .card-icon i {
+            color: #c9793a;
+        }
         .btn-taobao {
-            background: #f0922e;
-            color: #2c1a0c;
+            background: #c9793a;
+            color: #fef9f0;
         }
         .btn-taobao:hover {
-            background: #ffa843;
+            background: #b06a30;
         }
         .url-input {
             width: 85%;
-            padding: 6px 10px;
-            margin: 10px auto 8px;
-            border-radius: 60px;
-            border: none;
-            background: #fff6e8;
+            padding: 8px 12px;
+            margin: 10px auto 10px;
+            border-radius: 40px;
+            border: 1px solid #dcc9a8;
+            background: #fdfaf4;
             text-align: center;
             font-size: 0.75rem;
-            color: #5a2e1a;
+            color: #5a3e24;
             display: block;
         }
+        .url-input::placeholder {
+            color: #b8a184;
+        }
+
+        /* 黄帝内经专属卡片 */
+        .neijing-card {
+            background: linear-gradient(145deg, rgba(252,248,240,0.95), rgba(245,235,215,0.95));
+            border: 1px solid #dcc9a8;
+        }
+        .neijing-card .card-icon i {
+            color: #a87c4a;
+            text-shadow: 0 0 8px rgba(168,124,74,0.25);
+        }
+        .neijing-card h2 {
+            color: #5c3e1e;
+        }
+        .neijing-card .btn-card {
+            background: #a87c4a;
+        }
+        .neijing-card .btn-card:hover {
+            background: #8f683c;
+        }
+
+        /* 页脚 · 内经经典 */
         .footer-note {
             text-align: center;
             margin-top: 30px;
-            padding-top: 16px;
-            border-top: 1px solid #dd9f62;
-            color: #ffdfb0;
+            padding-top: 20px;
+            border-top: 1px solid #dcc9a8;
+            color: #8b6b3d;
             font-size: 0.75rem;
+            line-height: 1.9;
         }
 
-        /* ========= 响应式样式 ========= */
-        /* 平板竖屏及小桌面 */
+        .footer-note i {
+            margin: 0 4px;
+            color: #a87c4a;
+        }
+
+        /* 响应式样式 */
         @media (max-width: 768px) {
             body {
                 padding: 16px 12px;
@@ -213,21 +309,20 @@
                 font-size: 0.9rem;
             }
             .card {
-                padding: 20px 12px 24px;
+                padding: 22px 14px 26px;
             }
             .card h2 {
-                font-size: 1.3rem;
+                font-size: 1.25rem;
             }
             .card p {
-                font-size: 0.85rem;
+                font-size: 0.84rem;
             }
             .btn-card {
-                padding: 6px 16px;
-                font-size: 0.85rem;
+                padding: 8px 18px;
+                font-size: 0.84rem;
             }
         }
 
-        /* 手机横屏及小屏手机 (≤640px) 改为单列布局 */
         @media (max-width: 640px) {
             .grid-2x2 {
                 grid-template-columns: 1fr;
@@ -235,7 +330,7 @@
             }
             .hero {
                 margin-bottom: 28px;
-                padding: 16px 12px;
+                padding: 18px 14px;
             }
             .hero h1 {
                 font-size: 1.35rem;
@@ -245,21 +340,26 @@
                 font-size: 1.35rem;
             }
             .card {
-                border-radius: 32px;
+                border-radius: 14px;
             }
             .card-icon {
-                font-size: 2.4rem;
+                font-size: 2.3rem;
             }
             .url-input {
                 width: 90%;
-                font-size: 0.7rem;
+                font-size: 0.72rem;
             }
             .footer-note {
                 font-size: 0.7rem;
             }
+            .hero::after {
+                bottom: -10px;
+                right: 20px;
+                font-size: 0.55rem;
+                padding: 1px 10px;
+            }
         }
 
-        /* 超小屏 (≤480px) 进一步紧凑 */
         @media (max-width: 480px) {
             body {
                 padding: 12px 10px;
@@ -273,39 +373,41 @@
             .hero p {
                 font-size: 0.8rem;
             }
+            .hero p::before {
+                font-size: 0.55rem;
+                margin-right: 4px;
+            }
             .card h2 {
-                font-size: 1.2rem;
+                font-size: 1.15rem;
             }
             .card p {
-                font-size: 0.8rem;
+                font-size: 0.78rem;
             }
             .btn-card {
-                padding: 5px 14px;
+                padding: 7px 16px;
                 font-size: 0.8rem;
             }
         }
 
-        /* 横屏模式优化 */
         @media (orientation: landscape) and (max-height: 500px) {
             body {
                 padding: 10px 16px;
             }
             .hero {
                 margin-bottom: 16px;
-                padding: 12px;
+                padding: 14px;
             }
             .grid-2x2 {
                 gap: 16px;
             }
             .card {
-                padding: 16px 12px;
+                padding: 18px 14px;
             }
             .footer-note {
                 margin-top: 16px;
             }
         }
 
-        /* 确保所有点击区域足够大 */
         .btn-card, .url-input, .card {
             touch-action: manipulation;
         }
@@ -313,50 +415,53 @@
 </head>
 <body>
 <div class="container">
+    <!-- 顶部牌匾 -->
     <div class="hero">
-        <h1><i class="fas fa-dharmachakra"></i> 敦煌医学·四维灵境 <i class="fas fa-feather-alt"></i></h1>
-        <p>灵韵天香 · 壁画药方 · 体质慧测 · 智慧对话</p>
+        <h1><i class="fas fa-dharmachakra"></i> 黄帝内经·敦煌医脉 <i class="fas fa-feather-alt"></i></h1>
+        <p>法于阴阳 · 和于术数 · 食饮有节 · 起居有常 · 不妄作劳</p>
     </div>
 
     <div class="grid-2x2">
-        <!-- 智能体：跳转至您指定的 agent.html 网页（新标签页） -->
-        <div class="card" onclick="window.open('https://drinkwater10086.github.io/A/agent.html', '_blank')">
+        <!-- 卡片一：上古天真 · 智慧体（跳转 agent.html） -->
+        <div class="card neijing-card" onclick="window.open('https://drinkwater10086.github.io/A/agent.html', '_blank')">
             <div class="card-icon"><i class="fas fa-robot"></i></div>
-            <h2>🪷 药师佛·智慧体</h2>
-            <p>敦煌医学AI使者，解答养生疑惑，解读壁画古方，随问随答。</p>
-            <span class="btn-card">进入灵境 <i class="fas fa-arrow-right"></i></span>
+            <h2>🌿 上古天真·智慧体</h2>
+            <p><i class="fas fa-quote-left"></i> 上古之人，其知道者，法于阴阳，和于术数，食饮有节，起居有常，不妄作劳，故能形与神俱。</p>
+            <span class="btn-card">问道灵境 <i class="fas fa-arrow-right"></i></span>
         </div>
 
-        <!-- 淘宝店铺跳转 -->
+        <!-- 卡片二：四气调神 · 千佛草堂（淘宝） -->
         <div class="card taobao-card">
             <div class="card-icon"><i class="fab fa-taobao"></i></div>
-            <h2>🏺 妙香宝坊·千佛草堂</h2>
-            <p>百年本草 · 丝路正源。可粘贴任意淘宝/天猫店铺链接。</p>
+            <h2>🏺 四气调神·宝坊</h2>
+            <p><i class="fas fa-quote-left"></i> 春生夏长，秋收冬藏。顺四时而适寒暑，和喜怒而安居处，节阴阳而调刚柔。</p>
             <input type="text" id="shopUrl" class="url-input" value="https://web.m.taobao.com/app/operation-center/seller-join/home-mobile?source=shoutaowode" placeholder="粘贴淘宝店铺链接">
             <button class="btn-card btn-taobao" onclick="window.open(document.getElementById('shopUrl').value, '_blank')" style="margin-top: 6px;">
                 <i class="fas fa-external-link-alt"></i> 前往宝坊
             </button>
         </div>
 
-        <!-- 体质自测小工具 -->
-        <div class="card" onclick="location.href='constitution.html'">
+        <!-- 卡片三：阴阳二十五人 · 体质镜 -->
+        <div class="card neijing-card" onclick="location.href='constitution.html'">
             <div class="card-icon"><i class="fas fa-clipboard-list"></i></div>
-            <h2>🌿 九色鹿·体质镜</h2>
-            <p>源自敦煌医籍体质法，五问识偏颇，获壁画灵草调理笺。</p>
+            <h2>🌿 阴阳二十五人·体质镜</h2>
+            <p><i class="fas fa-quote-left"></i> 盖有太阴之人，少阴之人，太阳之人，少阳之人，阴阳和平之人。凡五人者，其态不同，其筋骨气血各不等。</p>
             <span class="btn-card">照见体质 <i class="fas fa-heartbeat"></i></span>
         </div>
 
-        <!-- 知识科普专栏 -->
-        <div class="card" onclick="location.href='knowledge.html'">
-            <div class="card-icon"><i class="fas fa-scroll"></i></div>
-            <h2>📜 藏经洞·医典卷</h2>
-            <p>敦煌遗书医药卷、壁画养生、四季调摄，沉浸式佛国医智。</p>
-            <span class="btn-card">阅卷悟道 <i class="fas fa-leaf"></i></span>
+        <!-- 卡片四：素问灵枢 · 藏经阁 -->
+        <div class="card neijing-card" onclick="location.href='neijing.html'">
+            <div class="card-icon"><i class="fas fa-yin-yang"></i></div>
+            <h2>☯️ 素问灵枢·藏经阁</h2>
+            <p><i class="fas fa-quote-left"></i> 夫四时阴阳者，万物之根本也。所以圣人春夏养阳，秋冬养阴，以从其根，故与万物沉浮于生长之门。</p>
+            <span class="btn-card">启卷问道 <i class="fas fa-leaf"></i></span>
         </div>
     </div>
 
+    <!-- 页脚 · 内经经典 -->
     <div class="footer-note">
-        <i class="fas fa-pagoda"></i> 敦煌医学 · 慈悲润生 | 智能体已连接灵境 | 自测与科普源自敦煌古方智慧
+        <i class="fas fa-pagoda"></i> 黄帝内经 · 敦煌医脉 | 恬淡虚无，真气从之，精神内守，病安从来 <i class="fas fa-feather-alt"></i><br>
+        <span style="font-size:0.68rem; opacity:0.85;">法于阴阳，和于术数，食饮有节，起居有常，不妄作劳，故能形与神俱</span>
     </div>
 </div>
 </body>
