@@ -5,12 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>黄帝内经·素问灵枢 | 藏经阁</title>
     <meta name="description" content="六篇黄帝内经专题文章——上古天真、四气调神、阴阳二十五人、五脏生成、汤液醪醴、异法方宜，基于内经原文考释。">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background: #f5ecd9;
             background-image: radial-gradient(circle at 12% 22%, rgba(180,140,90,0.1) 1.8%, transparent 2.4%),
@@ -19,11 +16,7 @@
             font-family: 'Segoe UI', 'Roboto', 'Noto Serif SC', 'Georgia', serif;
             color: #4a3728;
         }
-        .container {
-            max-width: 1300px;
-            margin: 0 auto;
-            padding: 0 24px;
-        }
+        .container { max-width: 1300px; margin: 0 auto; padding: 0 24px; }
         .header {
             padding: 36px 0 24px;
             border-bottom: 2px solid #dcc9a8;
@@ -31,46 +24,26 @@
             text-align: center;
             position: relative;
         }
-        /* 内经素问小印 */
         .header::after {
             content: "素问 · 灵枢 · 上古天真";
             position: absolute;
-            bottom: -12px;
-            right: 20px;
-            background: #a87c4a;
-            color: #fef9f0;
-            font-size: 0.62rem;
-            padding: 2px 14px;
-            border-radius: 30px;
-            letter-spacing: 2px;
-            font-style: italic;
-            opacity: 0.9;
+            bottom: -12px; right: 20px;
+            background: #a87c4a; color: #fef9f0;
+            font-size: 0.62rem; padding: 2px 14px;
+            border-radius: 30px; letter-spacing: 2px;
+            font-style: italic; opacity: 0.9;
             box-shadow: 0 2px 6px rgba(140,110,70,0.2);
         }
         .logo {
-            font-size: 2.5rem;
-            font-weight: 600;
+            font-size: 2.5rem; font-weight: 600;
             background: linear-gradient(135deg, #8b5e34, #a87c4a, #c49a6c);
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
-            letter-spacing: 2px;
+            background-clip: text; -webkit-background-clip: text;
+            color: transparent; letter-spacing: 2px;
         }
-        .sub {
-            font-size: 1rem;
-            color: #7a5c3c;
-            margin-top: 10px;
-            font-style: italic;
-            letter-spacing: 0.5px;
-        }
+        .sub { font-size: 1rem; color: #7a5c3c; margin-top: 10px; font-style: italic; letter-spacing: 0.5px; }
         .sub::before {
-            content: "「上古天真」";
-            font-size: 0.65rem;
-            color: #a08762;
-            margin-right: 8px;
-            font-style: normal;
-            opacity: 0.9;
-            letter-spacing: 1px;
+            content: "「上古天真」"; font-size: 0.65rem; color: #a08762;
+            margin-right: 8px; font-style: normal; opacity: 0.9; letter-spacing: 1px;
         }
         .hero {
             background: rgba(252, 248, 240, 0.92);
@@ -82,24 +55,16 @@
             box-shadow: 0 4px 20px rgba(140,110,70,0.08);
         }
         .hero h2 {
-            font-size: 1.9rem;
-            color: #5c3e1e;
+            font-size: 1.9rem; color: #5c3e1e;
             margin-bottom: 16px;
             border-left: 6px solid #a87c4a;
-            padding-left: 20px;
-            letter-spacing: 1px;
+            padding-left: 20px; letter-spacing: 1px;
         }
-        .hero p {
-            font-size: 1.05rem;
-            color: #4a3728;
-            max-width: 85%;
-            line-height: 1.8;
-        }
+        .hero p { font-size: 1.05rem; color: #4a3728; max-width: 85%; line-height: 1.8; }
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-            gap: 32px;
-            margin: 40px 0 60px;
+            gap: 32px; margin: 40px 0 60px;
         }
         .card {
             background: rgba(252, 248, 240, 0.95);
@@ -108,18 +73,12 @@
             box-shadow: 0 4px 16px rgba(140,110,70,0.1);
             transition: transform 0.25s ease, box-shadow 0.3s;
             border: 1px solid #e0d0b4;
-            cursor: pointer;
-            position: relative;
+            cursor: pointer; position: relative;
         }
-        /* 卡片内暗纹·内经卦象 */
         .card::before {
             content: "☰ ☷ ☵ ☲";
-            position: absolute;
-            bottom: 10px;
-            right: 14px;
-            font-size: 0.7rem;
-            color: #c49a6c;
-            opacity: 0.35;
+            position: absolute; bottom: 10px; right: 14px;
+            font-size: 0.7rem; color: #c49a6c; opacity: 0.35;
             letter-spacing: 6px;
             font-family: 'Segoe UI', 'Noto Sans Symbols', sans-serif;
             pointer-events: none;
@@ -131,87 +90,34 @@
             background: rgba(255, 252, 246, 0.98);
         }
         .card-canvas {
-            background: #f9efdf;
-            padding: 12px;
+            background: #f9efdf; padding: 12px;
             border-bottom: 2px solid #ebddc6;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            display: flex; justify-content: center; align-items: center;
         }
-        canvas {
-            width: 100%;
-            height: auto;
-            background: #fcf5e8;
-            border-radius: 28px;
-            display: block;
-        }
-        .card-content {
-            padding: 20px 22px 26px;
-        }
-        .card-category {
-            font-size: 0.7rem;
-            letter-spacing: 1px;
-            color: #a87c4a;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-        .card-title {
-            font-size: 1.55rem;
-            font-weight: 600;
-            margin-bottom: 12px;
-            color: #3f2a17;
-            line-height: 1.3;
-            letter-spacing: 0.5px;
-        }
-        .card-desc {
-            color: #5a4530;
-            font-size: 0.95rem;
-            margin-bottom: 12px;
-            line-height: 1.6;
-        }
-        .card-desc i {
-            color: #a87c4a;
-            margin-right: 4px;
-        }
-        .ref {
-            font-size: 0.75rem;
-            color: #8f7a5c;
-            border-top: 1px dashed #e2d1ba;
-            padding-top: 12px;
-            margin-top: 8px;
-        }
+        canvas { width: 100%; height: auto; background: #fcf5e8; border-radius: 28px; display: block; }
+        .card-content { padding: 20px 22px 26px; }
+        .card-category { font-size: 0.7rem; letter-spacing: 1px; color: #a87c4a; font-weight: 600; margin-bottom: 8px; }
+        .card-title { font-size: 1.55rem; font-weight: 600; margin-bottom: 12px; color: #3f2a17; line-height: 1.3; letter-spacing: 0.5px; }
+        .card-desc { color: #5a4530; font-size: 0.95rem; margin-bottom: 12px; line-height: 1.6; }
+        .card-desc i { color: #a87c4a; margin-right: 4px; }
+        .ref { font-size: 0.75rem; color: #8f7a5c; border-top: 1px dashed #e2d1ba; padding-top: 12px; margin-top: 8px; }
         .footer {
-            text-align: center;
-            border-top: 1px solid #dcc9a8;
-            padding: 32px 20px;
-            margin-top: 20px;
-            font-size: 0.85rem;
-            color: #8b6b3d;
-            line-height: 1.9;
+            text-align: center; border-top: 1px solid #dcc9a8;
+            padding: 32px 20px; margin-top: 20px;
+            font-size: 0.85rem; color: #8b6b3d; line-height: 1.9;
         }
-        .footer i {
-            margin: 0 4px;
-            color: #a87c4a;
-        }
+        .footer i { margin: 0 4px; color: #a87c4a; }
         @media (max-width: 760px) {
             .hero p { max-width: 100%; }
             .grid { grid-template-columns: 1fr; }
             .logo { font-size: 1.9rem; }
             .header::after { right: 10px; font-size: 0.55rem; }
         }
-        .badge-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin: 12px 0 6px;
-        }
+        .badge-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 6px; }
         .badge {
-            background: #efe2d0;
-            border-radius: 30px;
-            padding: 4px 12px;
-            font-size: 0.7rem;
-            color: #7b4d2c;
-            border: 1px solid #e0d0b4;
+            background: #efe2d0; border-radius: 30px;
+            padding: 4px 12px; font-size: 0.7rem;
+            color: #7b4d2c; border: 1px solid #e0d0b4;
         }
     </style>
 </head>
@@ -227,7 +133,7 @@
     </div>
     <div class="grid" id="articleGrid">
         <!-- 卡片1 上古天真论 -->
-        <div class="card" data-url="/A/content/shanggu-tianzhen.html">
+        <div class="card" data-url="content/shanggu-tianzhen.html">
             <div class="card-canvas"><canvas id="homeCanvas1" width="400" height="180" style="width:100%; aspect-ratio:400/180"></canvas></div>
             <div class="card-content">
                 <div class="card-category">📖 素问·首篇</div>
@@ -238,7 +144,7 @@
             </div>
         </div>
         <!-- 卡片2 四气调神大论 -->
-        <div class="card" data-url="/A/content/siqi-tiaoshen.html">
+        <div class="card" data-url="content/siqi-tiaoshen.html">
             <div class="card-canvas"><canvas id="homeCanvas2" width="400" height="180" style="width:100%; aspect-ratio:400/180"></canvas></div>
             <div class="card-content">
                 <div class="card-category">🍃 素问·四季</div>
@@ -249,7 +155,7 @@
             </div>
         </div>
         <!-- 卡片3 阴阳二十五人 -->
-        <div class="card" data-url="/A/content/yinyang-25.html">
+        <div class="card" data-url="content/yinyang-25.html">
             <div class="card-canvas"><canvas id="homeCanvas3" width="400" height="180" style="width:100%; aspect-ratio:400/180"></canvas></div>
             <div class="card-content">
                 <div class="card-category">🔥 灵枢·体质</div>
@@ -260,7 +166,7 @@
             </div>
         </div>
         <!-- 卡片4 五脏生成 -->
-        <div class="card" data-url="/A/content/wuzang-shengcheng.html">
+        <div class="card" data-url="content/wuzang-shengcheng.html">
             <div class="card-canvas"><canvas id="homeCanvas4" width="400" height="180" style="width:100%; aspect-ratio:400/180"></canvas></div>
             <div class="card-content">
                 <div class="card-category">🏔️ 素问·脏腑</div>
@@ -271,7 +177,7 @@
             </div>
         </div>
         <!-- 卡片5 汤液醪醴 -->
-        <div class="card" data-url="/A/content/tangye-laoli.html">
+        <div class="card" data-url="content/tangye-laoli.html">
             <div class="card-canvas"><canvas id="homeCanvas5" width="400" height="180" style="width:100%; aspect-ratio:400/180"></canvas></div>
             <div class="card-content">
                 <div class="card-category">🍲 素问·汤液</div>
@@ -282,10 +188,10 @@
             </div>
         </div>
         <!-- 卡片6 异法方宜 -->
-        <div class="card" data-url="/A/content/yifa-fangyi.html">
+        <div class="card" data-url="content/yifa-fangyi.html">
             <div class="card-canvas"><canvas id="homeCanvas6" width="400" height="180" style="width:100%; aspect-ratio:400/180"></canvas></div>
             <div class="card-content">
-                <div class="card-category">🦷 素问·地域</div>
+                <div class="card-category">🌏 素问·地域</div>
                 <div class="card-title">异法方宜论</div>
                 <div class="card-desc"><i class="fas fa-quote-left"></i> 东方之域，天地之所始生也……西方者，金玉之域，沙石之处，天地之所收引也。故圣人杂合以治，各得其所宜。</div>
                 <div class="badge-list"><span class="badge">五方之宜</span><span class="badge">地域医学</span></div>
@@ -299,7 +205,6 @@
     </div>
 </div>
 <script>
-    // 主页canvas绘图 —— 内经主题插画
     function drawHomeCanvas1(ctx, w, h) {
         ctx.fillStyle="#fdf3e0"; ctx.fillRect(0,0,w,h);
         ctx.fillStyle="#a87c4a"; ctx.font=`500 ${Math.floor(h*0.12)}px "Segoe UI"`; ctx.fillText("📜 上古天真",15,35);
@@ -319,7 +224,6 @@
     ];
     function renderHomeCanvases(){ for(let item of homeCanvases){ let canvas=document.getElementById(item.id); if(!canvas) continue; let ctx=canvas.getContext('2d'); let containerWidth=canvas.clientWidth; let drawWidth=containerWidth||400; let drawHeight=drawWidth/400*180; canvas.width=drawWidth; canvas.height=drawHeight; item.draw(ctx,canvas.width,canvas.height); } }
     window.addEventListener('load',()=>{ renderHomeCanvases(); window.addEventListener('resize',()=>renderHomeCanvases()); });
-    // 卡片点击跳转
     const cards=document.querySelectorAll('.card');
     cards.forEach(card=>{ card.addEventListener('click',function(e){ let url=this.getAttribute('data-url'); if(url) window.location.href=url; }); });
 </script>
