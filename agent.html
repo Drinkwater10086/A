@@ -153,15 +153,6 @@
             margin: 0 auto;
         }
 
-        /* 录音中动画（麦克风脉冲） */
-        .recording-pulse {
-            animation: recPulse 1.2s infinite ease-in-out;
-        }
-        @keyframes recPulse {
-            0%,100% { box-shadow: 0 0 0 0 rgba(165,76,44,0.55); }
-            50% { box-shadow: 0 0 0 8px rgba(165,76,44,0); }
-        }
-
         @media (max-width: 640px) {
             .nav-btn { width: 36px; height: 36px; }
             h1.text-xl { font-size: 1.05rem; }
@@ -235,7 +226,6 @@
                         <p class="text-xs mt-3" style="color:#a08762;">—— 黄帝内经·素问·上古天真论</p>
                         <div class="mt-4 pt-3" style="border-top:1px solid #e3d5bc;">
                             <p class="text-sm" style="color:#8b5e34;"><i class="fas fa-comment-dots mr-1"></i> 开始与内经康养顾问对话</p>
-                            <p class="text-xs mt-1" style="color:#a08762;"><i class="fas fa-microphone mr-1"></i> 支持语音输入，点击麦克风即可说话</p>
                         </div>
                     </div>
                 </div>
@@ -275,42 +265,22 @@
         <!-- 底部输入 · 敦煌医脉 -->
         <div class="border-t p-2 sm:p-4 shadow-lg flex-shrink-0">
             <div class="max-w-3xl mx-auto">
-                <!-- 录音状态提示 -->
-                <div v-if="isRecording" class="flex items-center gap-2 mb-2 px-2 text-xs" style="color:#a54c2c;">
-                    <i class="fas fa-circle text-red-500 animate-pulse"></i>
-                    <span>录音中... 请说话，说完点击红色方块停止</span>
-                </div>
-                <div class="flex items-end gap-2 rounded-2xl p-2" style="background:#f7f0e2; border:1px solid #e0d0b4;">
-                    <!-- 麦克风按钮 -->
-                    <button v-if="!isRecording" @click="startRecording"
-                        class="p-2 rounded-full transition flex-shrink-0"
-                        style="background:#f0e8da; color:#8b5e34;"
-                        title="点击开始语音输入">
-                        <i class="fas fa-microphone"></i>
-                    </button>
-                    <button v-else @click="stopRecording"
-                        class="p-2 rounded-full flex-shrink-0 recording-pulse"
-                        style="background:#e8c9a8; color:#a54c2c;"
-                        title="点击停止录音">
-                        <i class="fas fa-stop"></i>
-                    </button>
-
+                <div class="flex items-end gap-3 rounded-2xl p-2" style="background:#f7f0e2; border:1px solid #e0d0b4;">
                     <textarea v-model="inputMessage" @keydown.enter.exact="sendMessage" @keydown.enter.shift.exact="inputMessage+='\n'" rows="1"
                         :disabled="isStreaming || !isApiReady" placeholder="请描述身体不适或养生疑问... (Enter发送, Shift+Enter换行)" 
                         class="flex-1 bg-transparent border-0 resize-none outline-none py-2 px-3 max-h-32 placeholder-gray-400 text-sm"
                         style="min-height: 40px; color:#4a3728;"></textarea>
-
                     <button v-if="!isStreaming" @click="sendMessage" :disabled="!inputMessage.trim() || !isApiReady"
-                        class="p-2 rounded-full transition disabled:opacity-40 btn-primary flex-shrink-0">
+                        class="p-2 rounded-full transition disabled:opacity-40 btn-primary">
                         <i class="fas fa-paper-plane"></i>
                     </button>
-                    <button v-else @click="stopStreaming" class="p-2 rounded-full flex-shrink-0" style="background:#e8c9a8; color:#8b4c2c;">
+                    <button v-else @click="stopStreaming" class="p-2 rounded-full" style="background:#e8c9a8; color:#8b4c2c;">
                         <i class="fas fa-stop"></i>
                     </button>
                 </div>
                 <div class="flex justify-between mt-2 text-xs px-1" style="color:#a08762;">
                     <span><i class="fas fa-database"></i> {{ isApiReady ? '✅ 内经智脑已就绪' : '⚠️ 请配置API Key' }}</span>
-                    <span><i class="fas fa-microphone"></i> 语音输入 · 体质结果自动发送</span>
+                    <span><i class="fas fa-home"></i> 返回主页 | 体质结果自动发送</span>
                 </div>
             </div>
         </div>
@@ -407,124 +377,9 @@
                 const userConfig = ref({ apiBase: DEFAULT_API_BASE, apiKey: DEFAULT_API_KEY });
                 const isApiReady = ref(true);
 
-                // 语音播报相关
+                // 语音相关
                 let currentUtterance = null;
                 let speechAllowed = false;
-
-                // ========== 语音转文字（录音）相关 ==========
-                const isRecording = ref(false);
-                let mediaRecorder = null;
-                let audioChunks = [];
-
-                const startRecording = async () => {
-                    if (isStreaming.value) return;
-                    try {
-                        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-
-                        // 关键改动：优先选用 Dify 明确支持的音频格式
-                        // 优先级：audio/mp4 > audio/mp3 > audio/webm
-                        let mimeType = '';
-                        if (typeof MediaRecorder !== 'undefined') {
-                            const candidates = [
-                                'audio/mp4',
-                                'audio/mp4;codecs=mp4a.40.2',
-                                'audio/mpeg',
-                                'audio/mp3',
-                                'audio/webm;codecs=opus',
-                                'audio/webm'
-                            ];
-                            for (const c of candidates) {
-                                if (MediaRecorder.isTypeSupported(c)) {
-                                    mimeType = c;
-                                    break;
-                                }
-                            }
-                        }
-
-                        const options = mimeType ? { mimeType } : undefined;
-                        mediaRecorder = new MediaRecorder(stream, options);
-                        audioChunks = [];
-
-                        mediaRecorder.ondataavailable = (e) => {
-                            if (e.data && e.data.size > 0) audioChunks.push(e.data);
-                        };
-
-                        mediaRecorder.onstop = async () => {
-                            const type = mediaRecorder.mimeType || mimeType || 'audio/mp4';
-                            const audioBlob = new Blob(audioChunks, { type });
-                            stream.getTracks().forEach(t => t.stop());
-                            await transcribeAudio(audioBlob, type);
-                        };
-
-                        mediaRecorder.start();
-                        isRecording.value = true;
-                        errorMsg.value = '';
-                    } catch (err) {
-                        console.error(err);
-                        errorMsg.value = '无法访问麦克风，请检查浏览器权限（需 HTTPS）';
-                        setTimeout(() => errorMsg.value = '', 4000);
-                    }
-                };
-
-                const stopRecording = () => {
-                    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-                        mediaRecorder.stop();
-                    }
-                    isRecording.value = false;
-                };
-
-                const transcribeAudio = async (audioBlob, mimeType) => {
-                    if (!isApiReady.value || !userConfig.value.apiKey) {
-                        errorMsg.value = '请先配置 API Key 后再使用语音输入';
-                        setTimeout(() => errorMsg.value = '', 3000);
-                        return;
-                    }
-                    const apiBase = userConfig.value.apiBase.replace(/\/$/, '');
-                    const url = `${apiBase}/audio-to-text`;
-
-                    // 根据 mimeType 决定文件扩展名（Dify 支持 mp3 / mp4 / m4a / wav / webm / mpga）
-                    let ext = 'mp4';
-                    const t = (mimeType || '').toLowerCase();
-                    if (t.includes('mp4') || t.includes('m4a')) ext = 'mp4';
-                    else if (t.includes('mpeg') || t.includes('mp3')) ext = 'mp3';
-                    else if (t.includes('wav')) ext = 'wav';
-                    else if (t.includes('webm')) ext = 'webm';
-                    else if (t.includes('mpga')) ext = 'mpga';
-                    else if (t.includes('ogg')) ext = 'ogg';
-
-                    const formData = new FormData();
-                    formData.append('file', audioBlob, `recording.${ext}`);
-                    formData.append('user', userId.value);
-
-                    try {
-                        errorMsg.value = '⏳ 正在识别语音...';
-                        const res = await fetch(url, {
-                            method: 'POST',
-                            headers: {
-                                'Authorization': `Bearer ${userConfig.value.apiKey}`
-                                // 注意：不要手动设置 Content-Type，浏览器会自动补 boundary
-                            },
-                            body: formData
-                        });
-                        if (!res.ok) {
-                            const errText = await res.text().catch(() => '');
-                            throw new Error(`识别失败 ${res.status}${errText ? ' - ' + errText.slice(0,120) : ''}`);
-                        }
-                        const data = await res.json();
-                        if (data.text && data.text.trim()) {
-                            inputMessage.value += (inputMessage.value && !inputMessage.value.endsWith(' ') ? ' ' : '') + data.text.trim();
-                            errorMsg.value = '';
-                        } else {
-                            errorMsg.value = '未识别到有效语音，请重试';
-                            setTimeout(() => errorMsg.value = '', 2500);
-                        }
-                    } catch (err) {
-                        console.error(err);
-                        errorMsg.value = '语音识别失败：' + err.message;
-                        setTimeout(() => errorMsg.value = '', 5000);
-                    }
-                };
-                // ========== 语音转文字结束 ==========
 
                 const stopSpeaking = () => {
                     if (window.speechSynthesis) window.speechSynthesis.cancel();
@@ -709,7 +564,6 @@
 
                 const newConversation = () => {
                     if (isStreaming.value) stopStreaming();
-                    if (isRecording.value) stopRecording();
                     messages.value = [];
                     conversationId.value = '';
                     errorMsg.value = '';
@@ -727,7 +581,6 @@
 
                 const goBackToHome = () => {
                     if (isStreaming.value && abortController) abortController.abort();
-                    if (isRecording.value) stopRecording();
                     window.location.href = 'https://drinkwater10086.github.io/A/index.html';
                 };
 
@@ -770,9 +623,7 @@
                     messages, inputMessage, isStreaming, errorMsg, showConfig,
                     userConfig, isApiReady, messageContainer, conversationId,
                     sendMessage, stopStreaming, newConversation, saveUserConfig,
-                    renderMarkdown, speakMessage, shouldDisableVoice, stopSpeaking, goBackToHome,
-                    // 新增：语音转文字
-                    isRecording, startRecording, stopRecording
+                    renderMarkdown, speakMessage, shouldDisableVoice, stopSpeaking, goBackToHome
                 };
             }
         }).mount('#app');
