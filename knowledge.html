@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>黄帝内经·素问灵枢 | 藏经阁</title>
-    <meta name="description" content="六篇黄帝内经专题文章——上古天真、四气调神、阴阳二十五人、五脏生成、汤液醪醴、异法方宜，基于内经原文考释。">
+    <title>黄帝内经·敦煌医脉 | 双卷藏经阁</title>
+    <meta name="description" content="双卷十二篇——素问灵枢六篇（上古天真、四气调神、阴阳二十五人、五脏生成、汤液醪醴、异法方宜）＋敦煌医学六篇（张仲景五脏论、辅行诀、灸经图、藏医长卷、神仙粥、净齿图）。">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -17,6 +17,8 @@
             color: #4a3728;
         }
         .container { max-width: 1300px; margin: 0 auto; padding: 0 24px; }
+
+        /* 顶部 */
         .header {
             padding: 36px 0 24px;
             border-bottom: 2px solid #dcc9a8;
@@ -25,7 +27,7 @@
             position: relative;
         }
         .header::after {
-            content: "素问 · 灵枢 · 上古天真";
+            content: "素问 · 灵枢 · 敦煌遗书";
             position: absolute;
             bottom: -12px; right: 20px;
             background: #a87c4a; color: #fef9f0;
@@ -40,17 +42,24 @@
             background-clip: text; -webkit-background-clip: text;
             color: transparent; letter-spacing: 2px;
         }
-        .sub { font-size: 1rem; color: #7a5c3c; margin-top: 10px; font-style: italic; letter-spacing: 0.5px; }
-        .sub::before {
-            content: "「上古天真」"; font-size: 0.65rem; color: #a08762;
-            margin-right: 8px; font-style: normal; opacity: 0.9; letter-spacing: 1px;
+        .sub {
+            font-size: 1rem; color: #7a5c3c;
+            margin-top: 10px; font-style: italic; letter-spacing: 0.5px;
         }
+        .sub::before {
+            content: "「上古天真」";
+            font-size: 0.65rem; color: #a08762;
+            margin-right: 8px; font-style: normal;
+            opacity: 0.9; letter-spacing: 1px;
+        }
+
+        /* 引言牌匾 */
         .hero {
             background: rgba(252, 248, 240, 0.92);
             backdrop-filter: blur(6px);
             border-radius: 48px 24px 48px 24px;
             padding: 30px 32px;
-            margin: 24px 0 48px;
+            margin: 24px 0 36px;
             border: 1px solid #e0d0b4;
             box-shadow: 0 4px 20px rgba(140,110,70,0.08);
         }
@@ -60,11 +69,50 @@
             border-left: 6px solid #a87c4a;
             padding-left: 20px; letter-spacing: 1px;
         }
-        .hero p { font-size: 1.05rem; color: #4a3728; max-width: 85%; line-height: 1.8; }
+        .hero p {
+            font-size: 1.05rem; color: #4a3728;
+            max-width: 88%; line-height: 1.8;
+        }
+
+        /* 分卷标题 */
+        .volume-title {
+            display: flex; align-items: center; gap: 14px;
+            margin: 42px 0 26px;
+            padding: 14px 24px;
+            background: linear-gradient(135deg, rgba(245, 232, 210, 0.9), rgba(252, 248, 240, 0.9));
+            border-left: 8px solid #a87c4a;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(140,110,70,0.1);
+        }
+        .volume-title .vol-icon {
+            font-size: 1.6rem; color: #a87c4a; flex-shrink: 0;
+        }
+        .volume-title .vol-text {
+            flex: 1;
+        }
+        .volume-title h3 {
+            font-size: 1.4rem; color: #5c3e1e;
+            font-weight: 600; letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+        .volume-title p {
+            font-size: 0.85rem; color: #8b6b3d;
+            font-style: italic; letter-spacing: 0.3px;
+        }
+        .volume-title .vol-badge {
+            flex-shrink: 0;
+            background: #efe2d0; color: #7b4d2c;
+            font-size: 0.72rem; padding: 5px 14px;
+            border-radius: 30px; border: 1px solid #e0d0b4;
+            white-space: nowrap;
+        }
+
+        /* 卡片网格 */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-            gap: 32px; margin: 40px 0 60px;
+            gap: 28px;
+            margin-bottom: 20px;
         }
         .card {
             background: rgba(252, 248, 240, 0.95);
@@ -94,44 +142,87 @@
             border-bottom: 2px solid #ebddc6;
             display: flex; justify-content: center; align-items: center;
         }
-        canvas { width: 100%; height: auto; background: #fcf5e8; border-radius: 28px; display: block; }
+        canvas {
+            width: 100%; height: auto;
+            background: #fcf5e8;
+            border-radius: 28px; display: block;
+        }
         .card-content { padding: 20px 22px 26px; }
-        .card-category { font-size: 0.7rem; letter-spacing: 1px; color: #a87c4a; font-weight: 600; margin-bottom: 8px; }
-        .card-title { font-size: 1.55rem; font-weight: 600; margin-bottom: 12px; color: #3f2a17; line-height: 1.3; letter-spacing: 0.5px; }
-        .card-desc { color: #5a4530; font-size: 0.95rem; margin-bottom: 12px; line-height: 1.6; }
+        .card-category {
+            font-size: 0.7rem; letter-spacing: 1px;
+            color: #a87c4a; font-weight: 600; margin-bottom: 8px;
+        }
+        .card-title {
+            font-size: 1.5rem; font-weight: 600;
+            margin-bottom: 12px; color: #3f2a17;
+            line-height: 1.3; letter-spacing: 0.5px;
+        }
+        .card-desc {
+            color: #5a4530; font-size: 0.93rem;
+            margin-bottom: 12px; line-height: 1.6;
+        }
         .card-desc i { color: #a87c4a; margin-right: 4px; }
-        .ref { font-size: 0.75rem; color: #8f7a5c; border-top: 1px dashed #e2d1ba; padding-top: 12px; margin-top: 8px; }
-        .footer {
-            text-align: center; border-top: 1px solid #dcc9a8;
-            padding: 32px 20px; margin-top: 20px;
-            font-size: 0.85rem; color: #8b6b3d; line-height: 1.9;
+        .ref {
+            font-size: 0.75rem; color: #8f7a5c;
+            border-top: 1px dashed #e2d1ba;
+            padding-top: 12px; margin-top: 8px;
         }
-        .footer i { margin: 0 4px; color: #a87c4a; }
-        @media (max-width: 760px) {
-            .hero p { max-width: 100%; }
-            .grid { grid-template-columns: 1fr; }
-            .logo { font-size: 1.9rem; }
-            .header::after { right: 10px; font-size: 0.55rem; }
+        .badge-list {
+            display: flex; flex-wrap: wrap; gap: 8px;
+            margin: 12px 0 6px;
         }
-        .badge-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 6px; }
         .badge {
             background: #efe2d0; border-radius: 30px;
             padding: 4px 12px; font-size: 0.7rem;
             color: #7b4d2c; border: 1px solid #e0d0b4;
         }
+
+        /* 页脚 */
+        .footer {
+            text-align: center; border-top: 1px solid #dcc9a8;
+            padding: 32px 20px; margin-top: 30px;
+            font-size: 0.85rem; color: #8b6b3d; line-height: 1.9;
+        }
+        .footer i { margin: 0 4px; color: #a87c4a; }
+
+        /* 响应式 */
+        @media (max-width: 760px) {
+            .hero p { max-width: 100%; }
+            .grid { grid-template-columns: 1fr; }
+            .logo { font-size: 1.9rem; }
+            .header::after { right: 10px; font-size: 0.55rem; }
+            .volume-title { flex-wrap: wrap; padding: 12px 16px; }
+            .volume-title h3 { font-size: 1.2rem; }
+            .volume-title .vol-badge { font-size: 0.65rem; padding: 4px 10px; }
+        }
     </style>
 </head>
 <body>
 <div class="container">
+    <!-- 顶部牌匾 -->
     <div class="header">
-        <div class="logo">☯️ 黄帝内经 · 素问灵枢</div>
-        <div class="sub">上古天真 · 四气调神 · 阴阳二十五人 · 藏经阁</div>
+        <div class="logo">☯️ 黄帝内经 · 敦煌医脉</div>
+        <div class="sub">双卷十二篇 · 素问灵枢 · 藏经洞医方</div>
     </div>
+
+    <!-- 引言 -->
     <div class="hero">
-        <h2>📜 六篇黄帝内经专题文章</h2>
-        <p>基于《素问》《灵枢》原典与历代注家考释成果，每一篇文章皆引证内经原文（上古天真论、四气调神大论、阴阳二十五人、五脏生成、汤液醪醴、异法方宜等），点击任意卡片阅读完整文章，探索千年医道智慧。</p>
+        <h2>📜 双卷藏经阁 · 十二篇专题</h2>
+        <p>
+            上卷收《黄帝内经》素问灵枢六篇，溯阴阳术数、四气调神之源；下卷纳敦煌藏经洞医学六篇，考古方针灸、食疗壁画之遗。两组文章分别引证内经原典与敦煌原卷（英藏 S.、法藏 P.、北藏等），点击任意卡片阅读完整文章，探索千年医道智慧。
+        </p>
     </div>
-    <div class="grid" id="articleGrid">
+
+    <!-- ====================== 上卷 · 黄帝内经 ====================== -->
+    <div class="volume-title">
+        <div class="vol-icon"><i class="fas fa-yin-yang"></i></div>
+        <div class="vol-text">
+            <h3>上卷 · 素问灵枢</h3>
+            <p>黄帝内经六篇 · 上古天真 · 四气调神 · 阴阳二十五人 · 五脏生成 · 汤液醪醴 · 异法方宜</p>
+        </div>
+        <div class="vol-badge">素问 · 灵枢</div>
+    </div>
+    <div class="grid">
         <!-- 卡片1 上古天真论 -->
         <div class="card" data-url="content/shanggu-tianzhen.html">
             <div class="card-canvas"><canvas id="homeCanvas1" width="400" height="180" style="width:100%; aspect-ratio:400/180"></canvas></div>
@@ -199,12 +290,94 @@
             </div>
         </div>
     </div>
+
+    <!-- ====================== 下卷 · 敦煌医学 ====================== -->
+    <div class="volume-title">
+        <div class="vol-icon"><i class="fas fa-dharmachakra"></i></div>
+        <div class="vol-text">
+            <h3>下卷 · 藏经洞医方</h3>
+            <p>敦煌医学六篇 · 张仲景五脏论 · 辅行诀 · 灸经图 · 藏医长卷 · 神仙粥 · 净齿图</p>
+        </div>
+        <div class="vol-badge">英藏 S. · 法藏 P.</div>
+    </div>
+    <div class="grid">
+        <!-- 卡片7 张仲景五脏论 -->
+        <div class="card" data-url="zhang-zhongjing-wuzang-lun.html">
+            <div class="card-canvas"><canvas id="homeCanvas7" width="400" height="180" style="width:100%; aspect-ratio:400/180"></canvas></div>
+            <div class="card-content">
+                <div class="card-category">📖 医经遗珍</div>
+                <div class="card-title">敦煌《张仲景五脏论》</div>
+                <div class="card-desc">写本 P.2115、S.5614 等，脏腑辨证早期文献，马继兴《敦煌古医籍考释》有详录。</div>
+                <div class="badge-list"><span class="badge">法藏 P.2115</span><span class="badge">英藏 S.5614</span></div>
+                <div class="ref">考释来源：马继兴《敦煌古医籍考释》1988</div>
+            </div>
+        </div>
+        <!-- 卡片8 辅行诀 -->
+        <div class="card" data-url="fuxingjue-tangyejingfa.html">
+            <div class="card-canvas"><canvas id="homeCanvas8" width="400" height="180" style="width:100%; aspect-ratio:400/180"></canvas></div>
+            <div class="card-content">
+                <div class="card-category">🍃 经方复古</div>
+                <div class="card-title">《辅行诀脏腑用药法要》</div>
+                <div class="card-desc">陶弘景辑录，保存“汤液经法图”，王雪苔、马继兴鉴定为敦煌真本。</div>
+                <div class="badge-list"><span class="badge">五行互含</span><span class="badge">阴阳旦汤</span></div>
+                <div class="ref">来源：王淑民《中华医史杂志》1990</div>
+            </div>
+        </div>
+        <!-- 卡片9 灸经图 -->
+        <div class="card" data-url="jiujingtu-moxibustion.html">
+            <div class="card-canvas"><canvas id="homeCanvas9" width="400" height="180" style="width:100%; aspect-ratio:400/180"></canvas></div>
+            <div class="card-content">
+                <div class="card-category">🔥 针灸遗韵</div>
+                <div class="card-title">《灸经图》· 敦煌灸法图谱</div>
+                <div class="card-desc">英藏 S.6168、S.6262，现存最早灸法图谱，黄龙祥《中国针灸学术史大纲》详考。</div>
+                <div class="badge-list"><span class="badge">明堂灸法</span><span class="badge">穴图+文字</span></div>
+                <div class="ref">黄龙祥《中国针灸学术史大纲》2001</div>
+            </div>
+        </div>
+        <!-- 卡片10 藏医药长卷 -->
+        <div class="card" data-url="tibetan-medical-scroll.html">
+            <div class="card-canvas"><canvas id="homeCanvas10" width="400" height="180" style="width:100%; aspect-ratio:400/180"></canvas></div>
+            <div class="card-content">
+                <div class="card-category">🏔️ 吐蕃医药</div>
+                <div class="card-title">敦煌藏医药文献《长卷》</div>
+                <div class="card-desc">P.T.127、IOL Tib J756 记录《医疗术》《医马经》，罗秉芬《敦煌本吐蕃医学文献选编》。</div>
+                <div class="badge-list"><span class="badge">三因学说</span><span class="badge">医马经</span></div>
+                <div class="ref">罗秉芬《敦煌本吐蕃医学文献选编》2002</div>
+            </div>
+        </div>
+        <!-- 卡片11 神仙粥与食疗 -->
+        <div class="card" data-url="shenxianzhou-diet.html">
+            <div class="card-canvas"><canvas id="homeCanvas11" width="400" height="180" style="width:100%; aspect-ratio:400/180"></canvas></div>
+            <div class="card-content">
+                <div class="card-category">🍲 食养智慧</div>
+                <div class="card-title">神仙粥·敦煌食疗方</div>
+                <div class="card-desc">P.3810《呼吸静功妙诀》附“神仙粥”及枸杞煎方，丛春雨《敦煌中医药全书》。</div>
+                <div class="badge-list"><span class="badge">神仙粥</span><span class="badge">枸杞煎</span></div>
+                <div class="ref">丛春雨《敦煌中医药全书》1994</div>
+            </div>
+        </div>
+        <!-- 卡片12 净齿图 -->
+        <div class="card" data-url="jingchitu-oral-health.html">
+            <div class="card-canvas"><canvas id="homeCanvas12" width="400" height="180" style="width:100%; aspect-ratio:400/180"></canvas></div>
+            <div class="card-content">
+                <div class="card-category">🦷 医学图像</div>
+                <div class="card-title">莫高窟第196窟·净齿图</div>
+                <div class="card-desc">壁画“净齿图”与 P.2704《净齿药方》，王惠民《敦煌研究》2003。</div>
+                <div class="badge-list"><span class="badge">杨柳枝揩齿</span><span class="badge">世界口腔医学史料</span></div>
+                <div class="ref">王惠民《敦煌壁画中的净齿图与古代口腔医学》</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
     <div class="footer">
         <i class="fas fa-pagoda"></i> 黄帝内经 · 敦煌医脉 | 恬淡虚无，真气从之，精神内守，病安从来 <i class="fas fa-feather-alt"></i><br>
-        <span style="font-size:0.72rem; opacity:0.85;">法于阴阳，和于术数，食饮有节，起居有常，不妄作劳，故能形与神俱</span>
+        <span style="font-size:0.72rem; opacity:0.85;">上卷素问灵枢 · 下卷藏经洞医方 · 十二篇文献均依据公开出版物，插图原创示意</span>
     </div>
 </div>
+
 <script>
+    /* ============ 上卷 · 黄帝内经 六图 ============ */
     function drawHomeCanvas1(ctx, w, h) {
         ctx.fillStyle="#fdf3e0"; ctx.fillRect(0,0,w,h);
         ctx.fillStyle="#a87c4a"; ctx.font=`500 ${Math.floor(h*0.12)}px "Segoe UI"`; ctx.fillText("📜 上古天真",15,35);
@@ -218,14 +391,63 @@
     function drawHomeCanvas4(ctx,w,h){ ctx.fillStyle="#f2e5d2"; ctx.fillRect(0,0,w,h); ctx.fillStyle="#6c4f28"; ctx.font=`${Math.floor(h*0.12)}px "Segoe UI"`; ctx.fillText("🏔️ 五脏生成",15,40); ctx.fillStyle="#a16531"; ctx.font=`italic ${Math.floor(h*0.09)}px "楷体"`; ctx.fillText("心肝脾肺肾",25,85); ctx.fillStyle="#c28245"; ctx.fillRect(280,70,60,50); ctx.fillStyle="#fcf3e1"; ctx.font=`${Math.floor(h*0.09)}px "KaiTi"`; ctx.fillText("五脏",290,100); ctx.fillText("所合",290,125); }
     function drawHomeCanvas5(ctx,w,h){ ctx.fillStyle="#fdf0de"; ctx.fillRect(0,0,w,h); ctx.fillStyle="#b95f2a"; ctx.font=`bold ${Math.floor(h*0.12)}px "楷体"`; ctx.fillText("汤液醪醴",15,42); ctx.fillStyle="#8b613c"; ctx.font=`${Math.floor(h*0.08)}px "Segoe UI"`; ctx.fillText("古法煎煮·醪醴之道",20,85); ctx.beginPath(); ctx.ellipse(280,100,45,25,0,0,Math.PI*2); ctx.fillStyle="#dbb57b"; ctx.fill(); ctx.fillStyle="#f9e5bf"; ctx.beginPath(); ctx.ellipse(280,92,38,18,0,0,Math.PI*2); ctx.fill(); ctx.fillStyle="#af753d"; ctx.font=`${Math.floor(h*0.1)}px "Segoe UI"`; ctx.fillText("🥣",270,100); ctx.fillRect(250,108,60,12); }
     function drawHomeCanvas6(ctx,w,h){ ctx.fillStyle="#f9efdf"; ctx.fillRect(0,0,w,h); ctx.fillStyle="#3f2a16"; ctx.font=`${Math.floor(h*0.12)}px "KaiTi"`; ctx.fillText("异法方宜",15,42); ctx.beginPath(); ctx.moveTo(80,110); ctx.lineTo(130,60); ctx.lineTo(140,70); ctx.lineTo(90,120); ctx.fillStyle="#9d7942"; ctx.fill(); ctx.fillStyle="#517e3a"; ctx.fillRect(115,52,12,25); ctx.fillStyle="#a8632e"; ctx.font=`${Math.floor(h*0.07)}px "KaiTi"`; ctx.fillText("五方之宜",72,145); ctx.fillStyle="#b27438"; ctx.beginPath(); ctx.arc(230,90,22,0,Math.PI*2); ctx.fill(); ctx.fillStyle="#f9eedb"; ctx.font=`${Math.floor(h*0.11)}px "Segoe UI"`; ctx.fillText("🌏",224,100); }
-    const homeCanvases=[
-        {id:"homeCanvas1",draw:drawHomeCanvas1},{id:"homeCanvas2",draw:drawHomeCanvas2},{id:"homeCanvas3",draw:drawHomeCanvas3},
-        {id:"homeCanvas4",draw:drawHomeCanvas4},{id:"homeCanvas5",draw:drawHomeCanvas5},{id:"homeCanvas6",draw:drawHomeCanvas6}
+
+    /* ============ 下卷 · 敦煌医学 六图 ============ */
+    function drawHomeCanvas7(ctx, w, h) {
+        ctx.fillStyle="#fdf3e0"; ctx.fillRect(0,0,w,h);
+        ctx.fillStyle="#b87c4a"; ctx.font=`500 ${Math.floor(h*0.12)}px "Segoe UI"`; ctx.fillText("📜 五脏论",15,35);
+        ctx.fillStyle="#67441e"; ctx.font=`${Math.floor(h*0.09)}px "楷体"`; ctx.fillText("心 肝 脾 肺 肾",25,70);
+        ctx.beginPath(); ctx.arc(w-40,45,20,0,Math.PI*2); ctx.fillStyle="#dcb57c"; ctx.fill();
+        ctx.fillStyle="#4f2f12"; ctx.font=`${Math.floor(h*0.11)}px "Segoe UI"`; ctx.fillText("⚕",w-50,52);
+        ctx.fillStyle="#af7642"; ctx.fillRect(w-85,110,28,28); ctx.fillStyle="#fff8ed"; ctx.font=`${Math.floor(h*0.09)}px "楷体"`; ctx.fillText("药",w-75,130);
+    }
+    function drawHomeCanvas8(ctx,w,h){ ctx.fillStyle="#f7ecdb"; ctx.fillRect(0,0,w,h); ctx.fillStyle="#a07141"; ctx.font=`bold ${Math.floor(h*0.13)}px "Times New Roman"`; ctx.fillText("汤液经法图",15,45); ctx.fillStyle="#7a562e"; ctx.font=`${Math.floor(h*0.09)}px "楷体"`; ctx.fillText("五味·五行互含",18,85); for(let i=0;i<5;i++){ let angle=(i*72-90)*Math.PI/180; let x=w-50+Math.cos(angle)*30,y=100+Math.sin(angle)*30; ctx.beginPath(); ctx.arc(x,y,8,0,2*Math.PI); ctx.fillStyle="#ddb36b"; ctx.fill(); ctx.fillStyle="#4d301a"; ctx.font=`${Math.floor(h*0.07)}px "KaiTi"`; ctx.fillText("⚡",x-4,y+4); } }
+    function drawHomeCanvas9(ctx,w,h){ ctx.fillStyle="#f4e9d8"; ctx.fillRect(0,0,w,h); ctx.fillStyle="#925e2c"; ctx.font=`bold ${Math.floor(h*0.12)}px "KaiTi"`; ctx.fillText("灸经图",15,38); ctx.beginPath(); ctx.moveTo(80,50); ctx.lineTo(120,30); ctx.lineTo(160,50); ctx.lineTo(160,130); ctx.lineTo(80,130); ctx.fillStyle="#e2cdaf"; ctx.fill(); for(let i=0;i<5;i++){ ctx.beginPath(); ctx.arc(120,55+i*20,5,0,2*Math.PI); ctx.fillStyle="#d4954b"; ctx.fill(); ctx.fillStyle="#2f2113"; ctx.font=`${Math.floor(h*0.06)}px "KaiTi"`; ctx.fillText("穴",117,59+i*20); } ctx.fillStyle="#c29357"; ctx.fillRect(200,45,60,90); ctx.fillStyle="#fff8ed"; ctx.font=`${Math.floor(h*0.08)}px "KaiTi"`; ctx.fillText("明堂",215,78); ctx.fillText("灸方",215,110); }
+    function drawHomeCanvas10(ctx,w,h){ ctx.fillStyle="#f2e5d2"; ctx.fillRect(0,0,w,h); ctx.fillStyle="#6c4f28"; ctx.font=`${Math.floor(h*0.12)}px "Segoe UI"`; ctx.fillText("🏔️ 藏医长卷",15,40); ctx.fillStyle="#a16531"; ctx.font=`italic ${Math.floor(h*0.09)}px "楷体"`; ctx.fillText("三因学说",25,85); ctx.fillStyle="#c28245"; ctx.fillRect(280,70,60,50); ctx.fillStyle="#fcf3e1"; ctx.font=`${Math.floor(h*0.09)}px "KaiTi"`; ctx.fillText("医马经",290,100); }
+    function drawHomeCanvas11(ctx,w,h){ ctx.fillStyle="#fdf0de"; ctx.fillRect(0,0,w,h); ctx.fillStyle="#b95f2a"; ctx.font=`bold ${Math.floor(h*0.12)}px "楷体"`; ctx.fillText("神仙粥",15,42); ctx.fillStyle="#8b613c"; ctx.font=`${Math.floor(h*0.08)}px "Segoe UI"`; ctx.fillText("山药 芡实 韭菜籽",20,85); ctx.beginPath(); ctx.ellipse(280,100,45,25,0,0,Math.PI*2); ctx.fillStyle="#dbb57b"; ctx.fill(); ctx.fillStyle="#f9e5bf"; ctx.beginPath(); ctx.ellipse(280,92,38,18,0,0,Math.PI*2); ctx.fill(); ctx.fillStyle="#af753d"; ctx.font=`${Math.floor(h*0.1)}px "Segoe UI"`; ctx.fillText("🥣",270,100); ctx.fillRect(250,108,60,12); }
+    function drawHomeCanvas12(ctx,w,h){ ctx.fillStyle="#f9efdf"; ctx.fillRect(0,0,w,h); ctx.fillStyle="#3f2a16"; ctx.font=`${Math.floor(h*0.12)}px "KaiTi"`; ctx.fillText("净齿图·第196窟",15,42); ctx.beginPath(); ctx.moveTo(80,110); ctx.lineTo(130,60); ctx.lineTo(140,70); ctx.lineTo(90,120); ctx.fillStyle="#9d7942"; ctx.fill(); ctx.fillStyle="#517e3a"; ctx.fillRect(115,52,12,25); ctx.fillStyle="#a8632e"; ctx.font=`${Math.floor(h*0.07)}px "KaiTi"`; ctx.fillText("杨柳枝",72,145); ctx.fillStyle="#b27438"; ctx.beginPath(); ctx.arc(230,90,22,0,Math.PI*2); ctx.fill(); ctx.fillStyle="#f9eedb"; ctx.font=`${Math.floor(h*0.11)}px "Segoe UI"`; ctx.fillText("🦷",224,100); }
+
+    /* ============ 渲染 ============ */
+    const homeCanvases = [
+        {id:"homeCanvas1",  draw:drawHomeCanvas1},
+        {id:"homeCanvas2",  draw:drawHomeCanvas2},
+        {id:"homeCanvas3",  draw:drawHomeCanvas3},
+        {id:"homeCanvas4",  draw:drawHomeCanvas4},
+        {id:"homeCanvas5",  draw:drawHomeCanvas5},
+        {id:"homeCanvas6",  draw:drawHomeCanvas6},
+        {id:"homeCanvas7",  draw:drawHomeCanvas7},
+        {id:"homeCanvas8",  draw:drawHomeCanvas8},
+        {id:"homeCanvas9",  draw:drawHomeCanvas9},
+        {id:"homeCanvas10", draw:drawHomeCanvas10},
+        {id:"homeCanvas11", draw:drawHomeCanvas11},
+        {id:"homeCanvas12", draw:drawHomeCanvas12}
     ];
-    function renderHomeCanvases(){ for(let item of homeCanvases){ let canvas=document.getElementById(item.id); if(!canvas) continue; let ctx=canvas.getContext('2d'); let containerWidth=canvas.clientWidth; let drawWidth=containerWidth||400; let drawHeight=drawWidth/400*180; canvas.width=drawWidth; canvas.height=drawHeight; item.draw(ctx,canvas.width,canvas.height); } }
-    window.addEventListener('load',()=>{ renderHomeCanvases(); window.addEventListener('resize',()=>renderHomeCanvases()); });
-    const cards=document.querySelectorAll('.card');
-    cards.forEach(card=>{ card.addEventListener('click',function(e){ let url=this.getAttribute('data-url'); if(url) window.location.href=url; }); });
+    function renderHomeCanvases() {
+        for (let item of homeCanvases) {
+            let canvas = document.getElementById(item.id);
+            if (!canvas) continue;
+            let ctx = canvas.getContext('2d');
+            let containerWidth = canvas.clientWidth;
+            let drawWidth = containerWidth || 400;
+            let drawHeight = drawWidth / 400 * 180;
+            canvas.width = drawWidth;
+            canvas.height = drawHeight;
+            item.draw(ctx, canvas.width, canvas.height);
+        }
+    }
+    window.addEventListener('load', () => {
+        renderHomeCanvases();
+        window.addEventListener('resize', () => renderHomeCanvases());
+    });
+
+    /* 卡片点击跳转 */
+    const cards = document.querySelectorAll('.card');
+    cards.forEach(card => {
+        card.addEventListener('click', function () {
+            let url = this.getAttribute('data-url');
+            if (url) window.location.href = url;
+        });
+    });
 </script>
 </body>
 </html>
