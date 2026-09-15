@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>敦煌医学专业康养顾问 - 智能对话</title>
+    <title>黄帝内经·敦煌医脉 | 智能辩证康养</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -12,9 +12,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <style>
+        /* 敦煌医脉·黄帝内经 主题色调 —— 暖褐、土黄、米白、赭石 */
         body {
             position: relative;
-            background-color: #2a160a;
+            background-color: #f5ecd9;
+            font-family: 'Segoe UI', '华文楷书', 'Microsoft YaHei', 'Georgia', serif;
         }
         body::after {
             content: "";
@@ -27,7 +29,7 @@
             background-size: cover;
             background-position: center center;
             background-repeat: no-repeat;
-            filter: blur(12px);
+            filter: blur(14px) sepia(0.35) brightness(0.96) saturate(0.85);
             transform: scale(1.05);
             z-index: -2;
             pointer-events: none;
@@ -39,7 +41,11 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.25);
+            background-color: rgba(245, 236, 217, 0.55);
+            background-image: radial-gradient(circle at 12% 22%, rgba(180,140,90,0.12) 1.8%, transparent 2.4%),
+                              radial-gradient(circle at 82% 68%, rgba(200,160,100,0.1) 1.5%, transparent 2%),
+                              radial-gradient(circle at 45% 88%, rgba(160,120,70,0.08) 2.2%, transparent 3%);
+            background-size: 56px 56px, 72px 72px, 96px 96px;
             z-index: -1;
             pointer-events: none;
         }
@@ -53,12 +59,12 @@
             background-color: transparent;
         }
         .message-container { flex: 1; overflow-y: auto; min-height: 0; }
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: rgba(241,241,241,0.5); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb { background: rgba(193,193,193,0.8); border-radius: 10px; }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: rgba(215,195,165,0.4); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: rgba(170,130,80,0.6); border-radius: 10px; }
         .typing-indicator span {
             display: inline-block; width: 6px; height: 6px; border-radius: 50%;
-            background-color: #9ca3af; margin: 0 2px;
+            background-color: #a78b62; margin: 0 2px;
             animation: typing 1.4s infinite ease-in-out both;
         }
         .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
@@ -67,7 +73,7 @@
             0%,80%,100% { transform: scale(0.6); opacity: 0.5; }
             40% { transform: scale(1); opacity: 1; }
         }
-        .voice-btn:hover { background-color: #e5e7eb; transform: scale(1.05); }
+        .voice-btn:hover { background-color: #e8ddc8; transform: scale(1.05); }
         .nav-btn {
             transition: all 0.2s ease;
             min-width: 36px; min-height: 36px;
@@ -75,127 +81,205 @@
         }
         .nav-btn:active { transform: scale(0.95); }
         header {
-            background-color: rgba(255, 255, 255, 0.9) !important;
-            backdrop-filter: blur(4px);
+            background-color: rgba(250, 244, 230, 0.92) !important;
+            backdrop-filter: blur(6px);
+            border-bottom: 1px solid #dcc9a8;
         }
-        .message-container .bg-white { background-color: rgba(255,255,255,0.92) !important; }
-        .message-container .bg-indigo-600 { background-color: rgba(79,70,229,0.92) !important; }
-        .border-t { background-color: rgba(255,255,255,0.85) !important; backdrop-filter: blur(4px); }
-        .bg-gray-50 { background-color: rgba(249,250,251,0.9) !important; }
-        textarea { font-size: 16px; }
+        .message-container .bg-white { background-color: rgba(252,248,240,0.96) !important; border: 1px solid #e3d5bc; }
+        .message-container .bg-indigo-600 { background-color: rgba(168,124,74,0.92) !important; }
+        .border-t { background-color: rgba(250,244,230,0.92) !important; backdrop-filter: blur(6px); border-top: 1px solid #dcc9a8; }
+        .bg-gray-50 { background-color: rgba(247,240,226,0.92) !important; border: 1px solid #e0d0b4; }
+        textarea { font-size: 16px; color: #4a3728; }
+        textarea::placeholder { color: #a99274; }
+
+        /* 敦煌医脉风格素问小印 */
+        .neijing-seal {
+            font-size: 0.62rem;
+            color: #8b6b3d;
+            letter-spacing: 2px;
+            font-style: italic;
+            opacity: 0.85;
+            padding-bottom: 2px;
+        }
+
+        /* 用户气泡 · 赭石色 */
+        .user-bubble {
+            background-color: #a87c4a !important;
+            color: #fef9f0 !important;
+        }
+        /* 助手气泡 */
+        .assistant-bubble {
+            background-color: #fcf8f0 !important;
+            border: 1px solid #e3d5bc !important;
+            color: #3d2c1c !important;
+        }
+        /* 按钮主色 */
+        .btn-primary {
+            background-color: #a87c4a;
+            color: #fef9f0;
+        }
+        .btn-primary:hover {
+            background-color: #8f683c;
+        }
+        .btn-primary:disabled {
+            background-color: #d9cbb4;
+            color: #f0e8da;
+        }
+
+        /* 卡片 · 药材数据库风格 */
+        .card-dunhuang {
+            background: rgba(252, 248, 240, 0.9);
+            border: 1px solid #e0d0b4;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(140,110,70,0.08);
+        }
+
+        /* 页眉标题渐变（敦煌暖褐） */
+        .title-gradient {
+            background: linear-gradient(135deg, #8b5e34, #a87c4a, #c49a6c);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        /* 空状态引言牌匾风 */
+        .empty-plaque {
+            background: rgba(252,248,240,0.85);
+            border: 1px solid #e0d0b4;
+            border-radius: 16px;
+            padding: 20px 24px;
+            box-shadow: 0 4px 16px rgba(140,110,70,0.08);
+            max-width: 460px;
+            margin: 0 auto;
+        }
+
         @media (max-width: 640px) {
             .nav-btn { width: 36px; height: 36px; }
-            h1.text-xl { font-size: 1.1rem; }
+            h1.text-xl { font-size: 1.05rem; }
         }
     </style>
 </head>
 <body>
     <div id="app" class="h-full flex flex-col overflow-hidden">
-        <!-- 顶部导航栏 - 确保标题清晰可见 -->
-        <header class="bg-white/90 backdrop-blur-sm border-b shadow-md flex-shrink-0">
+        <!-- 顶部导航栏 · 黄帝内经·敦煌医脉 -->
+        <header class="flex-shrink-0 shadow-sm">
             <div class="max-w-5xl mx-auto px-4 py-2 sm:py-3 flex items-center justify-between">
                 <div class="flex items-center space-x-2 sm:space-x-3">
-                    <div class="w-8 h-8 bg-amber-700 rounded-xl flex items-center justify-center shadow-md">
-                        <i class="fas fa-dharmachakra text-white text-sm"></i>
+                    <div class="w-8 h-8 bg-amber-800 rounded-xl flex items-center justify-center shadow-md">
+                        <i class="fas fa-dharmachakra text-amber-50 text-sm"></i>
                     </div>
-                    <h1 class="text-lg sm:text-xl font-bold bg-gradient-to-r from-amber-800 to-indigo-800 bg-clip-text text-transparent">
-                        <i class="fas fa-feather-alt text-amber-700 mr-1"></i>敦煌医学·专业康养顾问
+                    <h1 class="text-lg sm:text-xl font-bold title-gradient">
+                        <i class="fas fa-feather-alt text-amber-700 mr-1"></i>黄帝内经·敦煌医脉
                     </h1>
                 </div>
                 <div class="flex items-center gap-1 sm:gap-2">
                     <button @click="stopSpeaking" class="nav-btn p-1.5 rounded-full hover:bg-red-50" title="停止语音">
                         <i class="fas fa-stop-circle text-red-500 text-lg"></i>
                     </button>
-                    <button @click="newConversation" :disabled="isStreaming" class="nav-btn p-1.5 rounded-full hover:bg-gray-100 disabled:opacity-50" title="新建对话">
-                        <i class="fas fa-plus text-gray-600 text-lg"></i>
+                    <button @click="newConversation" :disabled="isStreaming" class="nav-btn p-1.5 rounded-full hover:bg-amber-50 disabled:opacity-50" title="新建对话">
+                        <i class="fas fa-plus text-amber-800 text-lg"></i>
                     </button>
-                    <button @click="showConfig = !showConfig" class="nav-btn p-1.5 rounded-full hover:bg-gray-100" title="API配置">
-                        <i class="fas fa-sliders-h text-gray-600 text-lg"></i>
+                    <button @click="showConfig = !showConfig" class="nav-btn p-1.5 rounded-full hover:bg-amber-50" title="API配置">
+                        <i class="fas fa-sliders-h text-amber-800 text-lg"></i>
                     </button>
-                    <button @click="goBackToHome" class="nav-btn p-1.5 rounded-full hover:bg-indigo-100" title="返回主页">
-                        <i class="fas fa-home text-indigo-600 text-lg"></i>
+                    <button @click="goBackToHome" class="nav-btn p-1.5 rounded-full hover:bg-amber-100" title="返回主页">
+                        <i class="fas fa-home text-amber-800 text-lg"></i>
                     </button>
                 </div>
             </div>
+            <!-- 素问灵枢细纹 -->
+            <div class="text-center pb-1 neijing-seal">
+                <i class="fas fa-book-open mr-1"></i> 素问 · 灵枢 · 敦煌遗书 · 四气调神
+            </div>
         </header>
 
-        <!-- 配置侧边栏（同前） -->
+        <!-- 配置侧边栏 -->
         <div v-if="showConfig" class="fixed inset-0 bg-black/30 z-20 flex justify-end" @click.self="showConfig=false">
             <div class="w-full max-w-md bg-white h-full shadow-2xl p-6 overflow-y-auto">
                 <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-xl font-bold">⚙️ API 配置</h2>
+                    <h2 class="text-xl font-bold" style="color:#5c3e1e;">⚙️ API 配置</h2>
                     <button @click="showConfig=false" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
                 </div>
                 <div class="space-y-5">
                     <div>
-                        <label class="block text-sm font-medium">API 基础地址</label>
-                        <input type="text" v-model="userConfig.apiBase" placeholder="https://api.dify.ai/v1" class="w-full border rounded-lg px-4 py-2">
+                        <label class="block text-sm font-medium" style="color:#5c3e1e;">API 基础地址</label>
+                        <input type="text" v-model="userConfig.apiBase" placeholder="https://api.dify.ai/v1" class="w-full border rounded-lg px-4 py-2" style="border-color:#dcc9a8; background:#fdfaf4;">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium">API Key</label>
-                        <input type="password" v-model="userConfig.apiKey" placeholder="app-xxx" class="w-full border rounded-lg px-4 py-2">
+                        <label class="block text-sm font-medium" style="color:#5c3e1e;">API Key</label>
+                        <input type="password" v-model="userConfig.apiKey" placeholder="app-xxx" class="w-full border rounded-lg px-4 py-2" style="border-color:#dcc9a8; background:#fdfaf4;">
                     </div>
-                    <button @click="saveUserConfig" class="w-full bg-indigo-600 text-white py-2 rounded-lg">保存配置</button>
+                    <button @click="saveUserConfig" class="w-full btn-primary py-2 rounded-lg font-medium">保存配置</button>
                 </div>
             </div>
         </div>
 
-        <!-- 消息区域 -->
+        <!-- 消息区域 · 敦煌医脉风格空状态 -->
         <main class="message-container" ref="messageContainer">
             <div class="max-w-5xl mx-auto px-3 sm:px-4 py-4 space-y-4">
-                <div v-if="messages.length===0" class="flex flex-col items-center justify-center h-48 text-gray-500">
-                    <i class="fas fa-comment-dots text-5xl mb-3 opacity-60"></i>
-                    <p class="text-lg font-medium">开始与康养顾问对话</p>
-                    <p class="text-sm mt-1">默认 API 已配置 | 语音可随时停止</p>
+                <!-- 空状态：敦煌医脉牌匾风 -->
+                <div v-if="messages.length===0" class="flex flex-col items-center justify-center h-64 text-center px-4">
+                    <div class="empty-plaque">
+                        <i class="fas fa-yin-yang text-4xl mb-3 opacity-60" style="color:#a87c4a;"></i>
+                        <p class="text-lg font-medium" style="color:#5c3e1e;">「法于阴阳，和于术数」</p>
+                        <p class="text-sm mt-2 leading-relaxed" style="color:#7a5c3c;">食饮有节，起居有常，不妄作劳，故能形与神俱。</p>
+                        <p class="text-xs mt-3" style="color:#a08762;">—— 黄帝内经·素问·上古天真论</p>
+                        <div class="mt-4 pt-3" style="border-top:1px solid #e3d5bc;">
+                            <p class="text-sm" style="color:#8b5e34;"><i class="fas fa-comment-dots mr-1"></i> 开始与内经康养顾问对话</p>
+                        </div>
+                    </div>
                 </div>
                 <div v-for="(msg, idx) in messages" :key="msg.id" class="flex" :class="msg.role==='user'?'justify-end':'justify-start'">
                     <!-- 助手消息 -->
                     <div v-if="msg.role==='assistant'" class="flex items-start gap-2 max-w-[85%] sm:max-w-[80%]">
-                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center"><i class="fas fa-robot text-gray-600"></i></div>
-                        <div class="relative px-4 py-3 rounded-2xl bg-white text-gray-800 border shadow-sm">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center" style="background:#e8ddc8;">
+                            <i class="fas fa-leaf" style="color:#8b5e34;"></i>
+                        </div>
+                        <div class="relative px-4 py-3 rounded-2xl assistant-bubble shadow-sm">
                             <div class="prose prose-sm max-w-none" v-html="renderMarkdown(msg.content)"></div>
                             <div v-if="idx===messages.length-1 && isStreaming && !msg.content" class="typing-indicator flex space-x-1 py-1">
                                 <span></span><span></span><span></span>
                             </div>
                         </div>
-                        <button @click="speakMessage(msg)" :disabled="shouldDisableVoice(msg,idx)" class="voice-btn w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center">
+                        <button @click="speakMessage(msg)" :disabled="shouldDisableVoice(msg,idx)" class="voice-btn w-8 h-8 rounded-full flex items-center justify-center" style="background:#f0e8da; color:#8b5e34;">
                             <i class="fas fa-volume-up"></i>
                         </button>
                     </div>
                     <!-- 用户消息 -->
                     <div v-else class="flex items-start gap-2 max-w-[85%] sm:max-w-[80%] flex-row-reverse">
-                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center"><i class="fas fa-user text-indigo-600"></i></div>
-                        <div class="relative px-4 py-3 rounded-2xl bg-indigo-600 text-white rounded-tr-none shadow-sm">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center" style="background:#e8ddc8;">
+                            <i class="fas fa-user" style="color:#8b5e34;"></i>
+                        </div>
+                        <div class="relative px-4 py-3 rounded-2xl rounded-tr-none shadow-sm user-bubble">
                             <div class="whitespace-pre-wrap">{{ msg.content }}</div>
                         </div>
-                        <button @click="speakMessage(msg)" class="voice-btn w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center">
+                        <button @click="speakMessage(msg)" class="voice-btn w-8 h-8 rounded-full flex items-center justify-center" style="background:#f0e8da; color:#8b5e34;">
                             <i class="fas fa-volume-up"></i>
                         </button>
                     </div>
                 </div>
-                <div v-if="errorMsg" class="bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded-xl text-sm">{{ errorMsg }}</div>
+                <div v-if="errorMsg" class="px-4 py-2 rounded-xl text-sm" style="background:#fdf0e8; border:1px solid #e8c9a8; color:#a54c2c;">{{ errorMsg }}</div>
             </div>
         </main>
 
-        <!-- 底部输入 -->
-        <div class="border-t bg-white/90 p-2 sm:p-4 shadow-lg flex-shrink-0">
+        <!-- 底部输入 · 敦煌医脉 -->
+        <div class="border-t p-2 sm:p-4 shadow-lg flex-shrink-0">
             <div class="max-w-3xl mx-auto">
-                <div class="flex items-end gap-3 bg-gray-50 rounded-2xl border p-2 focus-within:ring-2 focus-within:ring-indigo-300">
+                <div class="flex items-end gap-3 rounded-2xl p-2" style="background:#f7f0e2; border:1px solid #e0d0b4;">
                     <textarea v-model="inputMessage" @keydown.enter.exact="sendMessage" @keydown.enter.shift.exact="inputMessage+='\n'" rows="1"
-                        :disabled="isStreaming || !isApiReady" placeholder="输入消息... (Enter发送, Shift+Enter换行)" 
-                        class="flex-1 bg-transparent border-0 resize-none outline-none py-2 px-3 max-h-32 text-gray-700 placeholder-gray-400 text-sm"
-                        style="min-height: 40px;"></textarea>
+                        :disabled="isStreaming || !isApiReady" placeholder="请描述身体不适或养生疑问... (Enter发送, Shift+Enter换行)" 
+                        class="flex-1 bg-transparent border-0 resize-none outline-none py-2 px-3 max-h-32 placeholder-gray-400 text-sm"
+                        style="min-height: 40px; color:#4a3728;"></textarea>
                     <button v-if="!isStreaming" @click="sendMessage" :disabled="!inputMessage.trim() || !isApiReady"
-                        class="p-2 rounded-full transition disabled:opacity-40"
-                        :class="inputMessage.trim()&&isApiReady?'bg-indigo-600 text-white hover:bg-indigo-700':'bg-gray-200 text-gray-400'">
+                        class="p-2 rounded-full transition disabled:opacity-40 btn-primary">
                         <i class="fas fa-paper-plane"></i>
                     </button>
-                    <button v-else @click="stopStreaming" class="p-2 rounded-full bg-red-100 text-red-600 hover:bg-red-200">
+                    <button v-else @click="stopStreaming" class="p-2 rounded-full" style="background:#e8c9a8; color:#8b4c2c;">
                         <i class="fas fa-stop"></i>
                     </button>
                 </div>
-                <div class="flex justify-between mt-2 text-xs text-gray-500 px-1">
-                    <span><i class="fas fa-database"></i> {{ isApiReady ? '✅ API已就绪' : '⚠️ 请配置API Key' }}</span>
+                <div class="flex justify-between mt-2 text-xs px-1" style="color:#a08762;">
+                    <span><i class="fas fa-database"></i> {{ isApiReady ? '✅ 内经智脑已就绪' : '⚠️ 请配置API Key' }}</span>
                     <span><i class="fas fa-home"></i> 返回主页 | 体质结果自动发送</span>
                 </div>
             </div>
