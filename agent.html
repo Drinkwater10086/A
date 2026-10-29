@@ -4,662 +4,375 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <title>黄帝内经·敦煌医脉 | 智能辩证康养</title>
-    
-    <!-- Tailwind CSS (主用官方, 备用国内镜像) -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        if (typeof tailwind === 'undefined') {
-            document.write('<script src="https://cdn.staticfile.net/tailwindcss/3.4.1/tailwind.min.js"><\/script>');
-        }
-    </script>
-
-    <!-- Font Awesome 图标库 (国内镜像) -->
-    <link rel="stylesheet" href="https://s4.zstatic.net/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
-    <!-- Markdown 解析库 (国内镜像) -->
-    <script src="https://s4.zstatic.net/ajax/libs/marked/9.1.6/marked.min.js"></script>
-    
-    <!-- DOMPurify 防 XSS 库 (国内镜像) -->
-    <script src="https://s4.zstatic.net/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
-    
-    <!-- 代码高亮样式与库 (国内镜像) -->
-    <link rel="stylesheet" href="https://s4.zstatic.net/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
-    <script src="https://s4.zstatic.net/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    
-    <!-- Vue 3 框架 (国内镜像) -->
-    <script src="https://s4.zstatic.net/npm/vue@3/dist/vue.global.js"></script>
-
     <style>
-        /* 敦煌医脉·黄帝内经 主题色调 —— 暖褐、土黄、米白、赭石 */
+        /* ================= 核心样式 (纯手写，脱离外部依赖) ================= */
+        :root {
+            --dunhuang-bg: #f5ecd9;
+            --dunhuang-amber: #a87c4a;
+            --dunhuang-amber-dark: #8f683c;
+            --dunhuang-border: #e3d5bc;
+            --dunhuang-text: #4a3728;
+            --dunhuang-text-light: #a99274;
+            --dunhuang-user-bg: #a87c4a;
+            --dunhuang-user-text: #fef9f0;
+            --dunhuang-assistant-bg: #fcf8f0;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            position: relative;
-            background-color: #f5ecd9;
-            font-family: 'Segoe UI', '华文楷书', 'Microsoft YaHei', 'Georgia', serif;
+            position: relative; background-color: var(--dunhuang-bg);
+            font-family: 'Segoe UI', 'Microsoft YaHei', 'Georgia', serif;
+            height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+            color: var(--dunhuang-text);
         }
-        body::after {
-            content: "";
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('image.jpg');
-            background-size: cover;
-            background-position: center center;
-            background-repeat: no-repeat;
-            filter: blur(14px) sepia(0.35) brightness(0.96) saturate(0.85);
-            transform: scale(1.05);
-            z-index: -2;
-            pointer-events: none;
-        }
+        /* 背景纹理 */
         body::before {
-            content: "";
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: rgba(245, 236, 217, 0.55);
             background-image: radial-gradient(circle at 12% 22%, rgba(180,140,90,0.12) 1.8%, transparent 2.4%),
                               radial-gradient(circle at 82% 68%, rgba(200,160,100,0.1) 1.5%, transparent 2%),
                               radial-gradient(circle at 45% 88%, rgba(160,120,70,0.08) 2.2%, transparent 3%);
             background-size: 56px 56px, 72px 72px, 96px 96px;
-            z-index: -1;
-            pointer-events: none;
+            z-index: -1; pointer-events: none;
         }
-        html, body, #app { height: 100%; margin: 0; padding: 0; }
-        #app {
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            position: relative;
-            z-index: 1;
-            background-color: transparent;
-        }
-        .message-container { flex: 1; overflow-y: auto; min-height: 0; }
+        /* 滚动条美化 */
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: rgba(215,195,165,0.4); border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: rgba(170,130,80,0.6); border-radius: 10px; }
-        .typing-indicator span {
+
+        /* 头部 */
+        header {
+            background-color: rgba(250, 244, 230, 0.92); backdrop-filter: blur(6px);
+            border-bottom: 1px solid #dcc9a8; flex-shrink: 0; padding: 10px 20px;
+        }
+        .header-content { max-width: 1000px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .title-gradient {
+            font-size: 1.25rem; font-weight: bold;
+            background: linear-gradient(135deg, #8b5e34, #a87c4a, #c49a6c);
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+        }
+        .nav-btns { display: flex; gap: 6px; }
+        .nav-btn {
+            background: none; border: none; cursor: pointer; font-size: 1.1rem;
+            color: var(--dunhuang-amber-dark); padding: 6px; border-radius: 50%;
+            transition: background 0.2s, transform 0.1s; display: flex; align-items: center; justify-content: center;
+        }
+        .nav-btn:hover { background: #ebdcb9; }
+        .nav-btn:active { transform: scale(0.9); }
+        
+        /* 主聊天区 */
+        .chat-container { flex: 1; overflow-y: auto; padding: 20px; }
+        .chat-inner { max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+        
+        /* 消息气泡 */
+        .message-row { display: flex; width: 100%; }
+        .message-row.user { justify-content: flex-end; }
+        .message-row.assistant { justify-content: flex-start; }
+        
+        .bubble {
+            max-width: 80%; padding: 12px 16px; border-radius: 12px;
+            font-size: 0.95rem; line-height: 1.6; word-break: break-word;
+        }
+        .message-row.user .bubble {
+            background-color: var(--dunhuang-user-bg); color: var(--dunhuang-user-text);
+            border-top-right-radius: 2px;
+        }
+        .message-row.assistant .bubble {
+            background-color: var(--dunhuang-assistant-bg); border: 1px solid var(--dunhuang-border);
+            border-top-left-radius: 2px; white-space: pre-wrap;
+        }
+
+        /* 正在输入动画 */
+        .typing { display: inline-block; }
+        .typing span {
             display: inline-block; width: 6px; height: 6px; border-radius: 50%;
             background-color: #a78b62; margin: 0 2px;
             animation: typing 1.4s infinite ease-in-out both;
         }
-        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
-        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
-        @keyframes typing {
-            0%,80%,100% { transform: scale(0.6); opacity: 0.5; }
-            40% { transform: scale(1); opacity: 1; }
-        }
-        .voice-btn:hover { background-color: #e8ddc8; transform: scale(1.05); }
-        .nav-btn {
-            transition: all 0.2s ease;
-            min-width: 36px; min-height: 36px;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .nav-btn:active { transform: scale(0.95); }
-        header {
-            background-color: rgba(250, 244, 230, 0.92) !important;
-            backdrop-filter: blur(6px);
-            border-bottom: 1px solid #dcc9a8;
-        }
-        .message-container .bg-white { background-color: rgba(252,248,240,0.96) !important; border: 1px solid #e3d5bc; }
-        .message-container .bg-indigo-600 { background-color: rgba(168,124,74,0.92) !important; }
-        .border-t { background-color: rgba(250,244,230,0.92) !important; backdrop-filter: blur(6px); border-top: 1px solid #dcc9a8; }
-        .bg-gray-50 { background-color: rgba(247,240,226,0.92) !important; border: 1px solid #e0d0b4; }
-        textarea { font-size: 16px; color: #4a3728; }
-        textarea::placeholder { color: #a99274; }
+        .typing span:nth-child(1) { animation-delay: -0.32s; }
+        .typing span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes typing { 0%,80%,100% { transform: scale(0.6); opacity: 0.5; } 40% { transform: scale(1); opacity: 1; } }
 
-        /* 敦煌医脉风格素问小印 */
-        .neijing-seal {
-            font-size: 0.62rem;
-            color: #8b6b3d;
-            letter-spacing: 2px;
-            font-style: italic;
-            opacity: 0.85;
-            padding-bottom: 2px;
+        /* 底部输入区 */
+        .input-area {
+            background-color: rgba(250,244,230,0.92); border-top: 1px solid #dcc9a8;
+            padding: 15px 20px; flex-shrink: 0; backdrop-filter: blur(6px);
         }
+        .input-wrapper { max-width: 800px; margin: 0 auto; display: flex; gap: 10px; align-items: flex-end; }
+        textarea {
+            flex: 1; resize: none; border: 1px solid var(--dunhuang-border);
+            border-radius: 12px; padding: 10px 15px; font-family: inherit;
+            font-size: 1rem; color: var(--dunhuang-text); background: #f7f0e2;
+            outline: none; max-height: 120px; min-height: 44px; line-height: 1.5;
+        }
+        textarea::placeholder { color: var(--dunhuang-text-light); }
+        button.send-btn {
+            background-color: var(--dunhuang-amber); color: var(--dunhuang-user-text);
+            border: none; border-radius: 8px; padding: 0 20px; height: 44px;
+            font-weight: bold; cursor: pointer; transition: background 0.2s;
+        }
+        button.send-btn:hover { background-color: var(--dunhuang-amber-dark); }
+        button.send-btn:disabled { background-color: #d9cbb4; cursor: not-allowed; }
 
-        /* 用户气泡 · 赭石色 */
-        .user-bubble {
-            background-color: #a87c4a !important;
-            color: #fef9f0 !important;
-        }
-        /* 助手气泡 */
-        .assistant-bubble {
-            background-color: #fcf8f0 !important;
-            border: 1px solid #e3d5bc !important;
-            color: #3d2c1c !important;
-        }
-        /* 按钮主色 */
-        .btn-primary {
-            background-color: #a87c4a;
-            color: #fef9f0;
-        }
-        .btn-primary:hover {
-            background-color: #8f683c;
-        }
-        .btn-primary:disabled {
-            background-color: #d9cbb4;
-            color: #f0e8da;
-        }
-
-        /* 卡片 · 药材数据库风格 */
-        .card-dunhuang {
-            background: rgba(252, 248, 240, 0.9);
-            border: 1px solid #e0d0b4;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(140,110,70,0.08);
-        }
-
-        /* 页眉标题渐变（敦煌暖褐） */
-        .title-gradient {
-            background: linear-gradient(135deg, #8b5e34, #a87c4a, #c49a6c);
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
-        }
-
-        /* 空状态引言牌匾风 */
-        .empty-plaque {
-            background: rgba(252,248,240,0.85);
-            border: 1px solid #e0d0b4;
-            border-radius: 16px;
-            padding: 20px 24px;
-            box-shadow: 0 4px 16px rgba(140,110,70,0.08);
-            max-width: 460px;
-            margin: 0 auto;
-        }
-
-        @media (max-width: 640px) {
-            .nav-btn { width: 36px; height: 36px; }
-            h1.text-xl { font-size: 1.05rem; }
+        /* 错误提示 */
+        .error-toast {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            background: #fdf0e8; border: 1px solid #e8c9a8; color: #a54c2c;
+            padding: 10px 20px; border-radius: 8px; font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: none; z-index: 100;
         }
     </style>
 </head>
 <body>
-    <div id="app" class="h-full flex flex-col overflow-hidden">
-        <!-- 顶部导航栏 · 黄帝内经·敦煌医脉 -->
-        <header class="flex-shrink-0 shadow-sm">
-            <div class="max-w-5xl mx-auto px-4 py-2 sm:py-3 flex items-center justify-between">
-                <div class="flex items-center space-x-2 sm:space-x-3">
-                    <div class="w-8 h-8 bg-amber-800 rounded-xl flex items-center justify-center shadow-md">
-                        <i class="fas fa-dharmachakra text-amber-50 text-sm"></i>
-                    </div>
-                    <h1 class="text-lg sm:text-xl font-bold title-gradient">
-                        <i class="fas fa-feather-alt text-amber-700 mr-1"></i>黄帝内经·敦煌医脉
-                    </h1>
-                </div>
-                <div class="flex items-center gap-1 sm:gap-2">
-                    <button @click="stopSpeaking" class="nav-btn p-1.5 rounded-full hover:bg-red-50" title="停止语音">
-                        <i class="fas fa-stop-circle text-red-500 text-lg"></i>
-                    </button>
-                    <button @click="newConversation" :disabled="isStreaming" class="nav-btn p-1.5 rounded-full hover:bg-amber-50 disabled:opacity-50" title="新建对话">
-                        <i class="fas fa-plus text-amber-800 text-lg"></i>
-                    </button>
-                    <button @click="showConfig = !showConfig" class="nav-btn p-1.5 rounded-full hover:bg-amber-50" title="API配置">
-                        <i class="fas fa-sliders-h text-amber-800 text-lg"></i>
-                    </button>
-                    <button @click="goBackToHome" class="nav-btn p-1.5 rounded-full hover:bg-amber-100" title="返回主页">
-                        <i class="fas fa-home text-amber-800 text-lg"></i>
-                    </button>
-                </div>
-            </div>
-            <!-- 素问灵枢细纹 -->
-            <div class="text-center pb-1 neijing-seal">
-                <i class="fas fa-book-open mr-1"></i> 素问 · 灵枢 · 敦煌遗书 · 四气调神
-            </div>
-        </header>
 
-        <!-- 配置侧边栏 -->
-        <div v-if="showConfig" class="fixed inset-0 bg-black/30 z-20 flex justify-end" @click.self="showConfig=false">
-            <div class="w-full max-w-md bg-white h-full shadow-2xl p-6 overflow-y-auto">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-xl font-bold" style="color:#5c3e1e;">⚙️ API 配置</h2>
-                    <button @click="showConfig=false" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
-                </div>
-                <div class="space-y-5">
-                    <div>
-                        <label class="block text-sm font-medium" style="color:#5c3e1e;">API 基础地址</label>
-                        <input type="text" v-model="userConfig.apiBase" placeholder="https://api.dify.ai/v1" class="w-full border rounded-lg px-4 py-2" style="border-color:#dcc9a8; background:#fdfaf4;">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium" style="color:#5c3e1e;">API Key</label>
-                        <input type="password" v-model="userConfig.apiKey" placeholder="app-xxx" class="w-full border rounded-lg px-4 py-2" style="border-color:#dcc9a8; background:#fdfaf4;">
-                    </div>
-                    <button @click="saveUserConfig" class="w-full btn-primary py-2 rounded-lg font-medium">保存配置</button>
-                </div>
+    <div class="error-toast" id="errorToast"></div>
+
+    <header>
+        <div class="header-content">
+            <div class="title-gradient">☯ 黄帝内经·敦煌医脉</div>
+            <div class="nav-btns">
+                <!-- 停止语音 (保留图标占位) -->
+                <button class="nav-btn" onclick="stopVoice()" title="停止语音">⏹</button>
+                <!-- 新建对话 -->
+                <button class="nav-btn" onclick="newConversation()" title="新建对话">➕</button>
+                <!-- 设置 -->
+                <button class="nav-btn" onclick="showError('纯原生版本已硬编码 API，无需配置')" title="配置">⚙</button>
+                <!-- 返回主页 -->
+                <button class="nav-btn" onclick="goBackToHome()" title="返回主页">🏠</button>
             </div>
         </div>
+    </header>
 
-        <!-- 消息区域 · 敦煌医脉风格空状态 -->
-        <main class="message-container" ref="messageContainer">
-            <div class="max-w-5xl mx-auto px-3 sm:px-4 py-4 space-y-4">
-                <!-- 空状态：敦煌医脉牌匾风 -->
-                <div v-if="messages.length===0" class="flex flex-col items-center justify-center h-64 text-center px-4">
-                    <div class="empty-plaque">
-                        <i class="fas fa-yin-yang text-4xl mb-3 opacity-60" style="color:#a87c4a;"></i>
-                        <p class="text-lg font-medium" style="color:#5c3e1e;">「法于阴阳，和于术数」</p>
-                        <p class="text-sm mt-2 leading-relaxed" style="color:#7a5c3c;">食饮有节，起居有常，不妄作劳，故能形与神俱。</p>
-                        <p class="text-xs mt-3" style="color:#a08762;">—— 黄帝内经·素问·上古天真论</p>
-                        <div class="mt-4 pt-3" style="border-top:1px solid #e3d5bc;">
-                            <p class="text-sm" style="color:#8b5e34;"><i class="fas fa-comment-dots mr-1"></i> 开始与内经康养顾问对话</p>
-                        </div>
-                    </div>
-                </div>
-                <div v-for="(msg, idx) in messages" :key="msg.id" class="flex" :class="msg.role==='user'?'justify-end':'justify-start'">
-                    <!-- 助手消息 -->
-                    <div v-if="msg.role==='assistant'" class="flex items-start gap-2 max-w-[85%] sm:max-w-[80%]">
-                        <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center" style="background:#e8ddc8;">
-                            <i class="fas fa-leaf" style="color:#8b5e34;"></i>
-                        </div>
-                        <div class="relative px-4 py-3 rounded-2xl assistant-bubble shadow-sm">
-                            <div class="prose prose-sm max-w-none" v-html="renderMarkdown(msg.content)"></div>
-                            <div v-if="idx===messages.length-1 && isStreaming && !msg.content" class="typing-indicator flex space-x-1 py-1">
-                                <span></span><span></span><span></span>
-                            </div>
-                        </div>
-                        <button @click="speakMessage(msg)" :disabled="shouldDisableVoice(msg,idx)" class="voice-btn w-8 h-8 rounded-full flex items-center justify-center" style="background:#f0e8da; color:#8b5e34;">
-                            <i class="fas fa-volume-up"></i>
-                        </button>
-                    </div>
-                    <!-- 用户消息 -->
-                    <div v-else class="flex items-start gap-2 max-w-[85%] sm:max-w-[80%] flex-row-reverse">
-                        <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center" style="background:#e8ddc8;">
-                            <i class="fas fa-user" style="color:#8b5e34;"></i>
-                        </div>
-                        <div class="relative px-4 py-3 rounded-2xl rounded-tr-none shadow-sm user-bubble">
-                            <div class="whitespace-pre-wrap">{{ msg.content }}</div>
-                        </div>
-                        <button @click="speakMessage(msg)" class="voice-btn w-8 h-8 rounded-full flex items-center justify-center" style="background:#f0e8da; color:#8b5e34;">
-                            <i class="fas fa-volume-up"></i>
-                        </button>
-                    </div>
-                </div>
-                <div v-if="errorMsg" class="px-4 py-2 rounded-xl text-sm" style="background:#fdf0e8; border:1px solid #e8c9a8; color:#a54c2c;">{{ errorMsg }}</div>
-            </div>
-        </main>
+    <div class="chat-container" id="chatContainer">
+        <div class="chat-inner" id="chatInner">
+            <!-- 消息将在这里动态生成 -->
+        </div>
+    </div>
 
-        <!-- 底部输入 · 敦煌医脉 -->
-        <div class="border-t p-2 sm:p-4 shadow-lg flex-shrink-0">
-            <div class="max-w-3xl mx-auto">
-                <div class="flex items-end gap-3 rounded-2xl p-2" style="background:#f7f0e2; border:1px solid #e0d0b4;">
-                    <textarea v-model="inputMessage" @keydown.enter.exact="sendMessage" @keydown.enter.shift.exact="inputMessage+='\n'" rows="1"
-                        :disabled="isStreaming || !isApiReady" placeholder="请描述身体不适或养生疑问... (Enter发送, Shift+Enter换行)" 
-                        class="flex-1 bg-transparent border-0 resize-none outline-none py-2 px-3 max-h-32 placeholder-gray-400 text-sm"
-                        style="min-height: 40px; color:#4a3728;"></textarea>
-                    <button v-if="!isStreaming" @click="sendMessage" :disabled="!inputMessage.trim() || !isApiReady"
-                        class="p-2 rounded-full transition disabled:opacity-40 btn-primary">
-                        <i class="fas fa-paper-plane"></i>
-                    </button>
-                    <button v-else @click="stopStreaming" class="p-2 rounded-full" style="background:#e8c9a8; color:#8b4c2c;">
-                        <i class="fas fa-stop"></i>
-                    </button>
-                </div>
-                <div class="flex justify-between mt-2 text-xs px-1" style="color:#a08762;">
-                    <span><i class="fas fa-database"></i> {{ isApiReady ? '✅ 内经智脑已就绪' : '⚠️ 请配置API Key' }}</span>
-                    <span><i class="fas fa-home"></i> 返回主页 | 体质结果自动发送</span>
-                </div>
-            </div>
+    <div class="input-area">
+        <div class="input-wrapper">
+            <textarea id="inputBox" rows="1" placeholder="请描述身体不适或养生疑问... (Enter发送)" oninput="this.style.height = ''; this.style.height = Math.min(this.scrollHeight, 120) + 'px'"></textarea>
+            <button class="send-btn" id="sendBtn" onclick="sendMessage()">发送</button>
         </div>
     </div>
 
     <script>
-        // 兼容处理：如果 Vue 没加载成功，给出明确提示而不是报错白屏
-        if (typeof Vue === 'undefined') {
-            document.getElementById('app').innerHTML = '<div style="text-align:center;padding:50px;color:#a54c2c;font-size:18px;">⚠️ 核心框架 Vue 加载失败，请检查网络或更换 CDN 后刷新页面。</div>';
-            throw new Error("Vue is not defined");
+        // ================= 核心逻辑 (原生 JS 直连 Dify) =================
+
+        // 硬编码的 API 配置
+        const API_BASE = 'https://api.dify.ai/v1';
+        const API_KEY = 'app-66HmEsxZuCXDJGjKPQ6D8zN4';
+
+        let conversationId = '';
+        let isStreaming = false;
+        let currentAbortController = null;
+        let messages = [];
+
+        const chatInner = document.getElementById('chatInner');
+        const inputBox = document.getElementById('inputBox');
+        const sendBtn = document.getElementById('sendBtn');
+
+        // 提示框
+        function showError(msg) {
+            const toast = document.getElementById('errorToast');
+            toast.textContent = msg;
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 3000);
         }
 
-        const { createApp, ref, onMounted, nextTick, watch } = Vue;
+        // 滚动到底部
+        function scrollToBottom() {
+            const container = document.getElementById('chatContainer');
+            container.scrollTop = container.scrollHeight;
+        }
 
-        // ================= 硬编码配置区 =================
-        const DEFAULT_API_BASE = 'https://api.dify.ai/v1';
-        const DEFAULT_API_KEY = 'app-66HmEsxZuCXDJGjKPQ6D8zN4';
-        // ================================================
+        // 渲染空状态
+        function renderEmptyState() {
+            chatInner.innerHTML = `
+                <div style="text-align: center; margin-top: 50px; color: #7a5c3c;">
+                    <div style="font-size: 3rem; margin-bottom: 20px;">☯</div>
+                    <p style="font-size: 1.2rem; font-weight: bold; margin-bottom: 10px; color: #5c3e1e;">「法于阴阳，和于术数」</p>
+                    <p style="font-size: 0.9rem;">食饮有节，起居有常，不妄作劳，故能形与神俱。</p>
+                    <p style="font-size: 0.8rem; margin-top: 20px; color: #a08762;">—— 开始与内经康养顾问对话</p>
+                </div>
+            `;
+        }
 
-        function getOrCreateDeviceId() {
-            let deviceId = localStorage.getItem('dify_device_id');
-            if (!deviceId) {
-                deviceId = 'dev_' + Date.now() + '_' + Math.random().toString(36).substring(2, 10);
-                localStorage.setItem('dify_device_id', deviceId);
+        // 添加消息到界面
+        function appendMessage(role, content, isTyping = false) {
+            if (messages.length === 0 && chatInner.querySelector('div[style*="text-align: center"]')) {
+                chatInner.innerHTML = ''; // 清除空状态
             }
-            return deviceId;
-        }
 
-        function getOrCreateUserId(deviceId) {
-            let userId = localStorage.getItem('dify_user_id');
-            if (!userId) {
-                userId = `user_${deviceId}`;
-                localStorage.setItem('dify_user_id', userId);
+            const row = document.createElement('div');
+            row.className = `message-row ${role}`;
+            
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            
+            if (isTyping) {
+                bubble.innerHTML = `<div class="typing"><span></span><span></span><span></span></div>`;
+            } else {
+                bubble.textContent = content;
             }
-            return userId;
+
+            row.appendChild(bubble);
+            chatInner.appendChild(row);
+            scrollToBottom();
+            return bubble;
         }
 
-        function markdownToPlainText(md) {
-            if (!md) return '';
-            let text = md.replace(/!\[.*?\]\(.*?\)/g, '')
-                         .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-                         .replace(/`([^`]+)`/g, '$1')
-                         .replace(/```[\s\S]*?```/g, '')
-                         .replace(/(\*\*|__)(.*?)\1/g, '$2')
-                         .replace(/(\*|_)(.*?)\1/g, '$2')
-                         .replace(/^#{1,6}\s+/gm, '')
-                         .replace(/^[\s]*[-+*]\s+/gm, '')
-                         .replace(/^\d+\.\s+/gm, '')
-                         .replace(/<[^>]*>/g, '');
-            return text.trim();
-        }
-
-        async function* parseSSEStream(reader) {
-            const decoder = new TextDecoder('utf-8');
-            let buffer = '';
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
-                buffer += decoder.decode(value, { stream: true });
-                const lines = buffer.split('\n');
-                buffer = lines.pop() || '';
-                for (const line of lines) {
-                    const trimmed = line.trim();
-                    if (trimmed.startsWith('data:')) {
-                        const dataStr = trimmed.slice(5).trim();
-                        if (dataStr === '[DONE]') continue;
-                        try { yield JSON.parse(dataStr); } catch(e) {}
-                    }
-                }
+        // 更新最后一条 AI 消息
+        function updateLastAssistantMessage(content) {
+            const rows = chatInner.querySelectorAll('.message-row.assistant');
+            if (rows.length > 0) {
+                const lastBubble = rows[rows.length - 1].querySelector('.bubble');
+                lastBubble.textContent = content;
+                scrollToBottom();
             }
         }
 
-        function renderMarkdown(content) {
-            if (!content) return '';
+        // 发送消息核心逻辑
+        async function sendMessage() {
+            const text = inputBox.value.trim();
+            if (!text || isStreaming) return;
+
+            // 禁用输入
+            isStreaming = true;
+            sendBtn.disabled = true;
+            sendBtn.textContent = '停止';
+            sendBtn.style.backgroundColor = '#8f683c';
+            sendBtn.onclick = stopStreaming;
+
+            // 添加用户消息
+            messages.push({ role: 'user', content: text });
+            appendMessage('user', text);
+            inputBox.value = '';
+            inputBox.style.height = '44px';
+
+            // 添加 AI 占位符
+            appendMessage('assistant', '', true);
+            
+            let fullAnswer = '';
+            currentAbortController = new AbortController();
+
             try {
-                if (typeof marked === 'undefined' || typeof DOMPurify === 'undefined') {
-                    return content.replace(/\n/g, '<br>');
-                }
-                let html = marked.parse(content, { breaks: true, gfm: true });
-                let clean = DOMPurify.sanitize(html);
-                const div = document.createElement('div');
-                div.innerHTML = clean;
-                if (typeof hljs !== 'undefined') {
-                    div.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block));
-                }
-                return div.innerHTML;
-            } catch(e) { return content; }
-        }
-
-        function getStoragePrefix() {
-            const deviceId = getOrCreateDeviceId();
-            return `dify_${deviceId}_`;
-        }
-
-        createApp({
-            setup() {
-                const messages = ref([]);
-                const inputMessage = ref('');
-                const isStreaming = ref(false);
-                const errorMsg = ref('');
-                const showConfig = ref(false);
-                const conversationId = ref('');
-                const userId = ref('');
-                let abortController = null;
-                const messageContainer = ref(null);
-
-                // 初始化时直接使用硬编码的值
-                const userConfig = ref({ apiBase: DEFAULT_API_BASE, apiKey: DEFAULT_API_KEY });
-                const isApiReady = ref(true);
-
-                // 语音相关
-                let currentUtterance = null;
-                let speechAllowed = false;
-
-                const stopSpeaking = () => {
-                    if (window.speechSynthesis) window.speechSynthesis.cancel();
-                    currentUtterance = null;
-                };
-
-                const speakMessage = async (msg) => {
-                    if (!msg?.content) return;
-                    if (!window.speechSynthesis) {
-                        errorMsg.value = '浏览器不支持语音播报。';
-                        setTimeout(() => errorMsg.value = '', 3000);
-                        return;
-                    }
-                    if (!speechAllowed) {
-                        if (!localStorage.getItem('speech_warning_shown')) {
-                            errorMsg.value = '🔊 请先点击页面任意位置启用语音。';
-                            localStorage.setItem('speech_warning_shown', 'true');
-                            setTimeout(() => errorMsg.value = '', 4000);
-                        }
-                        return;
-                    }
-                    stopSpeaking();
-                    const text = msg.role === 'assistant' ? markdownToPlainText(msg.content) : msg.content;
-                    if (!text.trim()) return;
-                    const speakWithRetry = () => {
-                        const voices = window.speechSynthesis.getVoices();
-                        if (voices.length === 0) { setTimeout(speakWithRetry, 100); return; }
-                        const utterance = new SpeechSynthesisUtterance(text);
-                        utterance.lang = 'zh-CN';
-                        utterance.rate = 1.0;
-                        utterance.onend = () => currentUtterance = null;
-                        utterance.onerror = (event) => {
-                            if (event.error !== 'interrupted' && event.error !== 'canceled')
-                                errorMsg.value = '语音播报失败。';
-                        };
-                        currentUtterance = utterance;
-                        window.speechSynthesis.speak(utterance);
-                    };
-                    speakWithRetry();
-                };
-
-                const enableSpeechAfterUserInteraction = () => {
-                    if (speechAllowed) return;
-                    speechAllowed = true;
-                    errorMsg.value = '🔊 语音播报已启用。';
-                    setTimeout(() => errorMsg.value = '', 2000);
-                    document.removeEventListener('click', enableSpeechAfterUserInteraction);
-                    document.removeEventListener('touchstart', enableSpeechAfterUserInteraction);
-                };
-
-                // 核心功能
-                const initDevice = () => {
-                    const prefix = getStoragePrefix();
-                    
-                    // 【关键修改】这里强制使用硬编码的值，忽略本地存储的旧配置
-                    userConfig.value.apiBase = DEFAULT_API_BASE;
-                    userConfig.value.apiKey = DEFAULT_API_KEY;
-                    isApiReady.value = true;
-
-                    const storedMessages = localStorage.getItem(prefix + 'messages');
-                    if (storedMessages) {
-                        try { messages.value = JSON.parse(storedMessages).map(m => ({ ...m, id: m.id || Date.now()+Math.random() })); } catch(e) { messages.value = []; }
-                    } else { messages.value = []; }
-
-                    conversationId.value = localStorage.getItem(prefix + 'conversationId') || '';
-                    const storedUserId = localStorage.getItem(prefix + 'userId');
-                    if (storedUserId) {
-                        userId.value = storedUserId;
-                    } else {
-                        const deviceId = getOrCreateDeviceId();
-                        userId.value = `user_${deviceId}`;
-                        localStorage.setItem(prefix + 'userId', userId.value);
-                    }
-                };
-
-                const saveUserConfig = () => {
-                    // 允许用户在界面临时修改，但刷新页面后会被硬编码值覆盖
-                    const prefix = getStoragePrefix();
-                    localStorage.setItem(prefix + 'apiBase', userConfig.value.apiBase);
-                    localStorage.setItem(prefix + 'apiKey', userConfig.value.apiKey);
-                    isApiReady.value = !!(userConfig.value.apiBase && userConfig.value.apiKey);
-                    showConfig.value = false;
-                    errorMsg.value = '';
-                };
-
-                const saveMessagesToLocal = () => {
-                    const prefix = getStoragePrefix();
-                    const toStore = messages.value.map(m => ({ role: m.role, content: m.content, id: m.id }));
-                    localStorage.setItem(prefix + 'messages', JSON.stringify(toStore.slice(-100)));
-                    if (conversationId.value) localStorage.setItem(prefix + 'conversationId', conversationId.value);
-                };
-
-                const scrollToBottom = () => {
-                    nextTick(() => { if (messageContainer.value) messageContainer.value.scrollTop = messageContainer.value.scrollHeight; });
-                };
-
-                const sendMessage = async () => {
-                    const userMsg = inputMessage.value.trim();
-                    if (!userMsg) return;
-                    if (!isApiReady.value || !userConfig.value.apiKey) {
-                        errorMsg.value = '请先配置 API Key';
-                        showConfig.value = true;
-                        return;
-                    }
-                    if (isStreaming.value) return;
-                    errorMsg.value = '';
-
-                    messages.value.push({ id: Date.now()+'-user', role: 'user', content: userMsg });
-                    inputMessage.value = '';
-                    scrollToBottom();
-
-                    messages.value.push({ id: Date.now()+'-assistant', role: 'assistant', content: '' });
-                    scrollToBottom();
-
-                    const apiBase = userConfig.value.apiBase.replace(/\/$/, '');
-                    const url = `${apiBase}/chat-messages`;
-                    const body = {
+                const response = await fetch(`${API_BASE}/chat-messages`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${API_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Accept': 'text/event-stream'
+                    },
+                    body: JSON.stringify({
                         inputs: {},
-                        query: userMsg,
+                        query: text,
                         response_mode: 'streaming',
-                        conversation_id: conversationId.value || undefined,
-                        user: userId.value
-                    };
-
-                    isStreaming.value = true;
-                    abortController = new AbortController();
-                    let fullAnswer = '';
-                    let newConversationId = null;
-
-                    try {
-                        const res = await fetch(url, {
-                            method: 'POST',
-                            headers: {
-                                'Authorization': `Bearer ${userConfig.value.apiKey}`,
-                                'Content-Type': 'application/json',
-                                'Accept': 'text/event-stream'
-                            },
-                            body: JSON.stringify(body),
-                            signal: abortController.signal
-                        });
-                        if (!res.ok) throw new Error(`API错误 ${res.status}`);
-                        const reader = res.body.getReader();
-                        for await (const event of parseSSEStream(reader)) {
-                            if (event.event === 'message') {
-                                if (event.answer) {
-                                    fullAnswer += event.answer;
-                                    const last = messages.value[messages.value.length-1];
-                                    if (last && last.role === 'assistant') last.content = fullAnswer;
-                                    scrollToBottom();
-                                }
-                            } else if (event.event === 'message_end') {
-                                newConversationId = event.conversation_id;
-                                if (newConversationId) conversationId.value = newConversationId;
-                                saveMessagesToLocal();
-                                break;
-                            } else if (event.event === 'error') {
-                                throw new Error(event.message);
-                            }
-                        }
-                        const lastMsg = messages.value[messages.value.length-1];
-                        if (lastMsg && lastMsg.content === '') lastMsg.content = '(空响应)';
-                    } catch (err) {
-                        if (err.name !== 'AbortError') {
-                            errorMsg.value = err.message || '请求失败';
-                            const last = messages.value[messages.value.length-1];
-                            if (last && last.role === 'assistant') last.content = `❌ 错误: ${errorMsg.value}`;
-                        }
-                    } finally {
-                        isStreaming.value = false;
-                        abortController = null;
-                        saveMessagesToLocal();
-                        scrollToBottom();
-                    }
-                };
-
-                const stopStreaming = () => {
-                    if (abortController) abortController.abort();
-                    isStreaming.value = false;
-                    if (messages.value.length && messages.value[messages.value.length-1].role==='assistant' && !messages.value[messages.value.length-1].content) {
-                        messages.value.pop();
-                    }
-                };
-
-                const newConversation = () => {
-                    if (isStreaming.value) stopStreaming();
-                    messages.value = [];
-                    conversationId.value = '';
-                    errorMsg.value = '';
-                    const prefix = getStoragePrefix();
-                    localStorage.removeItem(prefix + 'messages');
-                    localStorage.removeItem(prefix + 'conversationId');
-                    scrollToBottom();
-                };
-
-                const shouldDisableVoice = (msg, idx) => {
-                    if (!msg.content) return true;
-                    if (isStreaming.value && msg.role==='assistant' && idx===messages.value.length-1) return true;
-                    return false;
-                };
-
-                const goBackToHome = () => {
-                    if (isStreaming.value && abortController) abortController.abort();
-                    window.location.href = 'https://drinkwater10086.github.io/A/index.html';
-                };
-
-                // 自动接收并发送体质结果
-                let autoSent = false;
-                const loadAndSendResult = async () => {
-                    if (autoSent) return;
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const resultParam = urlParams.get('result');
-                    if (resultParam && !autoSent) {
-                        try {
-                            const decoded = decodeURIComponent(resultParam);
-                            if (decoded && decoded.trim()) {
-                                inputMessage.value = decoded;
-                                autoSent = true;
-                                await nextTick();
-                                if (!isApiReady.value) {
-                                    errorMsg.value = '⏳ API未就绪，请配置后手动发送。';
-                                    setTimeout(() => errorMsg.value = '', 3000);
-                                    return;
-                                }
-                                await sendMessage();
-                            }
-                        } catch(e) { console.warn('自动发送失败', e); }
-                    }
-                };
-
-                watch([messages, conversationId], () => { if (!isStreaming.value) saveMessagesToLocal(); }, { deep: true });
-
-                onMounted(async () => {
-                    initDevice();
-                    document.addEventListener('click', enableSpeechAfterUserInteraction);
-                    document.addEventListener('touchstart', enableSpeechAfterUserInteraction);
-                    if (!window.speechSynthesis) errorMsg.value = '浏览器不支持语音播报。';
-                    await nextTick();
-                    await loadAndSendResult();
+                        conversation_id: conversationId || undefined,
+                        user: 'user_' + (localStorage.getItem('dify_device_id') || 'default')
+                    }),
+                    signal: currentAbortController.signal
                 });
 
-                return {
-                    messages, inputMessage, isStreaming, errorMsg, showConfig,
-                    userConfig, isApiReady, messageContainer, conversationId,
-                    sendMessage, stopStreaming, newConversation, saveUserConfig,
-                    renderMarkdown, speakMessage, shouldDisableVoice, stopSpeaking, goBackToHome
-                };
+                if (!response.ok) {
+                    throw new Error(`API 请求失败: ${response.status}`);
+                }
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder('utf-8');
+                let buffer = '';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    buffer += decoder.decode(value, { stream: true });
+                    const lines = buffer.split('\n');
+                    buffer = lines.pop() || '';
+
+                    for (const line of lines) {
+                        if (line.startsWith('data:')) {
+                            const dataStr = line.slice(5).trim();
+                            if (dataStr === '[DONE]') continue;
+                            try {
+                                const data = JSON.parse(dataStr);
+                                if (data.event === 'message' && data.answer) {
+                                    fullAnswer += data.answer;
+                                    updateLastAssistantMessage(fullAnswer);
+                                } else if (data.event === 'message_end') {
+                                    if (data.conversation_id) conversationId = data.conversation_id;
+                                } else if (data.event === 'error') {
+                                    throw new Error(data.message || '服务端错误');
+                                }
+                            } catch (e) { }
+                        }
+                    }
+                }
+                
+                if (!fullAnswer) updateLastAssistantMessage('(空响应)');
+                else messages.push({ role: 'assistant', content: fullAnswer });
+
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    updateLastAssistantMessage(fullAnswer + ' [已停止]');
+                } else {
+                    updateLastAssistantMessage(`❌ 错误: ${error.message}`);
+                    showError('请求失败，请检查网络或 API Key');
+                }
+            } finally {
+                isStreaming = false;
+                sendBtn.disabled = false;
+                sendBtn.textContent = '发送';
+                sendBtn.style.backgroundColor = 'var(--dunhuang-amber)';
+                sendBtn.onclick = sendMessage;
             }
-        }).mount('#app');
+        }
+
+        // 停止生成
+        function stopStreaming() {
+            if (currentAbortController) {
+                currentAbortController.abort();
+            }
+        }
+
+        // 停止语音 (原生占位)
+        function stopVoice() {
+            if (window.speechSynthesis) window.speechSynthesis.cancel();
+            showError('已停止语音');
+        }
+
+        // 新建对话
+        function newConversation() {
+            if (isStreaming) stopStreaming();
+            messages = [];
+            conversationId = '';
+            chatInner.innerHTML = '';
+            renderEmptyState();
+            inputBox.focus();
+        }
+
+        // 返回主页 (使用你原本代码里的链接)
+        function goBackToHome() {
+            if (isStreaming) stopStreaming();
+            window.location.href = 'https://drinkwater10086.github.io/A/index.html';
+        }
+
+        // 绑定回车键
+        inputBox.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // 初始化
+        window.onload = () => {
+            if (!localStorage.getItem('dify_device_id')) {
+                localStorage.setItem('dify_device_id', Math.random().toString(36).substring(2, 10));
+            }
+            renderEmptyState();
+            inputBox.focus();
+        };
     </script>
 </body>
 </html>
