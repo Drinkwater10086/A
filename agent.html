@@ -4,13 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <title>黄帝内经·敦煌医脉 | 智能辩证康养</title>
+    
+    <!-- Tailwind CSS (主用官方, 备用国内镜像) -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script>
+        if (typeof tailwind === 'undefined') {
+            document.write('<script src="https://cdn.staticfile.net/tailwindcss/3.4.1/tailwind.min.js"><\/script>');
+        }
+    </script>
+
+    <!-- Font Awesome 图标库 (国内镜像) -->
+    <link rel="stylesheet" href="https://s4.zstatic.net/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Markdown 解析库 (国内镜像) -->
+    <script src="https://s4.zstatic.net/ajax/libs/marked/9.1.6/marked.min.js"></script>
+    
+    <!-- DOMPurify 防 XSS 库 (国内镜像) -->
+    <script src="https://s4.zstatic.net/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+    
+    <!-- 代码高亮样式与库 (国内镜像) -->
+    <link rel="stylesheet" href="https://s4.zstatic.net/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://s4.zstatic.net/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    
+    <!-- Vue 3 框架 (国内镜像) -->
+    <script src="https://s4.zstatic.net/npm/vue@3/dist/vue.global.js"></script>
+
     <style>
         /* 敦煌医脉·黄帝内经 主题色调 —— 暖褐、土黄、米白、赭石 */
         body {
@@ -287,10 +305,18 @@
     </div>
 
     <script>
+        // 兼容处理：如果 Vue 没加载成功，给出明确提示而不是报错白屏
+        if (typeof Vue === 'undefined') {
+            document.getElementById('app').innerHTML = '<div style="text-align:center;padding:50px;color:#a54c2c;font-size:18px;">⚠️ 核心框架 Vue 加载失败，请检查网络或更换 CDN 后刷新页面。</div>';
+            throw new Error("Vue is not defined");
+        }
+
         const { createApp, ref, onMounted, nextTick, watch } = Vue;
 
+        // ================= 硬编码配置区 =================
         const DEFAULT_API_BASE = 'https://api.dify.ai/v1';
         const DEFAULT_API_KEY = 'app-66HmEsxZuCXDJGjKPQ6D8zN4';
+        // ================================================
 
         function getOrCreateDeviceId() {
             let deviceId = localStorage.getItem('dify_device_id');
@@ -348,11 +374,16 @@
         function renderMarkdown(content) {
             if (!content) return '';
             try {
+                if (typeof marked === 'undefined' || typeof DOMPurify === 'undefined') {
+                    return content.replace(/\n/g, '<br>');
+                }
                 let html = marked.parse(content, { breaks: true, gfm: true });
                 let clean = DOMPurify.sanitize(html);
                 const div = document.createElement('div');
                 div.innerHTML = clean;
-                div.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block));
+                if (typeof hljs !== 'undefined') {
+                    div.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block));
+                }
                 return div.innerHTML;
             } catch(e) { return content; }
         }
@@ -374,6 +405,7 @@
                 let abortController = null;
                 const messageContainer = ref(null);
 
+                // 初始化时直接使用硬编码的值
                 const userConfig = ref({ apiBase: DEFAULT_API_BASE, apiKey: DEFAULT_API_KEY });
                 const isApiReady = ref(true);
 
@@ -433,11 +465,11 @@
                 // 核心功能
                 const initDevice = () => {
                     const prefix = getStoragePrefix();
-                    const savedBase = localStorage.getItem(prefix + 'apiBase');
-                    const savedKey = localStorage.getItem(prefix + 'apiKey');
-                    userConfig.value.apiBase = savedBase || DEFAULT_API_BASE;
-                    userConfig.value.apiKey = savedKey || DEFAULT_API_KEY;
-                    isApiReady.value = !!(userConfig.value.apiBase && userConfig.value.apiKey);
+                    
+                    // 【关键修改】这里强制使用硬编码的值，忽略本地存储的旧配置
+                    userConfig.value.apiBase = DEFAULT_API_BASE;
+                    userConfig.value.apiKey = DEFAULT_API_KEY;
+                    isApiReady.value = true;
 
                     const storedMessages = localStorage.getItem(prefix + 'messages');
                     if (storedMessages) {
@@ -456,6 +488,7 @@
                 };
 
                 const saveUserConfig = () => {
+                    // 允许用户在界面临时修改，但刷新页面后会被硬编码值覆盖
                     const prefix = getStoragePrefix();
                     localStorage.setItem(prefix + 'apiBase', userConfig.value.apiBase);
                     localStorage.setItem(prefix + 'apiKey', userConfig.value.apiKey);
@@ -627,16 +660,6 @@
                 };
             }
         }).mount('#app');
-
-        if (typeof marked !== 'undefined') {
-            marked.setOptions({
-                breaks: true, gfm: true,
-                highlight: (code, lang) => {
-                    if (lang && hljs.getLanguage(lang)) return hljs.highlight(code, { language: lang }).value;
-                    return hljs.highlightAuto(code).value;
-                }
-            });
-        }
     </script>
 </body>
 </html>
